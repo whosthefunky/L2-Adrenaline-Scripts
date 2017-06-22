@@ -1,0 +1,34 @@
+var
+  log: TStringList;
+  res: int64;
+  timer: tdatetime;
+
+  const
+  Date1900 {: LongInt} = $0001AC05;  {Julian day count for 01/01/1900 -- TDateTime Start Date}
+  Date1970 {: LongInt} = $00020FE4;  {Julian day count for 01/01/1970 -- Unix Start Date}
+  Unix0Date: TDateTime = 25568;      {Date1970 - Date1900}
+
+  SecondsInDay    = 86400;  {Number of seconds in a day}
+  SecondsInHour   =  3600;  {Number of seconds in an hour}
+  SecondsInMinute =    60;  {Number of seconds in a minute}
+  HoursInDay      =    24;  {Number of hours in a day}
+  MinutesInHour   =    60;  {Number of minutes in an hour}
+  MinutesInDay    =  1440;  {Number of minutes in a day}
+
+
+function AbDateTimeToUnixTime(DateTime : TDateTime) : LongInt;
+{ convert Delphi TDateTime to unix date }
+var
+  Hrs, Mins, Secs, MSecs : Word;
+  Dt, Tm : TDateTime;
+begin
+  Dt := Trunc(DateTime);
+  Tm := DateTime - Dt;
+  if Dt < Unix0Date then
+    Result := 0
+  else
+    Result := Trunc(Dt - Unix0Date) * SecondsInDay;
+
+  DecodeTime(Tm, Hrs, Mins, Secs, MSecs);
+  Result := Result + (Hrs * SecondsInHour) + (Mins * SecondsInMinute) + Secs;
+end;

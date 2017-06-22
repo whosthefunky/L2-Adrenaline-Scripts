@@ -1,0 +1,366 @@
+﻿uses
+  SysUtils, SettingsModule, Classes;
+  
+const
+  Date1900 {: LongInt} = $0001AC05;  {Julian day count for 01/01/1900 -- TDateTime Start Date}
+  Date1970 {: LongInt} = $00020FE4;  {Julian day count for 01/01/1970 -- Unix Start Date}
+  Unix0Date: TDateTime = 25568;      {Date1970 - Date1900}
+
+  SecondsInDay    = 86400;  {Number of seconds in a day}
+  SecondsInHour   =  3600;  {Number of seconds in an hour}
+  SecondsInMinute =    60;  {Number of seconds in a minute}
+  HoursInDay      =    24;  {Number of hours in a day}
+  MinutesInHour   =    60;  {Number of minutes in an hour}
+  MinutesInDay    =  1440;  {Number of minutes in a day}
+  
+var
+	MySet: TSettings;
+	iconID: integer;
+	chargeID: integer;
+	triggerID: integer;
+	//config
+	itemResurrectId: integer;
+	leaderName: string;
+	rangeFromLeader: integer;
+	timer: tdatetime;
+
+function AbDateTimeToUnixTime(DateTime : TDateTime) : LongInt;
+{ convert Delphi TDateTime to unix date }
+var
+  Hrs, Mins, Secs, MSecs : Word;
+  Dt, Tm : TDateTime;
+begin
+  Dt := Trunc(DateTime);
+  Tm := DateTime - Dt;
+  if Dt < Unix0Date then
+    Result := 0
+  else
+    Result := Trunc(Dt - Unix0Date) * SecondsInDay;
+
+  DecodeTime(Tm, Hrs, Mins, Secs, MSecs);
+  Result := Result + (Hrs * SecondsInHour) + (Mins * SecondsInMinute) + Secs;
+end;
+
+function fHaschargeID: boolean; //есть зарядка 
+begin
+  Result := effectTime(chargeID) > 0;
+end;
+
+function fHasTrigger: boolean; //есть триггер
+begin
+  Result := effectTime(triggerID) > 0;
+end;
+
+function fHasTrigger3: boolean; //триггер 3 уровня
+begin
+  Result := effectLevel(triggerID) = 3;
+end;
+
+function fHasIcon: boolean; //есть икона
+begin
+  Result := effectTime(iconID) > 0;
+end;
+
+function fTriggerFunc: boolean; //есть триггера, но его лвл меньше 3 либо время до конца 2 секунды
+begin
+  Result := (fHasTrigger
+	and (not fHasTrigger3 or (effectTime(triggerID) <= 2000)));
+end;
+	
+function getCurrentState: integer;
+var
+	painOfShilenTrigger: TL2Buff;
+begin
+  if (skillCoolTime(iconID) >= 5000) then
+  begin
+    Result := 0;
+    exit;
+  end;
+
+  if not fHaschargeID and not fHasTrigger or fTriggerFunc or fHasIcon then   //или есть шилка 
+  begin
+    if (User.Buffs.ByID(triggerID, painOfShilenTrigger)) then
+      Engine.Dispel(painOfShilenTrigger.Name);
+      
+    Result := 1;
+    exit;
+  end;
+
+  if fHaschargeID then
+  begin
+    Result := 2;
+    exit;
+  end;
+
+  if fHasTrigger3 then
+  begin
+    Result := 3;
+    exit;
+  end;
+  
+end;
+
+procedure mainStatus;
+var
+	partyLeader: TL2Live;
+	state: integer;
+	tmpChar: TL2Live;
+begin
+	MySet.SetFile(Script.Path + 'autoShilenParams_'+User.Name+'.ini');
+  
+	leaderName := MySet.Load('Char params', 'Leader Name', User.Name);
+	itemResurrectId := MySet.Load('Char params', 'Resurrect item ID', 737);
+	
+	iconID := MySet.Load('Skills', 'Icon ID', 789);
+	chargeID := MySet.Load('Skills', 'Charge ID', 788);
+	triggerID := MySet.Load('Skills', 'Trigger ID', 5564);
+	
+	Engine.MSG('[Settings]', 'Leader name: ' + leaderName, 8388736);
+	Engine.MSG('[Settings]', 'Resurrect item ID: ' + IntToStr(itemResurrectId), 8388736);
+	Engine.MSG('[Settings]', 'Icon ID: ' + IntToStr(iconID), 8388736);
+	Engine.MSG('[Settings]', 'Charge ID: ' + IntToStr(chargeID), 8388736);
+	Engine.MSG('[Settings]', 'Trigger ID: ' + IntToStr(triggerID), 8388736);
+	
+	state := 1;
+	
+	while Engine.Status = lsOnline do
+	begin
+	  delay(500);
+	  state := getCurrentState;
+		case state of
+		0 : delay(1000);
+		1 : 
+		begin
+			if true then //(petlist.count <> 0) and (not petlist.items(0).Dead) 
+			begin
+        
+			  if not shouldBuff then
+			    continue;
+               
+			  if not shouldchargeID and (skillCoolTime(iconID) > 5000) then
+			    continue; 
+			
+				if (skillCoolTime(chargeID) <> 0) then
+				begin
+				  delay(skillCoolTime(chargeID));
+					continue;
+				end;	
+				
+				Engine.UseSkill(chargeID);
+				delay(300);
+				delay(User.Cast.EndTime + 500);
+				
+				if fHaschargeID then
+				begin
+					Engine.FaceControl(0, false);
+					Engine.UseAction(23);
+					delay(1000);
+				end;
+        
+			end;
+		end;
+		2 :
+		begin
+			
+			if (petlist.count <> 0) and (petlist.items(0).Dead) then
+			begin
+				Engine.SetTarget(petlist.items(0));
+				Engine.UseItem(itemResurrectId);
+				delay(user.cast.endtime);
+				continue;
+			end;
+
+			while (not User.Dead and fHaschargeID and not fHasTrigger3) do
+			begin
+				if (petlist.count = 0) then
+				begin
+					MySet.SetFile(Script.Path + 'autoShilenParams_'+User.Name+'.ini');
+					Engine.SetTarget(MySet.Load('Char params', '2nd shilen name', User.Name));
+
+					if (not CharList.ByName(MySet.Load('Char params', '2nd shilen name', User.Name), tmpChar)) then
+					begin
+					  print('Char with name: ' + MySet.Load('Char params', '2nd shilen name', User.Name) + ' not found');
+					  break;
+					end;
+					
+					Engine.Attack(10, true);
+					delay(30);
+				end else begin
+
+				  if (petlist.items(0).Dead) then
+				    break;
+				    
+					Engine.SetTarget(petlist.items(0));
+					Engine.Attack(10, true);
+					delay(30);
+				end;
+			end;
+			
+		end;
+		3 :
+		begin
+			
+			if Party.Chars.Count <> 0 then
+			begin
+				MySet.SetFile(Script.Path + 'autoShilenParams_'+User.Name+'.ini');
+				leaderName := MySet.Load('Char params', 'Leader Name', User.Name);
+				if not Party.Chars.ByName(leaderName, partyLeader) then
+					print('Leader with this name [' + leaderName + '] not found in party');
+					
+				if Party.Chars.ByName(leaderName, partyLeader) then
+				begin
+					rangeFromLeader := MySet.Load('Char params', 'Range from leader', 150);
+					if (rangeFromLeader <> 0) then
+						Engine.MoveTo(partyLeader, -rangeFromLeader);					
+				end;
+
+				if fHasTrigger3 then
+					begin
+						if ((skillCoolTime(iconID) <> 0) and ((skillCoolTime(iconID) + 300) <= effectTime(triggerID))) then
+						begin
+							delay(skillCoolTime(iconID));
+						end;
+						
+						Engine.UseSkill(iconID);
+						delay(3000);
+				end;
+				
+			end;
+			if fHasIcon then
+				  Engine.FaceControl(0, true);
+				  {
+			else 
+			begin
+				if (User.Buffs.ByID(triggerID, painOfShilenTrigger) and (painOfShilenTrigger.Level = 3)) then
+				begin
+					if (SkillList.ById(iconID, spiritOfShilen) and (spiritOfShilen.EndTime <> 0) and (spiritOfShilen.EndTime + 300 <= painOfShilenTrigger.EndTime)) then
+					begin
+						delay(spiritOfShilen.EndTime);
+					end;
+					
+					Engine.UseSkill(iconID);
+					
+				end;
+			end;}
+			
+		end;
+		
+		//case end
+		end;
+	delay(300);
+	end;
+end;
+
+function shouldBuff: boolean;
+var
+  destEngine: TL2Control;
+  eff: TL2Buff;
+  checkCharName: string;
+  shilenEndTime: integer;
+begin
+  Result := false;
+  MySet.SetFile(Script.Path + 'autoShilenParams_'+User.Name+'.ini');
+  checkCharName := MySet.Load('Char params', 'Leader Name', User.Name);
+  shilenEndTime := MySet.Load('Char params', 'Shilen end time', 20 * 1000);
+
+  if not checkDist then
+    exit;
+
+  destEngine := GetControl(checkCharName);
+  if (Assigned(destEngine)) then
+  begin
+    Result := not destEngine.GetUser.Buffs.ById(iconID, eff) or
+    (destEngine.GetUser.Buffs.ById(iconID, eff) and (eff.EndTime < shilenEndTime));
+  end else
+	Result := true;
+end;
+
+function skillCoolTime(skillID: integer): cardinal;
+var
+  eff: TL2Skill;
+begin
+  if (SkillList.ByID(skillID, eff)) then
+    Result := eff.EndTime
+  else
+    Result := High(Cardinal);
+end;
+
+function effectTime(skillID: integer): cardinal;
+var
+  eff: TL2Buff;
+begin
+  if (User.Buffs.ByID(skillID, eff)) then
+    Result := eff.EndTime
+  else
+    Result := 0;
+end;
+
+function effectLevel(skillID: integer): cardinal;
+var
+  eff: TL2Buff;
+begin
+  if (User.Buffs.ByID(skillID, eff)) then
+    Result := eff.Level
+  else
+    Result := 0;
+end;
+
+function shouldchargeID: boolean;
+var
+  destEngine: TL2Control;
+  shil: TL2Skill;
+  selfShil: TL2Skill;
+  checkCharName: string;
+begin
+  MySet.SetFile(Script.Path + 'autoShilenParams_'+User.Name+'.ini');
+  checkCharName := MySet.Load('Char params', '2nd shilen name', User.Name);
+
+  Result := false;
+  
+  destEngine := GetControl(checkCharName);
+
+  if (Assigned(destEngine)) then
+  begin
+    Result := destEngine.GetSkillList.ById(iconID, shil) and (shil.Endtime > 30 * 1000);
+  end else 
+	Result := true;
+
+end;
+
+function checkDist: boolean;
+var
+  rangeFromLeader: integer;
+  leaderName: string;
+  leader: TL2Live;
+  range: integer;
+begin
+  leaderName := MySet.Load('Char params', 'Leader Name', User.Name);
+  range := MySet.Load('Char params', 'Buff range', 800);
+  CharList.ByName(leaderName, leader);
+
+  if (Assigned(leader)) then
+  begin
+    if (User.DistTo(leader) < range) then
+    begin
+      Result := true;
+      //print( User.DistTo(leader));
+      exit;
+    end;  
+  end;
+  
+  Result := false;
+  
+end;
+
+
+begin
+  timer := EncodeDate(2015, 05, 10); //year | month | day
+  if (AbDateTimeToUnixTime(timer) < AbDateTimeToUnixTime(now)) then
+  begin
+    print('Test time fired');
+    print('Developer ICQ - 670465907');
+    exit;
+  end;
+  
+  script.newThread(@mainStatus); 
+end.

@@ -1,0 +1,210 @@
+unit constants;
+   
+   interface
+			
+		const
+			{buttons block}
+			F1 = $70;
+			F2 = $71; 
+			F3 = $72;
+			F4 = $73; 
+			F5 = $74;
+			F6 = $75;
+			F7 = $76;
+			F8 = $77;
+			F9 = $78;
+			F10 = $79;
+			F11 = $7A;
+			F12 = $7B;
+			
+			{slb skills block}
+			SoulOfPain = 1436; //dd skills
+			AnnihilationCircle = 1438;
+			CurseOfDivinity = 1439;
+			SoulStrike = 1516;
+			Leopold = 1469;
+			SoulVortex = 1512;
+			SoulVortexExtinction = 1513;			
+			StealDivinity = 1440; //common skills
+			Warp = 628;
+			Blink = 1448;
+			SoulCleanse = 1510;			
+			Painkiller = 837;  //buffs
+			PrideOfKamael = 1444;
+			SoulToEmpower = 1441;
+			ArcaneShield = 1556;
+			LightningShock = 791; //debuffs
+			DeathMark = 1435;
+			ShadowBind = 1446;
+			VoiceBind = 1447;
+			SoulWeb = 1529;
+			
+			{skills block}
+			Ressurection = 1016;
+			MassResurrection = 1254;
+			BlessedRessurectionScroll = 2049;  
+			BlessedRessurectionScroll2 = 22104;
+			BlessedRessurectionScroll3 = 2321; 
+			BlessedRessurectionScroll4 = 2062; 
+			//transforms
+			AnakimScroll = 9159;
+			AnakimScroll2 = 2492;
+			TransformAnakim = 664;
+			TransformDivineHealer = 661;
+			//common skills
+			PrahNah = 1470;
+			Cancellation = 1056;
+			ShieldOfFaith = 528; 
+			ChantOfVictory = 1363;
+			VictoryOfPaagrio = 1414;
+			SublimeSelfSacrifice = 1505; 
+			BlessingOfEva = 2827;
+			MassRecharge = 1428;
+			SongOfPurification = 914;
+			//bubbles
+			RagingWaves = 1421; 
+			Cyclone = 1420; 
+			Vulcano = 1419; 
+			Gehenna = 1423;
+			DayOfDoom = 1254; 
+			SymbolOfNoise = 455;
+
+			//transform skills
+			SacrificeHealer = 703;
+			VailMasterDarkCure = 745;
+			
+			//taliks
+			LifeForce = 3429; 
+			MaximumClarity = 3282;
+			DivineProtection = 3284; 
+			DivineLord = 8334; 
+			
+			{buffs}
+			Regeneration = 1044;
+			DeflectMagic = 913; 
+			EvasKiss = 1073;
+			Might = 1068;
+			Focus = 1077;
+			ChantOfEvision = 1252;
+			Guidance = 1240;
+			Invigor = 1032;
+			BlessedShield = 1243;
+			AdvancedBlock = 1304;
+			ImpovedShieldDefence = 1503;
+			VampiricRage = 1268;
+			PoisonResistance = 1033;
+			Agility = 1087;
+			DecreaseWeigth = 1257;
+			LordOfVampire = 1507;
+			DeathWhisper = 1242;
+			Haste = 1086;
+			ForceMeditation = 441;
+			Invocation = 1430;
+			PaagrioOfProtection = 1250;
+			ChantOfRevenge = 1284;
+			WarChant = 1390;
+			GreaterMight = 1388;
+			CriticalOfPaagrio = 1537;
+			ChantOfCritical = 1518;
+			ChantOfBloodAwakening = 1519;
+			WeaponMaintenance = 5987;
+			PaagriosEye = 1364;
+			HolyWeapon = 1043;
+			PaagriosVision = 1249;
+			PaagriosHeart = 1256;
+			PaagriosTact = 1260;
+			ChantOfLife = 1229;
+			GreaterHeal = 1217;
+			GreaterGroupHeal = 1219;
+			FuryOfPaagrio = 1563;
+			RapidShot = 99;
+			DuelistSpirit = 297;
+			IronShield = 527;
+			SpiritOfSagittarius = 415;
+			FastShot = 490;
+			Sharshooting = 521;
+			RapidFire = 413;
+			DeadEye = 414;
+			Snipe = 313;
+			HawkEye = 131;
+			FocusChance = 356;
+			FocusPower = 357;
+			FocusDeath = 355;
+			MortalStrike = 410;
+			ThrillFight = 130;
+			FellSwoop = 421;
+			DetectAnimalWeakness = 87;
+			DetectDragonWeakness = 88;
+			DetectBestWeakness = 80;
+			DetectInsectWeakness = 75;
+			DetectPlantWeakness = 104;
+			EyeOfHunter = 359;
+			EyeOfSlayer = 360;
+			CombatAura = 982;
+			SeedOfRevenge = 761;
+			SpiritOfPhoenix = 784;
+			EvasWill = 786;
+			PainOfShilen = 788;
+			Frenzy = 176;
+			Rage = 94;
+			ReflectDamage = 86;
+			DeflectArrow = 112;
+			PhysicalMirror = 350;
+			MagicalMirror = 351;
+			Majesty = 82;
+			DarkForm = 423;
+			SeedOfFire = 1285;
+			SeedOfWater = 1286;
+			SeedOfWind = 1287;
+			FrostArmor = 1493;
+			FlameArmor = 1492;
+			HurricaneArmor = 1494;
+			FireResistance = 1191;
+			WarCry = 78;
+			{= 1182;
+			= 1189;
+			= 1548;
+			= 1393;
+			= 1392;
+			= 1352;
+			= 1549;
+			= 1353;
+			= 828;
+			= 829;
+			= 830;
+			= 825;
+			= 826;
+			= 827;
+			= 1307;
+			 = 1078; conc
+			= 2103;
+			= 2035;
+			= 2235;
+			= 2236;
+			= 2237;
+			= 2238;
+			= 2239;
+			= 2240;
+			= 2012;
+			= 2274;
+			= 2335;
+			= 2336;
+			= 2337;
+			= 2338;
+			= 2339;
+			= 2340; }
+			FuryOfPaagiro = 1563;
+			MaximizeLongrangeWeaponUse = 5128;
+			RecoverForce = 5127;
+			MaximumRecovery = 5126;
+			Smokescreen = 5129;
+			MaximumResistStatus = 5125;
+			MaximumDefense = 5123;
+			BlessingOfQueen = 4699;
+			NoblesseBlessing = 1323;
+			
+
+	implementation
+
+
+end.

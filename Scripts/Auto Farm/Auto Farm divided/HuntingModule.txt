@@ -1,0 +1,30 @@
+unit HuntingModule;
+
+interface
+
+uses SettingsModule;
+
+procedure moveToHuntingGround;
+
+implementation
+
+procedure moveToHuntingGround;
+begin
+    Print('Moving to hunting ground.');
+    Engine.MoveTo(146952, -70120, -3664);
+    Delay(500);
+    Engine.MoveTo(146872, -70424, -3560);
+    Delay(500);
+    Engine.MoveTo(145624, -73352, -4336);
+    Delay(500);
+    Engine.LoadConfig('1');
+    Engine.LoadZone('zona2.zmap');
+    Fight_Flag := true;
+    Print('Arrived to hunting ground.');
+    //toVillage;
+    //Engine.Facecontrol(0,True);
+end;
+
+
+BEGIN
+END.

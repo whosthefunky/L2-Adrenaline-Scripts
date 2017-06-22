@@ -1,0 +1,481 @@
+uses Classes, TCP, sysUtils;
+
+type
+  TBuf = Array of byte;
+  TSettings = packed record
+  private
+    fFile: string;
+  public
+    procedure SetFile(const Name: string);
+    procedure Save(const Section, Key, Data: string); overload;
+    procedure Save(const Section, Key: string; Data: Integer); overload;
+    function  Load(const Section, Key: string; DefData: string  = ''): string; overload;
+    function  Load(const Section, Key: string; DefData: integer = 0) : integer; overload;
+    function  LoadBool(const Section, Key: string; DefData: string = ''): boolean;
+  end;
+
+const
+  serverAddress = 'XX.XX.XXX.X'; //localhost r any server address
+
+var
+  chestAliveList: TNpcList;
+
+function GetPrivateProfileIntW(lpAppName, lpKeyName: PChar; nDefault: Integer; lpFileName: PChar): Integer; stdcall; external 'Kernel32.dll';
+function GetPrivateProfileStringW(lpAppName, lpKeyName, lpDefault: PWideChar; lpReturnedString: Pointer; nSize: DWORD; lpFileName: PWideChar): DWORD; stdcall; external 'Kernel32.dll';
+function WritePrivateProfileStringW(lpAppName, lpKeyName, lpString, lpFileName: PChar): Boolean; stdcall; external 'Kernel32.dll';
+  
+function BoolToStr(const value : boolean): string;
+begin
+   if value then
+    Result := 'True'
+   else
+    Result := 'False';
+end;
+ 
+procedure TSettings.SetFile(const Name: string);
+begin
+  fFile := Name;
+end;
+
+procedure TSettings.Save(const Section, Key, Data: string);
+begin
+  WritePrivateProfileStringW(PChar(Section), PChar(Key), PChar(Data), PChar(fFile));
+end;
+
+procedure TSettings.Save(const Section, Key: string; Data: Integer);
+begin
+  Save(Section, Key, IntToStr(Data));
+end;
+
+procedure TSettings.Save(const Section, Key: string; Data: boolean);
+begin
+  Save(Section, Key, BoolToStr(Data));
+end;
+
+function TSettings.Load(const Section, Key: string; DefData: string = ''): string;
+var
+  buf: array [0..2048] of Byte;
+begin
+  GetPrivateProfileStringW(PChar(Section), PChar(Key), PChar(DefData), @buf, 2048, PChar(fFile));
+  Result := PChar(@buf);
+end;
+
+function TSettings.Load(const Section, Key: string; DefData: integer = 0): Integer;
+var
+  buf: array [0..2048] of Byte;
+begin
+  Result := GetPrivateProfileIntW(PChar(Section), PChar(Key), DefData, PChar(fFile));
+end;
+
+function TSettings.LoadBool(const Section, Key: string; DefData: string = ''): boolean;
+var
+	compString: string;
+  buf: array [0..2048] of Byte;
+begin
+  GetPrivateProfileStringW(PChar(Section), PChar(Key), PChar(DefData), @buf, 2048, PChar(fFile));
+  compString := PChar(@buf);
+  Result := AnsiSameText(compString, 'true');
+end;
+
+function getState(stateType: string; stateValue: string; value: string): string;
+var
+  Settings: TSettings;
+begin
+	Settings.SetFile(Script.Path + 'Chests_' + User.Name + '.ini');
+	Result := Settings.Load(stateType, stateValue, value);
+end;
+
+//network
+function BytesToASCII(const bin: array of byte): AnsiString;
+var
+  i: integer;
+begin
+  
+  SetLength(Result, Length(bin));
+  for i := 0 to Length(bin)-1 do
+    Result[1+i] := AnsiChar(bin[i]);
+end;
+
+function getHttpResponse(const host: string; const dest: string): string;
+const
+  httpPort = '80';
+var
+  i: integer;
+  socket: TTCPBlockSocket;
+  contentLength: integer;
+  request: TStringList;
+  response: string;
+  buffer: array of byte;
+  lastByte: byte;
+begin
+  Result := '';
+  lastByte := 0;
+  
+  request := TStringList.Create;
+  request.Add('GET ' + dest + ' HTTP/1.1');            //Создаем запрос, который пошлем серверу
+  request.Add('Accept: */*');
+  request.Add('Accept-Encoding: gzip, deflate');
+  request.Add('Host: ' + host);
+  request.Add('Connection: Close');
+  request.Add(#10#13);
+
+  socket := TTCPBlockSocket.Create;
+  socket.connect(host, httpPort);
+
+  if (socket.LastError <> 0) then
+    exit;
+
+  socket.SendString(Request.text);
+
+  if (socket.LastError <> 0) then
+    exit;
+
+  repeat
+    response := socket.RecvString(5000);
+    if (response <> '') then
+      break;
+  until
+    socket.LastError <> 0;
+
+  if (Pos('HTTP/', response) = 1) then
+  begin
+    repeat
+      response := socket.RecvString(5000);
+
+      if Pos('Content-Length:', response) = 1 then
+        contentLength := StrToIntDef(Trim(Copy(response, 16, MaxInt)), -1);
+      if response = '' then
+        break;
+    until
+      socket.LastError <> 0;
+    
+    if (contentLength <= 0) then
+      exit;
+
+    SetLength(buffer, contentLength);
+    
+    repeat
+      if (lastByte = 191) then
+      begin
+        for i:=0 to contentLength-1 do
+        begin
+          buffer[i] := socket.RecvByte(5000);
+        end;
+        break;
+      end;
+      lastByte := socket.RecvByte(5000);
+    until
+      Socket.LastError <> 0;
+  end;
+  
+  request.Free;
+  socket.Free;
+  Result := BytesToASCII(buffer);
+end;
+
+//npclist stuff
+function isContains(list: TNpcList; obj: TL2Npc): boolean;
+var
+  i: integer;
+begin
+  Result := false;
+  for i:=0 to list.count-1 do
+  begin
+    if (list.items(i).OID = obj.OID) then
+    begin
+      Result := true;
+      break;
+    end;
+  end;
+end;
+
+//chest stuff
+function validID(ID: integer): boolean;
+begin
+  Result := (id >= 18265) and (id <= 18286);
+end;
+
+function storeDrop(chest: TL2Npc): string;
+var
+  i: integer;
+begin
+  Result := '[';
+  for i:=0 to DropList.count-1 do
+  begin
+    if (chest.DistTo(DropList.items(i)) < 200) then
+      Result := Result + '{' + IntToStr(DropList.items(i).ID) + ';'
+          + IntToStr(DropList.Items(i).Count) + '};';
+  end;
+  Result[Length(Result)] := ']';
+end;
+
+function aliveChestsCount: integer;
+var
+  i: integer;
+  localNpcList: TNpcList;
+begin
+  localNpcList := chestAliveList;
+  Result := 0;
+  for i:=0 to localNpcList.Count-1 do
+  begin
+    if (validID(localNpcList.Items(i).ID) and localNpcList.Items(i).Valid and not localNpcList.Items(i).dead) then
+      inc(Result);
+  end;
+end;
+
+//threads
+procedure spawnListener;
+var
+  i: integer;
+  localNpcList: TNpcList;
+  resp: string;
+  params: string;
+  oid: cardinal;
+  x, y, z, level, id: integer;
+begin
+  while true do
+  begin
+  delay(50);
+  
+  if (Engine.Status <> lsOnline) or (NpcList.count = 0) then
+    continue;
+
+  localNpcList := NpcList;
+
+  for i:=0 to localNpcList.Count-1 do
+  begin
+    params := '';
+    resp := '';
+    oid := 0;
+    id := 0;
+    level := 0;
+    x := 0;
+    y := 0;
+    z := 0;
+
+    if (not localNpcList.Items(i).Dead) and (localNpcList.Items(i).getVar = 0)
+        and validID(localNpcList.Items(i).ID) then
+    begin
+    
+      oid := localNpcList.Items(i).OID;
+      id := localNpcList.Items(i).ID;
+      level := localNpcList.Items(i).Level;
+      x := localNpcList.Items(i).X;
+      y := localNpcList.Items(i).Y;
+      z := localNpcList.Items(i).Z;
+
+      params := '/chests.php?loc=' + getState('Params', 'Location', 'inierr')
+        + '&objId=' + IntToStr(oid) + '&npcId=' + IntToStr(id)
+        + '&npcLevel=' + IntToStr(level)
+        + '&x=' + IntToStr(x) + '&y=' + IntToStr(y)
+        + '&z=' + IntToStr(z) + '&uploader=' + User.Name
+        + '&drop=alive' + '&dead=false';
+
+      resp := getHttpResponse(serverAddress, params);
+      
+      if (AnsiSameText(resp, 'Contains this objId')) then
+        localNpcList.Items(i).SetVar(1);
+
+      if (AnsiSameText(resp, 'Spawn added')) then
+      begin
+        localNpcList.Items(i).SetVar(2);
+        print('Spawn added');
+      end;
+
+      if not isContains(chestAliveList, localNpcList.Items(i)) then
+        chestAliveList.add(localNpcList.Items(i));
+        
+    end;
+    
+  end;
+  end;
+end;
+
+procedure decoyListener;
+var
+  i: integer;
+  localNpcList: TNpcList;
+  resp: string;
+  params: string;
+  oid: cardinal;
+  x, y, z, level, id: integer;
+begin
+  while true do
+  begin
+  delay(10);
+  
+  if (Engine.Status <> lsOnline) or (chestAliveList.count = 0) or (aliveChestsCount = 0) then
+  begin
+    delay(1000);
+    continue;
+  end;
+
+  localNpcList := chestAliveList;
+
+  for i:=0 to localNpcList.Count-1 do
+  begin
+    params := '';
+    resp := '';
+    oid := 0;
+    id := 0;
+    level := 0;
+    x := 0;
+    y := 0;
+    z := 0;
+
+    if localNpcList.Items(i).Dead and (localNpcList.Items(i).getVar <> 3) 
+      and validID(localNpcList.Items(i).ID) then
+    begin
+
+      oid := localNpcList.Items(i).OID;
+      id := localNpcList.Items(i).ID;
+      level := localNpcList.Items(i).Level;
+      x := localNpcList.Items(i).X;
+      y := localNpcList.Items(i).Y;
+      z := localNpcList.Items(i).Z;
+      
+      params := '/chests.php?loc=' + getState('Params', 'Location', 'inierr')
+        + '&objId=' + IntToStr(oid) + '&npcId=' + IntToStr(id)
+        + '&npcLevel=' + IntToStr(level)
+        + '&x=' + IntToStr(x) + '&y=' + IntToStr(y)
+        + '&z=' + IntToStr(z) + '&uploader=' + User.Name
+        + '&drop=' + storeDrop(TL2Npc(localNpcList.Items(i))) + '&dead=true';
+
+      resp := getHttpResponse(serverAddress, params);
+
+      if (AnsiSameText(resp, 'Updated')) then
+      begin
+        localNpcList.Items(i).SetVar(3);
+        print('Decoy time updated');
+        chestAliveList.Remove(localNpcList.Items(i));
+      end;
+    end;
+    
+  end;
+  end;
+end;
+
+procedure explodeListener;
+var
+  i: integer;
+  localNpcList: TNpcList;
+  resp: string;
+  params: string;
+  oid: cardinal;
+  x, y, z, level, id: integer;
+begin
+  while true do
+  begin
+  delay(10);
+  
+  if (Engine.Status <> lsOnline) or (chestAliveList.count = 0) or (aliveChestsCount = 0) then
+  begin
+    delay(1000);
+    continue;
+  end;
+
+  localNpcList := chestAliveList;
+
+  for i:=0 to localNpcList.Count-1 do
+  begin
+    params := '';
+    resp := '';
+    oid := 0;
+    id := 0;
+    level := 0;
+    x := 0;
+    y := 0;
+    z := 0;
+      
+    if (localNpcList.Items(i).Cast.ID = 4143) and (localNpcList.Items(i).Cast.EndTime > 0)
+      and validID(localNpcList.Items(i).ID) and (localNpcList.Items(i).getVar <> 3) then
+    begin
+
+      oid := localNpcList.Items(i).OID;
+      id := localNpcList.Items(i).ID;
+      level := localNpcList.Items(i).Level;
+      x := localNpcList.Items(i).X;
+      y := localNpcList.Items(i).Y;
+      z := localNpcList.Items(i).Z;
+
+      params := '/chests.php?loc=' + getState('Params', 'Location', 'inierr')
+        + '&objId=' + IntToStr(oid) + '&npcId=' + IntToStr(id)
+        + '&npcLevel=' + IntToStr(level)
+        + '&x=' + IntToStr(x) + '&y=' + IntToStr(y)
+        + '&z=' + IntToStr(z) + '&uploader=' + User.Name
+        + '&drop=exploded' + '&dead=true';
+
+      resp := getHttpResponse(serverAddress, params);
+      
+      if (AnsiSameText(resp, 'Updated')) then
+      begin
+        print('Explode updated');
+        localNpcList.Items(i).SetVar(3);
+        chestAliveList.Remove(localNpcList.Items(i));
+      end;
+    end;
+    
+  end;
+  end;
+end;
+
+procedure OnFree;
+begin
+  chestAliveList.Free;
+end;
+
+procedure clearVar;
+var
+  i: integer;
+  localNpcList: TNpcList;
+begin
+
+  if (NpcList.Count = 0) then
+    exit;
+
+  localNpcList := NpcList;
+    
+  for i:=0 to localNpcList.Count-1 do
+  begin
+    localNpcList.Items(i).SetVar(0);
+  end;
+  
+end;
+
+
+procedure getPath;
+var
+  sendRequestParams: string;
+  sendRequestResponse: string;
+  getPathParams: string;
+  getPathResponse: string;
+begin
+  getPathResponse := '';
+  
+  sendRequestParams := '/request.php?type=2' +
+  '&x=' + IntToStr(User.X) + '&y=' + IntToStr(User.Y) + '&z=' + IntToStr(User.Z)
+  + '&toX=43304&toY=-50968&toZ=-822&dropNodes=2';
+  sendRequestResponse := getHttpResponse(serverAddress, sendRequestParams);
+
+  if not AnsiSameText(sendRequestResponse, 'Error') then
+  begin
+    getPathParams := '/requestResponse.php?id=' + IntToStr(StrToInt(sendRequestResponse));
+    while AnsiSameText(getPathResponse, '') or AnsiSameText(getPathResponse, 'Computing') do
+    begin
+      delay(500);
+      getPathResponse := getHttpResponse(serverAddress, getPathParams);
+    end;
+    print(getPathResponse);
+  end;
+end;
+
+begin
+  engine.moveto(43304,-50968,-800);
+  //getPath;
+  {
+  chestAliveList := TNpcList.Create;
+  clearVar;
+  script.NewThread(@spawnListener);
+  script.NewThread(@decoyListener);
+  script.NewThread(@explodeListener); }
+end.

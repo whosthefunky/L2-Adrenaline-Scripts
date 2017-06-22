@@ -1,0 +1,113 @@
+uses
+  SysUtils, SettingsModule, Classes;
+
+type
+  TCharFunctor = function(actor: TL2Char): boolean;
+	
+var
+ // MySet: TSettings;
+	//config
+	effectsArray: array of integer;
+	effectsArr: array[0..3] of integer = (30, 263, 928, 334);
+	skillId: integer = 1436; //504
+	
+procedure trimText(text: string; separator: char);
+var
+  sl:TStringList;
+  i: integer;
+begin
+  sl := TStringList.Create;
+  try
+    sl.Delimiter     := separator;
+    sl.DelimitedText := text;
+	
+	SetLength(effectsArray, sl.Count);
+	for i:=0 to sl.count-1 do
+		effectsArray[i] := StrToInt(sl[i]);
+
+  finally
+    sl.Free;
+  end;
+end;
+
+function getState(stateType: string; stateValue: string; value: integer): integer;
+var
+  Settings: TSettings;
+begin
+	Settings.SetFile(Script.Path + 'Antibackstab.ini');
+	Result := Settings.Load(stateType, stateValue, value);
+end;
+
+function isOlympiadZone(actor: TL2Live): boolean;
+begin
+  Result := (actor.DistTo(-88104, -252840, -3312) < 2000) or
+            (actor.DistTo(-75464, -252456, -7736) < 2000) or
+            (actor.DistTo(-88088, -239352, -8432) < 2000) or
+            (actor.DistTo(-75544, -239176, -8184) < 2000);            
+end;
+
+function isBlowCasting(actor: TL2Live): boolean;
+begin
+  //print(isOlympiadZone(actor));
+  //print((actor.Target = User) or isOlympiadZone(actor));
+  Result := ((actor.Target = User) or isOlympiadZone(actor)) and (actor.Cast.EndTime > 0) and
+						isContains(effectsArr, 4, actor.Cast.ID) and (User.DistTo(actor) < 100);
+end;
+
+function getChar(functor: TCharfunctor; withMe: boolean = false): TL2Live;
+var
+	i: integer;
+begin
+	Result := nil;
+	for i:=0 to Charlist.Count-1 do
+	begin
+	if (functor(Charlist.Items(i))) then
+	begin
+		Result := Charlist.Items(i);
+		break;
+	end;
+	end;
+	if (withMe) and functor(User) then
+		Result := User;
+end;
+			
+function isContains(arr: array of integer; arrSize: integer; obj: integer): boolean;
+var
+	i: integer;
+begin
+	Result := false;
+	
+	if arrSize = 0 then
+		exit;
+	
+	for i:=0 to arrSize-1 do
+	begin
+		if arr[i] = obj then
+		begin
+			Result := true;
+			exit;
+		end;
+	end;
+end;
+
+procedure antiBackstab;
+var
+	obj: TL2Live;
+begin
+	while Engine.Status = lsOnline do
+	begin
+	  obj := getChar(isBlowCasting);
+	  if Assigned(obj) then
+	  begin
+	    Engine.SetTarget(obj);
+	    Engine.UseSkill(getState('Config', 'Skill id', -2));
+	    delay(500);
+	  end;
+
+	  delay(5);
+	end;
+end;
+
+begin
+  script.newThread(@antiBackstab);
+end.

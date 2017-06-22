@@ -1,0 +1,279 @@
+uses
+  SysUtils, Classes;
+
+type
+  DimensionArray = array of array of integer;
+
+const
+  roomRadius = 600;
+  ZAKEN_ANCHOR = 32468;
+  FIRST_FLOOR_Z = -3496;
+  SECOND_FLOOR_Z = -3224;
+  THIRD_FLOOR_Z = -2952;
+  HAS_DONE_MSG = 2261;
+  PET_DONE_MSG = 1015;
+  SUMMON_DONE_MSG = 1026;
+  RESISTED = 139;
+  isSummon = true;
+  skillID = 1137;
+  roomDelay = 9;
+
+var
+  firstFloor: DimensionArray;
+  secondFloor: DimensionArray;
+  thirdFloor: DimensionArray;
+
+  //
+  first1_2: DimensionArray;
+  first2_3: DimensionArray;
+  first3_4: DimensionArray;
+  first4_5: DimensionArray;
+  
+  isZakenFound: boolean;
+  Logger: TStringList;
+
+procedure writeToArray(var iArray: array of integer; val1, val2, val3: integer);
+begin
+	iArray[0] := val1;
+	iArray[1] := val2;
+	iArray[2] := val3;	
+end;
+
+procedure initArrays;
+begin
+  SetLength(firstFloor, 5, 3);
+     
+  writeToArray(firstFloor[0], 54280, 220152, -3480);
+  writeToArray(firstFloor[1], 56344, 220136, -3480);
+  writeToArray(firstFloor[2], 55224, 219080, -3480);
+  writeToArray(firstFloor[3], 56296, 218024, -3480);
+  writeToArray(firstFloor[4], 54200, 218088, -3480);
+  
+  SetLength(first1_2, 5, 3);
+  writeToArray(first1_2[0], 55112, 220136, -3506);
+  writeToArray(first1_2[1], 55192, 220264, -3506);
+  writeToArray(first1_2[2], 55368, 220264, -3506);
+  writeToArray(first1_2[3], 55432, 220136, -3506);
+  writeToArray(first1_2[4], 55918, 220136, -3505);
+   
+  SetLength(secondFloor, 5, 3);
+  writeToArray(secondFloor[0], 56296, 218136, -3208);
+  writeToArray(secondFloor[1], 56280, 220168, -3208);
+  writeToArray(secondFloor[2], 54200, 220136, -3208);
+  writeToArray(secondFloor[3], 55288, 219112, -3208);
+  writeToArray(secondFloor[4], 54264, 218040, -3208);
+
+  SetLength(thirdFloor, 5, 3);
+
+  writeToArray(thirdFloor[0], 56296, 218120, -2936);
+  writeToArray(thirdFloor[1], 56280, 220200, -2936);
+  writeToArray(thirdFloor[2], 54184, 220120, -2936);
+  writeToArray(thirdFloor[3], 55320, 219128, -2936);
+  writeToArray(thirdFloor[4], 54232, 218056, -2936);
+
+
+  
+
+end;
+
+function distanceBetween(x1, y1, z1, x2, y2, z2: int64): extended;
+begin
+	 Result := sqrt(((x2 - x1)*(x2 - x1)) + ((y2 - y1)*(y2 - y1)) + ((z2 - z1)*(z2 - z1)));
+end;
+
+function inRange(obj: TL2Spawn; x1, y1, z1: integer; range: integer): boolean; overload;
+begin
+  Result := (distanceBetween(obj.X, obj.Y, obj.Z, x1, y1, z1) < range); 
+end;
+
+function inRange(obj: TL2Spawn; iArray: array of integer; range: integer): boolean; overload;
+begin
+  if Length(iArray) < 3 then
+  begin
+    Result := false;
+    exit;
+  end;
+  Result := inRange(obj, iArray[0], iArray[1], iArray[2], range); 
+end;
+
+function moveTo(iArray: array of integer): boolean;
+begin
+  if Length(iArray) < 3 then
+  begin
+    Result := false;
+    exit;
+  end;
+
+  Result := Engine.MoveTo(iArray[0], iArray[1], iArray[2]);
+  
+end;
+
+function checkFloor(iArray: DimensionArray): boolean;
+var
+  i: integer;
+  pet: TL2Live;
+begin
+  if fileexists(Script.Path + '/ZakenSearchLog.txt') then
+    Logger.LoadFromFile(Script.Path + '/ZakenSearchLog.txt');
+    
+  for i:=0 to Length(iArray)-1 do
+  begin
+    moveTo(iArray[i]);
+
+    pet := petlist.items(0);
+    
+    while isSummon and (petlist.count > 0) and (User.DistTo(pet) > 50) do
+    begin
+      if User.Target <> User then
+        Engine.SetTarget(User);
+        
+      Engine.UseAction(53);
+
+      Engine.UseAction(21);
+      
+      delay(1000);
+    end;
+      
+
+    if isSummon then
+    begin
+      Engine.UseAction(skillID);
+      Logger.Add('Pet x: ' + inttostr(pet.x) + '; y: ' + inttostr(pet.y) + '; z: ' + inttostr(pet.z)
+       + 'Expected place: x: ' + inttostr(iArray[i][0]) + '; y: ' + inttostr(iArray[i][1]) + '; z: ' + inttostr(iArray[i][2])) ;
+    end;
+
+    if not isSummon then
+      Engine.UseSkill(skillID);
+      
+    delay(roomDelay * 1000);
+
+    if isZakenFound then
+    begin
+      print('Zaken found on floor ' + IntToStr(getUserFloor));
+      Result := true;
+      fireCandles;
+      Logger.SaveToFile(Script.Path + '/ZakenSearchLog.txt');
+      exit;
+    end;
+  end;
+  Logger.SaveToFile(Script.Path + '/ZakenSearchLog.txt');
+  Result := false;
+end;
+
+procedure sysMsgCheck;
+var
+  Action: TL2Action;
+  prm1, prm2: Pointer;
+begin
+  while not isZakenFound do
+  begin
+	 Action := Engine.WaitAction([laSysMsg], prm1, prm2);
+	 if Action = laSysMsg then
+	 begin
+	   if ((Cardinal(prm1) = HAS_DONE_MSG)
+	   or (Cardinal(prm1) = SUMMON_DONE_MSG)
+	   or (Cardinal(prm1) = PET_DONE_MSG)
+	   or (Cardinal(prm1) = RESISTED)) and not isZakenFound then
+	      isZakenFound := true;
+	 end;
+	 delay(30);
+  end;
+end;
+
+function getZakenFloor: integer;
+var
+  zaken: TL2Live;
+begin
+  if npclist.byid(ZAKEN_ANCHOR, zaken) then
+  begin
+    case zaken.Z of
+      FIRST_FLOOR_Z-30..FIRST_FLOOR_Z+30: Result := 1;
+      SECOND_FLOOR_Z-30..SECOND_FLOOR_Z+30: Result := 2;
+      THIRD_FLOOR_Z-30..THIRD_FLOOR_Z+30: Result := 3;
+    end;           
+  end;             
+end;
+
+function getUserFloor: integer;
+begin
+  case User.Z of
+    FIRST_FLOOR_Z-30..FIRST_FLOOR_Z+30: Result := 1;
+    SECOND_FLOOR_Z-30..SECOND_FLOOR_Z+30: Result := 2;
+    THIRD_FLOOR_Z-30..THIRD_FLOOR_Z+30: Result := 3;    
+  end;
+end;
+
+procedure mainController;
+begin
+  Engine.FaceControl(0, false);
+  if not checkFloor(firstFloor) then
+  begin
+    Engine.MoveTo(54248, 217224, -3480);
+    Engine.MoveTo(54760, 217112, -3424);
+    Engine.MoveTo(56072, 217128, -3208);
+    Engine.MoveTo(56328, 217304, -3208);
+    Engine.MoveTo(56296, 217672, -3208);
+    if not checkFloor(secondFloor) then
+    begin
+      Engine.MoveTo(54232, 217368, -3208);
+      Engine.MoveTo(54328, 217160, -3208);
+      Engine.MoveTo(55032, 217128, -3104);
+      Engine.MoveTo(56056, 217128, -2936);
+      Engine.MoveTo(56328, 217288, -2936);
+      Engine.MoveTo(56280, 217592, -2936);
+      if not checkFloor(thirdFloor) then
+      begin
+        print('script fail hard');
+      end;
+    end;
+  end;
+  Engine.FaceControl(0, true);
+end;
+
+function getCandles: array of TL2Live;
+var
+  i: integer;
+begin
+  SetLength(Result, 0);
+  for i:=0 to NpcList.count-1 do
+  begin
+    if (User.DistTo(NpcList.items(i)) < 1300) and (Abs(User.Z - NpcList.Items(i).Z) < 100)
+    and (NpcList.items(i).ID = 32705) then
+    begin
+      SetLength(Result, Length(Result) + 1);
+      Result[Length(Result)-1] := NpcList.items(i);
+    end;
+  end;
+end;
+
+procedure fireCandles;
+var
+  arr: array of TL2Live;
+  i: integer;
+  x, y, z: integer;
+begin
+  x := User.X;
+  y := User.Y;
+  z := User.Z;
+  arr := getCandles;
+  for i:=0 to Length(arr)-1 do
+  begin
+    Engine.MoveTo(arr[i]);
+    Engine.SetTarget(arr[i]);
+    Engine.Attack;
+    Engine.DlgOpen;
+    delay(500);
+    Engine.MoveTo(x, y, z);
+    delay(200);
+  end;
+  
+end;
+
+begin
+  Logger := TStringList.Create;
+  isZakenFound := false;
+  initArrays;
+  script.newThread(@sysMsgCheck);
+  mainController;
+  Logger.Free;  
+end.

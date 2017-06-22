@@ -1,0 +1,268 @@
+unit UserFunctions;
+
+interface
+
+uses 
+	SysUtils, Classes, SettingsModule;//, TNpcListModule;
+
+type
+	TSecondClass = (NONE, FIGHTER, MAGE, WARRIOR, KNIGHT, ROGUE, HEALER, ENCHANTER, SUMMONER, WIZARD);
+	TClassType = record
+		isMage: boolean;
+		secondClass: TSecondClass;
+	end;
+	
+const
+	CLASS_TYPE : array[0..136] of TClassType = (
+	(isMage: false; secondClass: FIGHTER), //0
+	(isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: WARRIOR), (isMage: false; secondClass: WARRIOR), (isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: KNIGHT), (isMage: false; secondClass: KNIGHT), (isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: ROGUE), (isMage: false; secondClass: ROGUE), //1 => 9
+	(isMage: true; secondClass: MAGE), (isMage: true; secondClass: MAGE), (isMage: true; secondClass: WIZARD), (isMage: true; secondClass: WIZARD), (isMage: true; secondClass: SUMMONER), (isMage: true; secondClass: MAGE), (isMage: true; secondClass: HEALER), (isMage: true; secondClass: ENCHANTER), //10 => 17
+	(isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: KNIGHT), (isMage: false; secondClass: ENCHANTER), (isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: ROGUE), (isMage: false; secondClass: ROGUE), //18 => 24
+	(isMage: true; secondClass: MAGE), (isMage: true; secondClass: MAGE), (isMage: true; secondClass: WIZARD), (isMage: true; secondClass: SUMMONER), (isMage: true; secondClass: MAGE), (isMage: true; secondClass: HEALER), //25 => 30
+	(isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: KNIGHT), (isMage: false; secondClass: ENCHANTER), (isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: ROGUE), (isMage: false; secondClass: ROGUE), //31 => 37
+	(isMage: true; secondClass: MAGE), (isMage: true; secondClass: MAGE), (isMage: true; secondClass: WIZARD), (isMage: true; secondClass: SUMMONER), (isMage: true; secondClass: MAGE), (isMage: true; secondClass: HEALER), //38 => 43
+	(isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: WARRIOR), (isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: WARRIOR), //44 => 48
+	(isMage: true; secondClass: MAGE), (isMage: true; secondClass: MAGE), (isMage: true; secondClass: ENCHANTER), (isMage: true; secondClass: ENCHANTER), //49 => 52
+	(isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: WARRIOR), (isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: WARRIOR), //53 => 57
+	(isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), //58 => 87 DUMMY//88 => 93
+	(isMage: false; secondClass: WARRIOR), (isMage: false; secondClass: WARRIOR), (isMage: false; secondClass: KNIGHT), (isMage: false; secondClass: KNIGHT), (isMage: false; secondClass: ROGUE), (isMage: false; secondClass: ROGUE), //87 => 93
+	(isMage: true; secondClass: WIZARD), (isMage: true; secondClass: WIZARD), (isMage: true; secondClass: SUMMONER), (isMage: true; secondClass: HEALER), (isMage: true; secondClass: SUMMONER), //94 => 98
+	(isMage: false; secondClass: KNIGHT), (isMage: false; secondClass: ENCHANTER), (isMage: false; secondClass: ROGUE), (isMage: false; secondClass: ROGUE), //99 => 102
+	(isMage: true; secondClass: WIZARD), (isMage: true; secondClass: SUMMONER), (isMage: true; secondClass: HEALER), //103 => 105
+	(isMage: false; secondClass: KNIGHT), (isMage: false; secondClass: ENCHANTER), (isMage: false; secondClass: ROGUE), (isMage: false; secondClass: ROGUE), //106 => 109
+	(isMage: true; secondClass: WIZARD), (isMage: true; secondClass: SUMMONER), (isMage: true; secondClass: HEALER), //110 => 112
+	(isMage: false; secondClass: WARRIOR), (isMage: false; secondClass: WARRIOR), //113 => 114
+	(isMage: true; secondClass: ENCHANTER), (isMage: true; secondClass: ENCHANTER), //115 => 116
+	(isMage: false; secondClass: WARRIOR), (isMage: false; secondClass: WARRIOR), //117 => 118
+	(isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), //119 => 122
+	(isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: FIGHTER), //123 => 136
+	(isMage: false; secondClass: WARRIOR), //127
+	(isMage: true; secondClass: WIZARD), (isMage: true; secondClass: WIZARD), //128 => 129 | SLB!!! in original they are WARRIORs
+	(isMage: false; secondClass: ROGUE), (isMage: false; secondClass: WARRIOR), //130 => 131
+	(isMage: true; secondClass: WIZARD), (isMage: true; secondClass: WIZARD), //132 => 133 | SLB!!! in original they are WARRIORs
+	(isMage: false; secondClass: ROGUE), (isMage: false; secondClass: ENCHANTER), (isMage: false; secondClass: ENCHANTER) //134 => 136	
+	);
+	WOODENBREASTPLATE = 23;
+	WOODENGAITERS = 2386;
+	//LEATHERTUNIC = 429; for mages
+	//LEATHERSTOCKINGS = 464;
+	WOODENHELMET = 43;
+	LEATHERSHOES = 37;
+	GLOVES = 49;
+	COUPON = 7832;
+		
+var
+	FIGHTER_NEWBIE_EQUIP : array[0..4] of integer = (23, 2386, 43, 37, 49);
+	nbArr : array[0..8] of integer = (30598, 30599, 30600, 30601, 30602, 32135, 31076, 31077, 32327);
+	Settings: TSettings;
+	
+	procedure equipNewbieItems;
+	function isMage(obj: TL2Char): boolean; overload;
+	function isMage: boolean; overload;
+	procedure getCoupon;
+	procedure getShadowWeaponFromCoupon(itemID: integer);
+	function couponItemTaken(itemID: integer): boolean;
+	procedure equipItem(itemID: integer);
+	procedure updateState(stateType: string; stateValue: string; value: string); overload;
+	procedure updateState(stateType: string; stateValue: string; value: integer); overload;
+	function getState(stateType: string; stateValue: string; value: string): string; overload;
+	function getState(stateType: string; stateValue: string; value: integer): integer; overload;
+	function getState(stateType: string; stateValue: string; value: boolean): boolean; overload;
+	function getArray(stateType: string; stateValue: string; value: string): array of integer;
+	
+	function getNewbieBuffer: TL2Live;
+	function countItems(itemID: integer): integer;
+	function shouldRebuff: boolean;
+	
+	
+implementation
+
+procedure equipNewbieItems;
+var
+	i: integer;
+	item: TL2Item;
+begin
+	for i:=0 to 4 do
+	begin
+		if Inventory.User.ByID(FIGHTER_NEWBIE_EQUIP[i], item) and not item.Equipped then
+			Engine.UseItem(FIGHTER_NEWBIE_EQUIP[i]);
+	end;
+end;
+
+function isMage;
+begin
+	Result := CLASS_TYPE[obj.ClassID].isMage;
+end;
+
+function isMage;
+begin
+	Result := isMage(User);
+end;
+
+procedure getCoupon;
+var	
+	couponItem: TL2Item;
+begin
+	if getNewbieBuffer = nil then
+	begin
+		print('Cant get coupon, newbie npc not found');
+		exit;
+	end;
+	
+	Engine.MoveTo(getNewbieBuffer);
+	Engine.SetTarget(getNewbieBuffer);
+	Engine.DlgOpen;
+	delay(500);
+	Engine.DlgSel(1);//in HF 7
+	delay(500);
+	Engine.DlgSel(1);
+	delay(500);
+	
+	if Inventory.User.ByID(COUPON, couponItem) then
+	begin
+		updateState('Etc', 'Is coupon taken', 'true');
+	end;
+	
+end;
+
+procedure getShadowWeaponFromCoupon;
+var
+	item: TL2Item;
+begin
+					
+	Engine.MoveTo(getNewbieBuffer);
+	Engine.SetTarget(getNewbieBuffer);
+	Engine.DlgOpen;
+	Engine.DlgSel(6); //in hf 7
+	Engine.DlgSel(2);
+	
+	Engine.NpcExchange(itemID, 1);
+    
+	while not Inventory.User.ByID(itemID, item) do
+	begin
+		delay(30);
+	end;
+end;
+
+function couponItemTaken;
+var
+	item: TL2Item;
+begin
+	Result := Inventory.User.ByID(itemID, item);
+end;
+
+procedure equipItem;
+var
+	item: TL2Item;
+begin
+	if Inventory.User.ByID(itemID, item) and not item.Equipped then
+		Engine.UseItem(itemID);	
+end;
+
+procedure updateState;
+begin
+	Settings.SetFile(Script.Path + User.Name + '_Settings.ini');
+	Settings.Save(stateType, stateValue, value);
+end;
+
+procedure updateState;
+begin
+	Settings.SetFile(Script.Path + User.Name + '_Settings.ini');
+	Settings.Save(stateType, stateValue, value);
+end;
+
+function getState;
+begin
+	Settings.SetFile(Script.Path + User.Name + '_Settings.ini');
+	Result := Settings.Load(stateType, stateValue, value);
+end;
+
+function getState;
+begin
+	Settings.SetFile(Script.Path + User.Name + '_Settings.ini');
+	Result := Settings.Load(stateType, stateValue, value);
+end;
+
+function getState;
+begin
+	Settings.SetFile(Script.Path + User.Name + '_Settings.ini');
+	Result := Settings.LoadBool(stateType, stateValue, BoolToStr(value));
+end;
+
+function getNewbieBuffer;
+var
+	i: integer;
+begin
+	for i:=0 to 8 do
+	begin
+		if NpcList.ByID(nbArr[i], Result) then
+			exit;
+	end;
+	Result := nil;
+end;
+
+function countItems;
+var
+	i: integer;
+	counter: integer;
+begin
+	counter := 0;
+	for i:=0 to Inventory.User.Count-1 do
+	begin
+		if Inventory.User.Items(i).ID = itemID then
+			inc(counter);
+	end;
+	Result := counter;
+end;
+
+function shouldRebuff;
+var
+	eff: TL2Buff;
+	i: integer;
+	effectsArray: array of integer; 
+begin
+	effectsArray := getArray('Effects', 'Effects for check', '0;0');
+	
+	if Length(effectsArray) = 0 then
+	begin
+		Result := false;
+		exit;
+	end;
+	
+	for i:=0 to Length(effectsArray)-1 do
+	begin
+		if not User.Buffs.ByID(effectsArray[i], eff) or (User.Buffs.ByID(effectsArray[i], eff) and (eff.EndTime <= 10 * 1000)) then
+		begin
+			print(effectsArray[i]);
+			Result := true;
+			exit;
+		end;
+	end;	
+	
+	Result := false;
+end;
+
+function getArray;
+var
+	sl:TStringList;
+	i: integer;
+	resStr: string;
+begin
+	sl := TStringList.Create;
+	Settings.SetFile(Script.Path + User.Name + '_Settings.ini');
+	resStr := Settings.Load(stateType, stateValue, value);
+  try
+    sl.Delimiter     := ';';
+    sl.DelimitedText := resStr;
+	SetLength(Result, sl.Count);
+	for i:=0 to sl.count-1 do
+		Result[i] := StrToInt(sl[i]);
+
+  finally
+    sl.Free;
+  end;
+end;
+
+
+begin
+end.

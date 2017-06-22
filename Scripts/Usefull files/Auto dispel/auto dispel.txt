@@ -1,0 +1,178 @@
+uses
+  SysUtils, SettingsModule, Classes;
+
+type
+  IntArr = array of integer;
+	
+var
+	MySet: TSettings;
+	//config
+	effectsArray: IntArr;
+	isAutoAccept: boolean;
+	minDelay, maxDelay: integer;
+
+	customEffectsArray: IntArr;
+	charsNickNames: array of string;
+	range: integer;
+	charsAlive: boolean;
+
+procedure trimIntText(var arr: IntArr; text: string; separator: char);
+var
+  sl:TStringList;
+  i: integer;
+begin
+  sl := TStringList.Create;
+  try
+    sl.Delimiter     := separator;
+    sl.DelimitedText := text;
+	
+	SetLength(arr, sl.Count);
+	for i:=0 to sl.count-1 do
+		arr[i] := StrToInt(sl[i]);
+
+  finally
+    sl.Free;
+  end;
+end;
+
+procedure trimStringText(text: string; separator: char);
+var
+  sl: TStringList;
+  i: integer;
+begin
+  sl := TStringList.Create;
+  try
+    sl.Delimiter     := separator;
+    sl.DelimitedText := text;
+	
+	SetLength(charsNickNames, sl.Count);
+	for i:=0 to sl.count-1 do
+		charsNickNames[i] := sl[i];
+
+  finally
+    sl.Free;
+  end;
+end;
+
+procedure loadSettings;
+var
+	i: integer;
+	resStr: String;
+	nicksStr: String;
+	customEffStr: String;
+	boolTempStr: String;
+begin
+	MySet.SetFile(Script.Path + 'autoDispel_' + User.Name + '.ini');
+	resStr := MySet.Load('Effects', 'Effect list', '1;2');
+	isAutoAccept := MySet.Load('Effects', 'AcceptDialogs', false);
+	minDelay := MySet.Load('Effects', 'Delay min', 1000);
+	maxDelay := MySet.Load('Effects', 'Delay max', 2000);
+
+	nicksStr := MySet.Load('Custom dispel', 'Chars nicknames', '');
+	customEffStr := MySet.Load('Custom dispel', 'Custom effects', '');
+	range := MySet.Load('Custom dispel', 'Dispel range', 1500);
+	boolTempStr := MySet.Load('Custom dispel', 'Chars alive', 'true');
+	charsAlive := AnsiSameText(boolTempStr, 'true');
+	
+	trimIntText(effectsArray, resStr, ';');
+	trimIntText(customEffectsArray, customEffStr, ';');
+	trimStringText(nicksStr, ';');
+	
+end;	
+
+procedure buffDispel(buffID: integer);
+var
+	Buff: TL2Buff;
+	randomDelay: integer;
+begin
+  Buff := nil;
+	if User.Buffs.ByID(buffID, Buff) and Assigned(Buff) and (Buff.ID = buffID) then
+	begin
+		randomDelay := minDelay + Random(maxDelay - minDelay);
+		delay(randomDelay);
+		//print('Dispel ID: ' + IntToStr(buffID) + ' skill id: ' + IntToStr(Buff.ID) + ' skill name: ' + Buff.Name);
+		Engine.Dispel(buffID);
+	end;
+end;
+
+procedure dispelController(effArr: IntArr; customEffArr: IntArr);
+var 
+	i: integer;
+begin
+	print('[Thread] Dispel thread started');
+	while Engine.Status = lsOnline do
+	begin
+		for i:=0 to Length(effArr)-1 do
+		begin
+			buffDispel(effArr[i]);
+			delay(200);
+		end;
+
+    iterateCustomDispel(customEffArr);
+		  
+	delay(500);		
+	end;
+end;
+
+procedure iterateCustomDispel(arr: IntArr);
+var
+  i: integer;
+begin
+  if (Length(arr) < 1) then
+    exit;
+
+  for i:=0 to Length(arr)-1 do
+  begin
+    if (checkCharDist) then
+    begin
+      buffDispel(arr[i]);
+      delay(300);
+    end;
+  end;
+end;
+
+function checkCharDist: boolean;
+var
+  i: integer;
+  obj: TL2Live;
+begin
+  Result := false;
+  for i:=0 to Length(charsNickNames)-1 do
+  begin
+    if (CharList.ByName(charsNickNames[i], obj)
+    and Assigned(obj) and (User.DistTo(obj) < range)) then
+    begin
+      if (charsAlive and obj.Dead) then
+        continue;
+        
+      Result := true;
+      exit;
+    end;
+  end;
+end;
+
+
+//07BD99B5
+//1) Автоматическое снятие эффектов
+
+procedure acceptDialogs;
+begin
+  print('[Thread] Auto accept dialogs activated');
+  while Engine.Status=lsOnline do
+  begin  
+   Engine.ConfirmDialog(true);
+   Delay(3000); 
+  end; 
+end;
+
+
+
+begin
+    loadSettings;
+    
+    if isAutoAccept then
+      script.newThread(@acceptDialogs);
+
+    script.newThread(@dispelController(effectsArray, customEffectsArray));  
+      
+end.

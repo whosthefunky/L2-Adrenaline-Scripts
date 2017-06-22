@@ -1,0 +1,63 @@
+uses 
+    Classes, SysUtils, SettingsModule;
+    
+var
+  charName: string;
+  i: integer;
+  SL: TStringList;
+  spamDelay: integer;
+  spamText: string;
+  randomSymbolsCount: integer;
+
+procedure OnFree;
+begin
+  SL.Free;
+  print('Spam finished');
+end;
+
+procedure loadConfig;
+var
+  MySet: TSettings;
+begin
+  MySet.SetFile(Script.Path + 'SpamConfig.ini');
+  spamDelay := MySet.Load('Params', 'Spam delay', 1000);
+  spamText := MySet.Load('Params', 'Spam text', 'Default spam text');
+  randomSymbolsCount := MySet.Load('Params', 'Random symbols count', 4);
+  print('Spam delay: ' + IntToStr(spamDelay));
+  print('Spam text: ' + spamText);
+  print('Random symbols count: ' + IntToStr(randomSymbolsCount));
+end;
+
+function getRandomString(size: integer): string;
+const
+  alphabet = 'Im looking for an english speaking clan, Im hawkeye lvl 74';
+var
+  i: integer;
+begin
+  Result := '';
+  for i:=0 to size-1 do
+  begin
+    Result := Result + alphabet[Random(Length(alphabet)-1)];
+  end;
+end;
+
+begin
+  SL := TStringList.Create;
+  loadConfig;
+  while true do
+  begin
+    for i := 0 to CharList.count -1 do
+    begin
+      charName := CharList.Items(i).name;
+      if (charName <> '') and (SL.IndexOf(charName) = -1) then
+      begin
+        SL.add(charName);
+        if Engine.Say(spamText + ' ' + getRandomString(randomSymbolsCount), 2, charName) then
+          print('Spammed to: ' + charName);
+        
+        delay(spamDelay);
+      end else
+        delay(100);
+      end;
+  end;
+end.

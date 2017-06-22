@@ -1,0 +1,360 @@
+uses
+  SysUtils, SettingsModule, Classes;
+
+type
+  TCharFunctor = function(actor: TL2Char): boolean;
+const
+  Date1900 {: LongInt} = $0001AC05;  {Julian day count for 01/01/1900 -- TDateTime Start Date}
+  Date1970 {: LongInt} = $00020FE4;  {Julian day count for 01/01/1970 -- Unix Start Date}
+  Unix0Date: TDateTime = 25568;      {Date1970 - Date1900}
+
+  SecondsInDay    = 86400;  {Number of seconds in a day}
+  SecondsInHour   =  3600;  {Number of seconds in an hour}
+  SecondsInMinute =    60;  {Number of seconds in a minute}
+  HoursInDay      =    24;  {Number of hours in a day}
+  MinutesInHour   =    60;  {Number of minutes in an hour}
+  MinutesInDay    =  1440;  {Number of minutes in a day}
+
+  backStabID = 30;
+  deadlyBlowID = 263;
+  impulseID = 928;
+  
+var
+  MySet: TSettings;
+	//config
+	itemsIDs: array of integer;
+	effectsArr: array[0..2] of integer = (30, 263, 928);
+	skillId: integer = 504; //504
+	itemID: integer = 0;
+
+	antiDisarmOn, antiBackOn, holdTargetOn: boolean;
+	isOlympiad: boolean;
+	
+	currentTarget: TL2Live;
+	previousTarget: TL2Live;
+	
+  res: int64;
+  timer: tdatetime;
+  
+function AbDateTimeToUnixTime(DateTime : TDateTime) : LongInt;
+{ convert Delphi TDateTime to unix date }
+var
+  Hrs, Mins, Secs, MSecs : Word;
+  Dt, Tm : TDateTime;
+begin
+  Dt := Trunc(DateTime);
+  Tm := DateTime - Dt;
+  if Dt < Unix0Date then
+    Result := 0
+  else
+    Result := Trunc(Dt - Unix0Date) * SecondsInDay;
+
+  DecodeTime(Tm, Hrs, Mins, Secs, MSecs);
+  Result := Result + (Hrs * SecondsInHour) + (Mins * SecondsInMinute) + Secs;
+end;
+
+procedure trimText(text: string; separator: char);
+var
+  sl:TStringList;
+  i: integer;
+begin
+  sl := TStringList.Create;
+  try
+    sl.Delimiter     := separator;
+    sl.DelimitedText := text;
+	
+	SetLength(itemsIDs, sl.Count);
+	for i:=0 to sl.count-1 do
+		itemsIDs[i] := StrToInt(sl[i]);
+
+  finally
+    sl.Free;
+  end;
+end;
+
+procedure loadSettings;
+var
+	i: integer;
+	resStr: String;
+begin
+	MySet.SetFile(Script.Path + 'Params.ini');
+	resStr := MySet.Load('Config', 'Items ids', '1;2');
+	skillId := MySet.Load('Config', 'Skill id', 1);
+	itemID := MySet.Load('Config', 'Weapon id', 0);
+	antiDisarmOn := MySet.Load('Config', 'AntiDisarm', true);
+	antiBackOn := MySet.Load('Config', 'Antibackstab', true);
+	holdTargetOn := MySet.Load('Config', 'HoldTarget', true);
+	isOlympiad := MySet.Load('Config', 'Olympiad antiback', false);
+	
+	trimText(resStr, ';');
+	
+end;
+
+function isEquippedFromList: boolean;
+var
+  i: integer;
+begin
+  Result := false;
+  for i:=0 to Length(itemsIDs)-1 do
+  begin
+    if getItem(itemsIds[i]).Equipped then
+    begin
+      Result := true;
+      break;
+    end;
+  end;
+end;
+
+function effectTime(actor: TL2Live; effect: integer): Cardinal;
+var
+	tmpEffect: TL2Effect;
+begin
+	if (actor.Buffs.ByID(effect, tmpEffect)) then
+		Result := tmpEffect.EndTime
+	else
+		Result := 0;
+end;
+
+function skillCoolTime(ID: integer): integer;
+var
+	skill: TL2Skill;
+begin
+	if Skilllist.byID(id, skill) then
+		Result := skill.Endtime
+	else  
+		Result := -1;	
+end;
+
+function getWeaponByOID(OID: integer): TL2Item;
+var
+	i: integer;
+begin
+	Result := nil;
+	for i:=0 to Inventory.User.Count-1 do
+	begin
+		if Inventory.User.Items(i).OID = OID then
+			Result := Inventory.User.Items(i);
+	end;		
+end;
+
+function getItem(id: integer): TL2Item;
+var
+  i: integer;
+begin
+  Result := nil;
+	for i:=0 to Inventory.User.Count-1 do
+	begin
+		if Inventory.User.Items(i).ID = id then
+		begin
+			Result := Inventory.User.Items(i);
+			break;
+		end;
+	end;
+end;
+
+function getWeaponOID(showInfo: boolean = true): integer;
+var
+	weapon : TL2Item;
+	i : integer;
+begin
+	for i:=0 to Inventory.User.Count-1 do
+	begin
+		if (Inventory.User.Items(i).Equipped{ and not notWeapon(Inventory.User.Items(i).name)}) then
+		begin
+		  if showInfo then
+			  print('item name: ' + Inventory.User.Items(i).name + '; ID: ' + IntToStr(Inventory.User.Items(i).ID) + '; OID: ' + IntToStr(Inventory.User.Items(i).OID));
+			Result := Inventory.User.Items(i).OID;
+			//exit;
+		end;
+	end;
+	Result := -1;
+end;
+
+function isOlympiadZone(actor: TL2Live): boolean;
+begin
+  Result := (actor.DistTo(-88104, -252840, -3312) < 2000) or
+            (actor.DistTo(-75464, -252456, -7736) < 2000) or
+            (actor.DistTo(-88088, -239352, -8432) < 2000) or
+            (actor.DistTo(-75544, -239176, -8184) < 2000);            
+end;
+
+function isBlowCasting(actor: TL2Live): boolean;
+begin
+  if isOlympiad then
+    Result := (actor.Cast.EndTime > 0) and
+    ((User.Cast.ID = backStabID) or (User.Cast.ID = deadlyBlowID) or (User.Cast.ID = impulseID))
+		and (User.DistTo(actor) < 300)
+  else
+    Result := ((actor.Target = User) and (actor.Cast.EndTime > 0) and
+		((User.Cast.ID = backStabID) or (User.Cast.ID = deadlyBlowID) or (User.Cast.ID = impulseID))
+		 and (User.DistTo(actor) < 300));
+end;
+
+function getChar(functor: TCharfunctor; withMe: boolean = false): TL2Live;
+var
+	i: integer;
+begin
+	Result := nil;
+	for i:=0 to Charlist.Count-1 do
+	begin
+	if (functor(Charlist.Items(i))) then
+	begin
+		Result := Charlist.Items(i);
+		break;
+	end;
+	end;
+	if (withMe) and functor(User) then
+		Result := User;
+end;
+			
+function isContains(arr: array of integer; arrSize: integer; obj: integer): boolean;
+var
+	i: integer;
+begin
+	Result := false;
+	
+	if arrSize = 0 then
+		exit;
+	
+	for i:=0 to arrSize-1 do
+	begin
+		if arr[i] = obj then
+		begin
+			Result := true;
+			exit;
+		end;
+	end;
+end;
+
+procedure antiBackstab;
+var
+  obj: TL2Live;
+begin
+	while Engine.Status = lsOnline do
+	begin
+	  obj := getChar(isBlowCasting);	
+	  if Assigned(obj) then
+	  begin
+	    Engine.SetTarget(obj);
+	    Engine.UseSkill(skillId);
+	    delay(500);
+	  end;
+
+	  delay(5);
+	end;
+end;
+
+procedure antiDisarm;
+begin
+  while Engine.Status = lsOnline do
+  begin
+  delay(50);
+
+    if not isEquippedFromList and
+      ((effectTime(User, 485) = 0) and (effectTime(User, 794) = 0) and (effectTime(User, 5260) = 0)
+       and (effectTime(User, 996) = 0) and (effectTime(User, 877) = 0) and (effectTime(User, 775) = 0)) then
+      begin
+        Engine.UseItem(itemID);
+      end;
+  
+  end;
+end;
+
+procedure disarmCleanse;
+begin
+  while Engine.Status = lsOnline do
+  begin
+  delay(50);
+
+    if ((effectTime(User, 485) > 0) or (effectTime(User, 794) > 0) or (effectTime(User, 5260) > 0)
+       or (effectTime(User, 996) > 0) or (effectTime(User, 877) > 0) or (effectTime(User, 775) > 0))
+       and (skillCoolTime(1510) = 0)
+    then
+    begin
+      
+      Engine.SetTarget(User);
+      Engine.UseSkill(1510);
+      delay(200);
+      
+      if user.cast.endtime > 0 then
+        delay(user.cast.endtime + 100);
+      
+    end;
+  
+  end;  
+end;
+
+procedure targetSaver;
+var
+	Action : TL2Action;
+	Prm1, Prm2: pointer;
+begin
+	while Engine.Status = lsOnline do
+	begin
+		Action := engine.WaitAction([latarget], Prm1, Prm2);
+		if Action = latarget then
+		begin
+			if (User.Target <> currentTarget) then
+			begin
+				previousTarget := currentTarget;
+				currentTarget := User.Target;
+			end;
+		end;
+		delay(30);
+	end;
+end; 
+		
+procedure holdTarget;
+var
+	prm1, prm2: pointer;
+	Action : TL2Action;
+	escBtn : boolean;
+begin
+	while Engine.Status = lsOnline do
+	begin
+		Action := Engine.WaitAction([laUnTarget, laKey], prm1, prm2);
+		if Action = laUnTarget then
+		begin
+			if not (User.Target = currentTarget) and not escBtn then
+			begin
+				delay(100);
+				Engine.SetTarget(currentTarget); 
+			end; 
+			delay(100);
+			escBtn := false;
+		end;
+		if Action = laKey then
+		begin
+			escBtn := (Integer(prm1) = $1B);
+		end;
+		delay(30);
+	end;
+end;
+
+begin
+  timer := EncodeDate(2014, 12, 22);
+  if (AbDateTimeToUnixTime(timer) < AbDateTimeToUnixTime(now)) then
+  begin
+    print('Test time fired');
+    print('Developer ICQ - 670465907');
+    exit;
+  end;
+
+  loadSettings;
+  
+  if antiBackOn then
+    script.newThread(@antiBackstab);
+
+  if antiDisarmOn then
+  begin
+    script.newThread(@antiDisarm);
+    script.newThread(@disarmCleanse);
+  end;
+  
+  if holdTargetOn then
+  begin
+    script.newThread(@holdTarget);
+	script.newThread(@targetSaver);
+  end;
+	
+end.

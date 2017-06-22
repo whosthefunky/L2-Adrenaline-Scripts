@@ -1,0 +1,363 @@
+unit NpcFunctions;
+
+interface
+
+uses 
+	SysUtils, Classes, Functions, UserFunctions;//, TNpcListModule;
+
+
+type
+   TNpc = record
+    obj: TL2Live;
+    objId: Cardinal;
+   end;
+
+   TNpcList = class
+    public
+      TNpcArray: array of TNpc;
+      function isContains(obj: TL2Live): boolean;
+      function add(obj: TL2Live): boolean;
+      function remove(_index: integer): boolean;
+      function getLength: integer;
+      procedure sort;
+      procedure clear;
+   end;	
+	
+var
+	language: boolean = false;
+	npcAvoidList: TNpcList;
+	validRange: integer;
+	
+	procedure loadNpcAvoidList;
+	function getNpcById(id: integer): TL2Live;
+	function startDialog(npcId: integer): boolean;
+	
+	function isValidNpc(obj: TL2Live): boolean;
+	function findFreeClosestEnemy(arr: array of integer): TL2Live;
+	function attackNpc: boolean;
+	
+	function countPlayersInZone(x, y, z: integer; radius: integer = 2000): integer; overload;
+	function countRangePlayersInZone(x, y, z: integer; radius: integer = 2000): integer; overload;
+	function countMiliPlayersInZone(x, y, z: integer; radius: integer = 2000): integer; overload;
+	
+	function countPlayersInZone(iArray: array of integer; radius: integer = 2000): integer; overload;
+	function countRangePlayersInZone(iArray: array of integer; radius: integer = 2000): integer; overload;
+	function countMiliPlayersInZone(iArray: array of integer; radius: integer = 2000): integer; overload;
+	
+	//function getUsefullZone: integer;
+	
+implementation
+
+//TNpcList funcs
+procedure TNpcList.sort;
+var
+  i, j: integer;
+  tempObj: TL2Live;
+  tempObjId: Cardinal;
+begin
+  if (Length(self.TNpcArray) <= 1) then
+	exit;
+	
+  for i:=0 to Length(self.TNpcArray)-1 do
+  begin
+	  for j:=Length(self.TNpcArray)-1 to 0 do
+	  begin
+		  if (User.DistTo(self.TNpcArray[j].obj) > User.DistTo(self.TNpcArray[j-1].obj)) then
+		  	begin
+		  		tempObj := self.TNpcArray[j].obj;
+		  		self.TNpcArray[j].obj := self.TNpcArray[j-1].obj;
+		  		self.TNpcArray[j-1].obj := tempObj;
+
+		  		tempObjId := self.TNpcArray[j].objId;
+		  		self.TNpcArray[j].objId := self.TNpcArray[j-1].objId;
+		  		self.TNpcArray[j-1].objId := tempObjId;
+			end;
+	  end;
+	end;
+end;
+
+procedure TNpcList.clear;
+begin
+  SetLength(self.TNpcArray, 0);
+end;
+
+function TNpcList.isContains(obj: TL2Live): boolean;
+var
+  i: integer;
+begin  
+  if Length(self.TNpcArray) < 1 then
+  begin
+    Result := false;
+    exit;
+  end;
+
+  for i:=0 to Length(self.TNpcArray)-1 do
+  begin
+    if (self.TNpcArray[i].objId = obj.OID) then
+    begin
+      Result := true;
+      exit;
+    end;
+  end;
+  Result := false;
+end;
+
+function TNpcList.add(obj: TL2Live): boolean;
+var
+	i: integer;
+begin
+  SetLength(self.TNpcArray, Length(self.TNpcArray) + 1);
+  self.TNpcArray[Length(self.TNpcArray)-1].obj := nil;
+	for i:=0 to Length(self.TNpcArray)-1 do
+	begin
+		if (self.TNpcArray[i].obj = nil) then
+		begin
+			self.TNpcArray[i].obj := obj;
+			self.TNpcArray[i].objId := obj.OID;
+			Result := true;
+			exit;
+		end;
+	end;
+	SetLength(self.TNpcArray, Length(self.TNpcArray) - 1);
+	Result := false;
+end;
+
+function TNpcList.remove(_index: integer): boolean;
+var
+  i: integer;
+  previousLength: integer;
+  resultArray: array of TNpc;
+begin
+  if (Length(self.TNpcArray) < 1) then
+  begin
+    Result := false;
+    exit;
+  end;  
+
+  previousLength := Length(self.TNpcArray);
+  SetLength(resultArray, previousLength - 1);
+
+  for i:=0 to Length(self.TNpcArray)-1 do
+  begin
+    if (i = _index) then
+    begin
+      if (i > 0) and (i < previousLength - 1) then
+      begin
+        Move(self.TNpcArray[0], resultArray[0], i);
+        Move(self.TNpcArray[i + 1], resultArray[i], previousLength - i - 1);
+        Move(resultArray[0], self.TNpcArray[0], previousLength - 1);
+        SetLength(self.TNpcArray, Length(self.TNpcArray) - 1);
+        Result := true;
+        exit;
+      end;
+      if (i = 0) then
+      begin
+        Move(self.TNpcArray[1], resultArray[0], previousLength - 1);
+        Move(resultArray[0], self.TNpcArray[0], previousLength - 1);
+        SetLength(self.TNpcArray, Length(self.TNpcArray) - 1);
+        Result := true;
+        exit;
+      end;
+      if (i = (previousLength - 1)) then
+      begin
+        Move(self.TNpcArray[0], self.TNpcArray[0], previousLength - 1);
+        SetLength(self.TNpcArray, Length(self.TNpcArray) - 1);
+        Result := true;
+        exit;
+      end;
+    end;
+  end;
+  Result := false;
+end;
+
+function TNpcList.getLength: integer;
+begin
+  Result := Length(self.TNpcArray);
+end;
+
+procedure loadNpcAvoidList;
+begin
+	npcAvoidList := TNpcList.Create;
+end;
+
+function isValidNpc;
+begin
+	Result := not obj.Dead and (User.DistTo(obj) < 123) and (obj <> TL2Npc);
+end;
+
+function findFreeClosestEnemy;     //todo додумать условия: атака\каст\хуй его; если чарлист.итем физ а я маг и рейндж больше N
+var
+	i: integer;
+	prelimResult: TL2Live;
+	isTakenNpc: TNpcList;
+	obj: tl2live;
+begin
+	isTakenNpc := TNpcList.Create;
+	NpcAvoidList := TNpcList.Create;
+	
+	if Length(arr) <> 0 then
+	begin
+		for i:=0 to Length(arr)-1 do
+		begin
+		if NpcList.ByID(arr[i], obj) then
+			NpcAvoidList.add(obj);
+		end;
+	end;
+
+	NpcList.ByID(18286, obj);
+	print(NpcAvoidList.isContains(obj));
+	
+	prelimResult := nil;
+	for i:=0 to Charlist.count-1 do
+	begin
+	if (Charlist.items(i).Target <> nil) then
+      if not isTakenNpc.isContains(Charlist.items(i)) and not npcAvoidList.isContains(Charlist.items(i).Target) then
+        isTakenNpc.add(Charlist.items(i).target);  
+	end;
+	
+		
+	for i:=0 to NpcList.count-1 do
+	begin
+    if not Npclist.items(i).dead and not npcAvoidList.isContains(NpcList.items(i)) and not isTakenNpc.isContains(NpcList.items(i)) then
+    begin
+		prelimResult := npclist.items(i);
+		break;
+    end;
+	end;
+	
+	for i:=0 to NpcList.count-1 do
+	begin
+    if (User.DistTo(prelimResult) > User.DistTo(NpcList.items(i)))
+    and not NpcList.items(i).Dead and not npcAvoidList.isContains(NpcList.items(i)) and not isTakenNpc.isContains(NpcList.items(i)) then
+		begin
+			prelimResult := NpcList.items(i);
+			break;
+		end;
+	end;
+	
+	Result := prelimResult;
+	isTakenNpc.Free;
+end;
+
+function attackNpc;
+var
+	currentTarget: TL2Live;
+begin
+	currentTarget := findFreeClosestEnemy([]);
+	if currentTarget = nil then
+	begin
+		Result := false;
+		exit;
+	end;
+	
+	Engine.SetTarget(nil);
+	
+end;
+
+function getNpcById;
+var
+	res: TL2Live;
+begin
+	res := nil;
+	NpcList.ById(id, res);
+	Result := res;
+end;
+
+function startDialog;
+begin
+	if getNpcById(npcId) = nil then
+	begin
+		Result := false;
+		exit;
+	end;
+	Result := Engine.MoveTo(getNpcById(npcId));
+	Result := Engine.SetTarget(npcId);
+	Result := Engine.DlgOpen();
+end;
+
+function countPlayersInZone;
+var
+	i: integer;
+	counter: integer;
+begin
+	counter := 0;
+	for i:=0 to Charlist.Count-1 do
+	begin
+		if InRange(Charlist.items(i), x, y, z, radius) then
+			inc(counter);
+	end;
+	Result := counter;
+end;
+
+function countMiliPlayersInZone;
+var
+	i: integer;
+	counter: integer;
+begin
+	counter := 0;
+	for i:=0 to Charlist.Count-1 do
+	begin
+		if InRange(Charlist.items(i), x, y, z, radius) and not isMage(Charlist.items(i)) then
+			inc(counter);
+	end;
+	Result := counter;
+end;
+
+function countRangePlayersInZone;
+var
+	i: integer;
+	counter: integer;
+begin
+	counter := 0;
+	for i:=0 to Charlist.Count-1 do
+	begin
+		if InRange(Charlist.items(i), x, y, z, radius) and isMage(Charlist.items(i)) then
+			inc(counter);
+	end;
+	Result := counter;
+end;
+
+function countPlayersInZone;
+var
+	i: integer;
+	counter: integer;
+begin
+	counter := 0;
+	for i:=0 to Charlist.Count-1 do
+	begin
+		if InRange(Charlist.items(i), iArray, radius) then
+			inc(counter);
+	end;
+	Result := counter;
+end;
+
+function countMiliPlayersInZone;
+var
+	i: integer;
+	counter: integer;
+begin
+	counter := 0;
+	for i:=0 to Charlist.Count-1 do
+	begin
+		if InRange(Charlist.items(i), iArray, radius) and not isMage(Charlist.items(i)) then
+			inc(counter);
+	end;
+	Result := counter;
+end;
+
+function countRangePlayersInZone;
+var
+	i: integer;
+	counter: integer;
+begin
+	counter := 0;
+	for i:=0 to Charlist.Count-1 do
+	begin
+		if InRange(Charlist.items(i), iArray, radius) and isMage(Charlist.items(i)) then
+			inc(counter);
+	end;
+	Result := counter;
+end;
+
+begin
+end.

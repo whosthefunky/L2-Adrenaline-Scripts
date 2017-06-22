@@ -1,0 +1,62 @@
+unit pvpFunctions;
+   interface
+			
+		uses
+			Classes, SysUtils, commonFunctions;
+			
+		function eAffraidF(actor: TL2Live): boolean;
+		function eNotAffraidF(actor: TL2Live): boolean;
+		//th
+		procedure wwAffraidEnemyProc;
+		
+	implementation
+		
+		//enemy
+		function eAffraidF(actor: TL2Live): boolean;
+		begin
+			Result := not isFriend(actor) and not isAllyMember(actor) and
+				(isAffraid(actor) or (actor.abnormalID = 272 {affraid + silence})
+				and not (actor.abnormalID = 134217744) {affraid + ud}
+				and not (actor.abnormalID = 1048592) {affraid + shadow}
+				and not (actor.abnormalID = 528) {affraid + root}
+				); 
+		end;
+
+		function eNotAffraidF(actor: TL2Live): boolean;
+		begin
+			Result := not isAffraid(actor) and not (actor.abnormalID = 272);
+		end;
+		
+		procedure wwAffraidEnemyProc;
+		var
+			i: integer;
+			wwUnderAffraid: TList;
+			actor: TL2Live;
+			proc: TActingWrapper;
+		begin
+			wwUnderAffraid := TList.Create;
+			while Engine.Status = lsOnline do
+			begin
+				delay(50);
+			
+				deleteFromList(wwUnderAffraid, eNotAffraidF);
+				
+				if isActing or not Assigned(getChar(eAffraidF)) or
+				(Assigned(getChar(eAffraidF)) and isContains(wwUnderAffraid, getChar(eAffraidF))) then
+				continue;
+			
+				actor := getChar(eAffraidF);
+				
+				proc := procedure
+						begin
+						Engine.SetTarget(getChar(eAffraidF));
+						Engine.UseSkill(1504, true);
+						end;
+			
+				actingAction(proc);
+				wwUnderAffraid.add(actor);
+				
+			end;
+		end;
+
+end.

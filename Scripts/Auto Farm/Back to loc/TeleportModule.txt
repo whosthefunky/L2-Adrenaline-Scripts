@@ -1,0 +1,134 @@
+unit CityModule;
+
+interface
+
+uses CityModule, SettingsModule;
+
+function DoTeleportToLocation(TeleportValue: String): boolean;
+function DoTeleport(TeleportValue: String): boolean;
+function isRightCity(val: TCity; shouldGoHome: boolean = true): boolean;
+function toRightCity(val: TCity): boolean;
+
+implementation
+
+{
+	Check if the city passed as parameter is the same as the one in which we are
+}
+function isRightCity(val: TCity; shouldGoHome: boolean = true): boolean;
+begin
+  Result := (GetCity(shouldGoHome) = val);
+end;
+
+{
+	Teleports through all cities until it finds the correct one
+}
+function toRightCity(val: TCity): boolean;
+var
+  currentCity: TCity;
+begin
+  if isRightCity(val) then
+  begin
+    Result := true;
+    exit;
+  end;
+
+  if not isRightCity(val) then
+  begin
+
+    currentCity := GetCity;
+
+    if currentCity = NON_CITY then
+      GoHome;
+
+    DoTeleport(CityNames[val]);
+
+  end;
+
+  delay(100);
+  Result := toRightCity(val);
+
+end;
+
+{
+	What does this do?
+}
+function DoTeleportToLocation(TeleportValue: String): boolean;
+begin
+	Result := false;
+	if toRightCity(TCities[getCityToLocationGK(TeleportValue)]) then
+		Result := DoTeleport(TeleportValue);
+end;
+
+{
+	Teleports to the desired location.
+	Each city has an integer associated,
+	GateKeepersStrings has the possible target locations for each city.
+	I don't understand how this works, I think:
+	
+}
+function DoTeleport(TeleportValue: String): boolean;
+var
+	City: TCity;
+	gkId: integer;
+	cityIndex: integer;
+	buffer: TL2Live;
+	dialogIndex: integer;
+	teleportIndex: TStringList;
+begin
+	teleportIndex := TStringList.Create;
+
+	City := GetCity;
+	cityIndex := Ord(City);
+
+	if (City = NON_CITY) or (Length(TeleportValue) = 0) then
+	begin
+		Result := false;
+		exit;
+	end;
+
+	gkId := GateKeepers[cityIndex];
+	teleportIndex.Delimiter := ',';
+	teleportIndex.DelimitedText := GateKeepersStrings[cityIndex];
+
+	buffer := nil;
+
+	NpcList.ById(gkId, buffer);
+
+	if buffer = nil then
+	begin
+		Result := false;
+		exit;
+	end;
+
+	dialogIndex := teleportIndex.indexOf(TeleportValue) + 1;
+
+	if dialogIndex = 0 then
+	begin
+		DoTeleportToLocation(TeleportValue);
+		exit;
+	end;
+	
+	if dialogIndex > 0 then
+	begin
+		Engine.SetTarget(buffer);
+		Engine.MoveTo(buffer);
+		Engine.DlgOpen;
+
+		{if (Pos(buffer.name, 'Ragara') <> 0) then
+		  Engine.DlgSel(1)
+		else
+		  Engine.DlgSel(GkDlg);}
+		Engine.DlgSel(1);
+		delay(500);
+		Engine.DlgSel(dialogIndex);
+		Delay(3 * 1000);
+		Result := true;
+	end else
+		Result := false;
+
+	teleportIndex.Free;
+end;
+
+
+BEGIN
+END.

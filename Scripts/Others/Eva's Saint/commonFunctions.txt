@@ -1,0 +1,1343 @@
+unit commonFunctions;
+   interface
+			
+			uses
+				Classes, SysUtils;
+				
+			type
+				TCharFunctor = function(actor: TL2Char): boolean;
+				TNpcFunctor = function(actor: TL2Npc): boolean;
+				TActingWrapper = reference to procedure;
+				TDispelProc = reference to procedure(actor: TL2Live);
+			
+			const			
+				ignoreDelay = 10;
+				defaultBuffSlotsCount = 20;
+				
+			var
+				vLastSkill: integer;
+				vLastSkillTime : integer;
+				movementCounter: integer = 1;
+				isActing: boolean;
+				
+			{property}
+			function fManaCheck(manaPerCount: integer): boolean;
+			function fBuffable(actor: TL2Live): boolean;
+			function fHealable(actor: TL2Live): boolean;
+			function fShouldCast(actor: TL2Live; hpAmount: integer = 30; mpAmount: integer = 10): boolean;
+			function isInterrupted(obj: TL2Live; castEndTime: Cardinal): boolean;
+			function isOlympiadZone(actor: TL2Live): boolean;
+			function isPvpStatus: boolean;			
+			{utils}
+			function liveToChar(actor: TL2Live):TL2Char;
+			function skillCoolTime(ID: integer): integer;
+			function effectTime(actor: TL2Live; effect: integer): Cardinal;
+			function skillLevel(ID: integer): integer;
+			function itemCount(ID: integer): integer;
+			function charByName(name: string): TL2Char;
+			//vars
+			procedure addVar(actor: TL2Live; ignoreTime: integer; isBuffCasting: integer);
+			function getVarFromList(actor: TL2Live; dataIndex: integer): integer;
+			procedure clearVar(actor: TL2Live);
+			function getIgnoreTime(actor: TL2Live): integer;
+			function getIsBuffCasting(actor: TL2Live): boolean;
+			{functors utils}
+			function partyCount(functor: TCharFunctor; withMe: boolean = false): integer;
+			function partyFind(functor: TCharFunctor; withMe: boolean = false): TList; overload;
+			function partyFind(functor: TCharFunctor; weightFunctor: TCharFunctor; withMe: boolean = false): TList; overload; 
+			function getPartyMember(functor: TCharFunctor; withMe: boolean = false): TL2Live;
+			//chars
+			function charsCount(functor: TCharFunctor; withMe: boolean = false): integer;
+			function charsFind(functor: TCharFunctor; withMe: boolean = false): TList; overload;
+			function charsFind(functor: TCharFunctor; weightFunctor: TCharFunctor; withMe: boolean = false): TList; overload;
+			function getChar(functor: TCharfunctor; withMe: boolean = false): TL2Live;
+			function charsInRange(range: integer; countCorpses: boolean = false): integer;
+			//nps
+			function npcsCount(functor: TNpcFunctor): integer;
+			function npcsFind(functor: TNpcFunctor): TList;
+			function getNpc(functor: TNpcFunctor): TL2Live;
+
+			function getNearestPlayer(victim: TL2Live): TL2Live;
+			function getLowerHP: TL2Live;
+			{buffs}
+			function fHasBuffRange(actor: TL2Live; sID, eID: integer): boolean;
+			function fNotBuff(sName: string): boolean;
+			function fBuffCount(actor: TL2Live): integer;
+			function fNotBuffCount(actor: TL2Live): integer;
+			function fBuffSlotsLeft(actor: TL2Live): integer;
+			//listeners
+			procedure cannotSeeTargetListener;
+			{----------------}
+			{actions}
+			procedure doCast(actor: TL2Live; keyCode: byte);
+			function buffDispel(buffID: integer): boolean;
+			procedure actingAction(refProc: TActingWrapper);
+			{----------------}
+			{win api}
+			function ShowWindow(hWnd: integer; nCmdShow: integer): boolean; stdcall; external 'user32.dll';
+			function PostMessageW(hWnd: integer; uINT: byte; wparam: integer; lparam: integer): integer; stdcall; external 'user32.dll';
+			function GetAsyncKeyState(vKey: integer): smallint; stdcall; external 'user32.dll';
+			function isKeyPressed(vKey: integer): boolean;
+			{----------------}
+			{math functions}
+			function distanceBetween(x1,y1,x2,y2: integer): extended;
+			function randomDispersion(x: integer): integer;
+			function isContains(list: TStringList; obj: integer): boolean; overload;
+			function isContains(list: TList; obj: TL2Live): boolean; overload;
+			function isContains(arr: array of integer; arrSize: integer; obj: integer): boolean; overload;
+			function deleteFromList(var list: TList; func: TCharFunctor): boolean; overload;
+			function deleteFromList(var list: TStringList; val: integer): boolean; overload;
+			function ifThen(val: boolean; ifTrue: integer; ifFalse: integer): integer;
+			function boolToStr(val: boolean): string;
+			{----------------}
+			{character status}
+			//abnormals
+			function isStunned(obj: TL2Live): boolean;
+			function isTranced(obj: TL2Live): boolean;
+			function isAffraid(obj: TL2Live): boolean;
+			function isMedused(obj: TL2Live): boolean;
+			function isAnchored(obj: TL2Live): boolean;
+			function isBleeding(obj: TL2Live): boolean;
+			function isRooted(obj: TL2Live): boolean;
+			function isDeathMark(obj: TL2Live): boolean;
+			function isSilenced(obj: TL2Live): boolean;
+			function isRealTarget(obj: TL2Live): boolean;
+			function isUltimateDefense(obj: TL2Live): boolean;
+			function isShadowed(obj: TL2Live): boolean;
+			//effs
+			function isInvincible(obj: TL2Live): boolean;
+			function isSealOfLimit(obj: TL2Live): boolean;
+			function isDisabled(obj: TL2Live): boolean;
+			function isOverweight(limit: integer): boolean;
+			function isCasting(obj: TL2Live): boolean;
+			//relations
+			function isFriend(victim: TL2Live): boolean;
+			function isClanMember(victim: TL2Live): boolean;
+			function isAllyMember(victim: TL2Live): boolean;
+			{----------------}
+			{class defination}
+			function getClassName(obj: TL2Char): string;
+			function isHealer(obj: TL2Char): boolean;
+			function isMage(obj: TL2Char): boolean;
+			function isWarrior(obj: TL2Char): boolean;
+			function isArcher(obj: TL2Char): boolean;
+			function isRoque(obj: TL2Char): boolean;
+			function isSummoner(obj: TL2Char): boolean;
+			function isKnight(obj: TL2Char): boolean;
+			function isEnchanter(obj: TL2Char): boolean;
+			function isBard(obj: TL2Char): boolean;
+			function isAnakim(obj: TL2Char): boolean;
+			function isHellKnight(obj: TL2Char): boolean;		
+			{--------------------}
+			{buffs status}
+			function fHasClarity(actor: TL2Live): boolean;
+			function fHasResistShock(actor: TL2Live): boolean;
+			function fHasMentalShield(actor: TL2Live): boolean;
+			function fHasWildMagic(actor: TL2Live): boolean;
+			function fHasConcentration(actor: TL2Live): boolean;
+			//			
+			function fHasShield(actor: TL2Live) : boolean;
+			function fHasBlockShield(actor: TL2Live) : boolean;		
+				
+			function fHasNoble(actor: TL2Live) : boolean; 			
+			function fHasSpirit(actor: TL2Live) : boolean;			
+			function fHasWW(actor: TL2Live) : boolean; 
+			function fHasBlockWW(actor: TL2Live) : boolean;
+			function fHasAntiSummoning(actor: TL2Live) : boolean;
+
+			{-------------}
+			{class status}
+			function fClarityClass(actor: TL2Char): boolean;
+			function fWildMagicClass(actor: TL2Char): boolean;
+			function fConcentrationClass(actor: TL2Char): boolean;
+			
+
+	
+	implementation
+			
+			{property}
+			function fManaCheck;
+			var
+				effect: TL2Effect;
+			begin
+				Result := (User.Buffs.ByID(1533, effect) or User.Buffs.ByID(1532, effect) or User.Buffs.ByID(3282, effect) or (User.MP > manaPerCount));
+			end;
+			
+			function fBuffable;
+			var
+				effect: TL2Effect;
+			begin
+				Result := not User.Dead and not actor.Dead and (User.DistTo(actor) < 700) and not isMedused(actor) and not actor.Buffs.ByID(1422, effect){ and (getIgnoreTime(actor) < GetTickCount)};
+			end;
+			
+			function fHealable;
+			begin
+				Result := not User.Dead and not actor.Dead and (User.DistTo(actor) < 900) and not isMedused(actor) and not isInvincible(actor){ and (getIgnoreTime(actor) < GetTickCount + 7 * 1000)};
+			end;
+			
+			function fShouldCast;
+			begin
+				Result := not actor.Dead and (actor.HP > hpAmount) and fManaCheck(mpAmount) and not isSilenced(actor) and not isDisabled(actor) and not isInvincible(actor) and (effectTime(User, 1520) = 0) and not User.Sitting;
+			end;
+			
+			function isInterrupted;
+			begin
+				Result := (obj.Cast.EndTime = 0) and (GetTickCount < castEndTime);
+			end;
+			
+			function isOlympiadZone(actor: TL2Live): boolean;
+			begin
+			Result := (actor.DistTo(-88104, -252840, -3312) < 2000) or
+						(actor.DistTo(-75464, -252456, -7736) < 2000) or
+						(actor.DistTo(-88088, -239352, -8432) < 2000) or
+						(actor.DistTo(-75544, -239176, -8184) < 2000);            
+			end;
+			
+			function isPvpStatus;
+			const
+				enemySearchRadius = 2000;
+			var
+				i: integer;
+				prelimResult: integer;
+			begin
+				prelimResult := 0;
+				for i:=0 to Charlist.count-1 do
+				begin
+					if Charlist.Items(i).Dead and (User.DistTo(Charlist.Items(i)) < enemySearchRadius)
+					and not isFriend(Charlist.Items(i)) and not Charlist.Items(i).isMember then
+						prelimResult := prelimResult + 1;
+				end;
+				Result := (prelimResult > 5);
+			end;
+			
+			{----------------}	
+			{utils}
+			function liveToChar;
+			var
+				char: tl2char;
+			begin
+				if (actor <> User) then
+					Charlist.byName(actor.name, Result)
+				else
+					Result := User;
+			end;
+			
+			function skillCoolTime;
+			var
+				skill: TL2Skill;
+			begin
+				if Skilllist.byID(id, skill) then
+					Result := skill.Endtime
+				else  
+					Result := -1;	
+			end;
+			
+			function effectTime;
+			var
+				tmpEffect: TL2Effect;
+			begin
+				if (actor.Buffs.ByID(effect, tmpEffect)) then
+					Result := tmpEffect.EndTime
+				else
+					Result := 0;
+			end;
+			
+			function skillLevel;
+			var
+				eff: TL2Effect;
+			begin
+				Result := ifThen(SkillList.ById(ID, eff), eff.Level, 0);
+			end;
+			
+			function itemCount;
+			var
+				tmpItem: TL2Item;
+			begin
+				if (Inventory.User.ByID(Id, tmpItem)) then
+					Result := tmpItem.Count
+				else
+					Result := 0;
+			end;
+			
+			function charByName;
+			var
+				tmpChar: TL2Char;
+			begin
+				tmpChar := nil;
+				if (Charlist.ByName(name, tmpChar)) then
+					Result := tmpChar;
+			end;
+			
+			//vars
+			procedure addVar(actor: TL2Live; ignoreTime: integer; isBuffCasting: integer = 0);
+			var
+				data: TStringList;
+			begin
+				data := TStringList.Create;
+				
+				data.add(IntToStr(ifThen(ignoreTime = 0, getVarFromList(actor, 0), ignoreTime)));
+				data.add(IntToStr(ifThen(isBuffCasting = 0, getVarFromList(actor, 1), isBuffCasting)));
+				
+				actor.SetVar(Cardinal(data));
+			end;
+			
+			function getVarFromList(actor: TL2Live; dataIndex: integer): integer;
+			begin
+				try
+					Result := StrToInt(TStringList(actor.getvar)[dataIndex]);
+				except
+					Result := 0;
+				end; 
+			end;
+			
+			procedure clearVar(actor: TL2Live);
+			begin
+				try
+					TStringList(actor.getvar).Free;
+				except
+					//
+				end; 	
+			end;
+			
+			function getIgnoreTime(actor: TL2Live): integer;
+			begin
+				Result := getVarFromList(actor, 0);
+			end;
+			
+			function getIsBuffCasting(actor: TL2Live): boolean;
+			begin
+				if (getVarFromList(actor, 1) = 0) then
+					Result := false
+				else
+					Result := true;
+			end;
+			
+			{------------------}
+			{functors utils}
+			function partyCount;
+			var
+				i: integer;
+			begin
+				Result := 0;
+				
+				if (Party.Chars.Count = 0) then
+					exit;
+					
+				for i:=0 to Party.Chars.Count-1 do
+					if (functor(Party.Chars.Items(i))) then
+						inc(Result);
+						
+				if (withMe) and functor(User) then
+					if functor(User) then
+						inc(Result);
+						
+			end;
+			
+			function partyFind;
+			var
+				i: integer;
+			begin
+				Result := TList.Create;
+				
+				if (Party.Chars.Count = 0) then
+					exit;
+				
+				for i:=0 to Party.Chars.Count-1 do
+					if (functor(Party.Chars.Items(i))) then
+						Result.add(Party.Chars.Items(i));
+				
+				if withMe and functor(User) then
+					Result.add(User);
+			
+			end;
+			
+			function partyFind;
+			var
+				i, j: integer;
+			begin
+				Result := TList.Create;
+				
+				if (Party.Chars.Count = 0) then
+					exit;
+				
+				for i:=0 to Charlist.Count-1 do
+					if functor(Charlist.Items(i)) then
+						Result.add(Charlist.Items(i));
+				
+				if withMe and functor(User) then
+					Result.add(User);
+					
+				for i:=Result.count-1 downto 0  do
+				begin
+					for j:=0 to i-1 do
+					begin
+						if (not weightFunctor(TL2Char(Result.Items(j))) and weightFunctor(TL2Char(Result.Items(j+1)))) then
+							Result.Exchange(j, j+1);
+					end;
+				end;
+
+			end;
+			
+			
+			function charsCount;
+			var
+				i: integer;
+			begin
+				Result := 0;
+				
+				for i:=0 to Charlist.Count-1 do
+					if (functor(Charlist.Items(i))) then
+						inc(Result);
+				
+				if (withMe) and functor(User) then
+					inc(Result);
+					
+			end;
+			
+			function charsFind;
+			var
+				i: integer;
+			begin
+				Result := TList.Create;
+				
+				for i:=0 to Charlist.Count-1 do
+					if (functor(Charlist.Items(i))) then
+						Result.add(Charlist.Items(i));
+				
+				if withMe and functor(User) then
+					Result.add(User);
+			
+			end;
+			
+			function charsFind;
+			var
+				i, j: integer;
+			begin
+				Result := TList.Create;
+				
+				for i:=0 to Charlist.Count-1 do
+					if functor(Charlist.Items(i)) then
+						Result.add(Charlist.Items(i));
+				
+				if withMe and functor(User) then
+					Result.add(User);
+					
+				for i:=Result.count-1 downto 0  do
+				begin
+					for j:=0 to i-1 do
+					begin
+						if (not weightFunctor(TL2Char(Result.Items(j))) and weightFunctor(TL2Char(Result.Items(j+1)))) then
+							Result.Exchange(j, j+1);
+					end;
+				end;
+
+			end;
+			
+			function getChar;
+			var
+				i: integer;
+			begin
+				Result := nil;
+				for i:=0 to Charlist.Count-1 do
+				begin
+				if (functor(Charlist.Items(i))) then
+				begin
+					Result := Charlist.Items(i);
+					break;
+				end;
+				end;
+				if (withMe) and functor(User) then
+					Result := User;
+			end;
+			
+			function charsInRange;
+			var
+				i: integer;
+			begin
+				Result := 0;
+				
+				for i:=0 to Charlist.count-1 do
+				begin
+					if (User.DistTo(Charlist.Items(i)) < range) then
+					begin
+						if (countCorpses) and Charlist.Items(i).Dead then
+							inc(Result)
+						else if not Charlist.Items(i).Dead then
+							inc(Result);
+					end;	
+				end;
+				
+			end;
+			
+			function npcsCount;
+			var
+				i: integer;
+			begin
+				Result := 0;
+				
+				for i:=0 to NpcList.Count-1 do
+					if (functor(NpcList.Items(i))) then
+						inc(Result);
+				
+			end;
+			
+			function npcsFind;
+			var
+				i: integer;
+			begin
+				Result := TList.Create;
+				
+				for i:=0 to NpcList.Count-1 do
+					if (functor(NpcList.Items(i))) then
+						Result.add(NpcList.Items(i));
+
+			end;
+			
+			function getNpc(functor: TNpcFunctor): TL2Live;
+			var
+				i: integer;
+			begin
+				Result := nil;
+				for i:=0 to NpcList.Count-1 do
+				begin
+				if (functor(NpcList.Items(i))) then
+				begin
+					Result := NpcList.Items(i);
+					break;
+				end;
+				end;
+			end;
+			
+			function getPartyMember;
+			var
+			i: integer;
+			begin
+			Result := nil;
+			for i:=0 to Party.Chars.Count-1 do
+				begin
+				if (functor(Party.Chars.Items(i))) then
+				begin
+						Result := Party.Chars.Items(i);
+						break;
+				end;
+				end;
+				if (withMe) and functor(User) then
+					Result := User;
+			end;
+						
+			function getNearestPlayer;
+			const
+				skillRadius = 300;
+			var
+				i: integer;
+				tempPlayer: tl2live;
+				prelimRange: integer;
+			begin
+				prelimRange := High(integer);
+				if ((victim = nil) or (victim = user)) then
+				begin
+					Result := User;
+					exit;
+				end;
+				for i:=0 to Charlist.Count-1 do
+				begin
+				if (
+					(victim.DistTo(Charlist.Items(i)) < prelimRange)
+					and not Charlist.Items(i).Dead
+					and (Charlist.Items(i) <> victim)
+					and isFriend(Charlist.Items(i))
+					)
+					then
+					begin
+					prelimRange := victim.DistTo(Charlist.Items(i));
+					tempPlayer := Charlist.Items(i);
+				end;        
+				end;
+				for i:=0 to npclist.Count-1 do
+				begin
+					if (
+					(victim.DistTo(npclist.Items(i)) < prelimRange)
+					and not npclist.Items(i).Dead
+					and npclist.Items(i).isPet
+					and isFriend(npclist.Items(i))
+					)
+					then
+					begin
+					prelimRange := victim.DistTo(npclist.Items(i));
+					tempPlayer := npclist.Items(i);
+				end;
+				end;
+			if (prelimRange > 300) then
+				Result := victim
+			else 
+				Result := tempPlayer;
+			end;
+			
+			function getLowerHP;
+			var
+				i: integer;
+				prelimResult : Cardinal;
+				tempPlayer: TL2Live;
+			begin
+				prelimResult := High(Cardinal);
+				tempPlayer := nil;
+				if (Party.Chars.Count = 0) then
+				begin
+					Result := User;
+					exit;
+				end;
+				for i:=0 to Party.Chars.Count-1 do
+				begin
+					if (Party.Chars.Items(i).HP < prelimResult)
+					and not Party.Chars.Items(i).Dead and (User.DistTo(Party.Chars.Items(i)) < 900) then
+					begin
+						prelimResult := Party.Chars.Items(i).HP;
+						tempPlayer := Party.Chars.Items(i); 
+					end;
+				end;
+				Result := tempPlayer;
+			end;
+			
+			{-------------------------------}
+			
+			{buffs}
+			function fHasBuffRange;
+			var
+				i: integer;
+			begin
+				Result := false;
+				for i:=sID to eID do
+				begin
+					if (effectTime(actor, i) > 0) then
+					begin
+						Result := true;
+						exit;
+					end;
+				end;
+			end;
+			
+			function fNotBuff;
+			begin
+				Result := (
+				(Pos('Dance' ,sName) <> 0) or
+				(Pos('Song' ,sName) <> 0) or
+				(Pos('Seal' ,sName) <> 0) or
+				(Pos('Block' ,sName) <> 0) or
+				((Pos('Lightning' ,sName) <> 0) and not (Pos('Barrier' ,sName) <> 0)) or
+				(Pos('Vortex' ,sName) <> 0) or
+				(Pos('Surrender' ,sName) <> 0) or
+				(Pos('Curse' ,sName) <> 0) or
+				((Pos('Symphony' ,sName) <> 0) and not (Pos('Noblesse' ,sName) <> 0)) or
+				((Pos('Decrease' ,sName) <> 0) and not (Pos('Weight' ,sName) <> 0)) or
+				((Pos('Poison' ,sName) <> 0) and not (Pos('Resist' ,sName) <> 0)) or
+				((Pos('Shock' ,sName) <> 0) and not (Pos('Resist' ,sName) <> 0)) or
+				((Pos('Freezing' ,sName) <> 0) and not (Pos('Skin' ,sName) <> 0)) or
+				((Pos('Arcane' ,sName) <> 0) and not (Pos('Protection' ,sName) <> 0)) or
+				(Pos('Transform' ,sName) <> 0) or
+				(Pos('Shackle' ,sName) <> 0) or
+				(Pos('Mass' ,sName) <> 0) or
+				(Pos('Rush' ,sName) <> 0) or
+				(Pos('Death' ,sName) <> 0) or
+				(Pos('Stun' ,sName) <> 0) or
+				(Pos('Root' ,sName) <> 0) or
+				(Pos('Hold' ,sName) <> 0) or
+				(Pos('Paraly' ,sName) <> 0) or
+				(Pos('Doom' ,sName) <> 0) or
+				(Pos('Hot Springs' ,sName) <> 0) or
+				(Pos('Silence' ,sName) <> 0) or
+				(Pos('Sleep' ,sName) <> 0) or
+				(Pos('Trance' ,sName) <> 0) or
+				(Pos('Fear' ,sName) <> 0) or
+				(Pos('Terror' ,sName) <> 0) or
+				(Pos('Horror' ,sName) <> 0) or
+				(Pos('Slow' ,sName) <> 0) or
+				(Pos('Anchor' ,sName) <> 0) or
+				(Pos('Anger' ,sName) <> 0) or
+				(Pos('Bleed' ,sName) <> 0) or
+				(Pos('Stigma' ,sName) <> 0) or
+				(Pos('Turn to Stone' ,sName) <> 0) or
+				(Pos('Magical Backfire' ,sName) <> 0) or
+				(Pos('Heroic Grandeur' ,sName) <> 0) or
+				(Pos('Dread' ,sName) <> 0) or
+				(Pos('Disarm' ,sName) <> 0) or
+				(Pos('Real Target' ,sName) <> 0) or
+				(Pos('Critical Wound' ,sName) <> 0) or
+				(Pos('Arrest' ,sName) <> 0) or
+				(Pos('Hate' ,sName) <> 0) or
+				(Pos('Aggression' ,sName) <> 0) or
+				(Pos('Burning Chop' ,sName) <> 0) or
+				(Pos('Ignore Shield Defense' ,sName) <> 0) or
+				(Pos('Speed Down' ,sName) <> 0) or
+				(Pos('Violent Temper' ,sName) <> 0) or
+				(Pos('Shield Bash' ,sName) <> 0) or
+				(Pos('Shield Slam' ,sName) <> 0) or
+				(Pos('Earthquake' ,sName) <> 0) or
+				(Pos('Cripple' ,sName) <> 0) or
+				(Pos('Entangle' ,sName) <> 0) or
+				(Pos('Hex' ,sName) <> 0) or
+				(Pos('Break' ,sName) <> 0) or
+				(Pos('Hamstring' ,sName) <> 0) or
+				(Pos('Sting' ,sName) <> 0) or
+				(Pos('Bluff' ,sName) <> 0) or
+				(Pos('Tribunal' ,sName) <> 0) or
+				(Pos('Judgment' ,sName) <> 0) or
+				(Pos('Sand Bomb' ,sName) <> 0) or
+				(Pos('Weapon Blockade' ,sName) <> 0) or
+				(Pos('Onslaught of Pa''agrio' ,sName) <> 0) or
+				(Pos('Aura Sink' ,sName) <> 0) or
+				(Pos('Frost' ,sName) <> 0) or
+				(Pos('Ice Dagger' ,sName) <> 0) or
+				(Pos('Blizzard' ,sName) <> 0) or
+				(Pos('Demon Wind' ,sName) <> 0) or
+				(Pos('Decay' ,sName) <> 0) or
+				(Pos('Diamond Dust' ,sName) <> 0) or
+				(Pos('Throne' ,sName) <> 0) or
+				(Pos('Count of Fire' ,sName) <> 0) or
+				(Pos('Vampiric Mist' ,sName) <> 0) or
+				(Pos('Bind' ,sName) <> 0) or
+				(Pos('Blink' ,sName) <> 0) or
+				(Pos('Flame Armor' ,sName) <> 0) or
+				(Pos('Hurricane Armor' ,sName) <> 0) or
+				(Pos('Dreaming Spirit' ,sName) <> 0) or
+				(Pos('Inferno' ,sName) <> 0) or
+				(Pos('Antharas' ,sName) <> 0) or
+				(Pos('Heat of Desert' ,sName) <> 0) or
+				(Pos('Inquisitor' ,sName) <> 0) or
+				(Pos('Charm of Courage' ,sName) <> 0) or
+				(Pos('Protection Power' ,sName) <> 0) or
+				(Pos('Enchanter Ability' ,sName) <> 0) or
+				(Pos('Knight Ability' ,sName) <> 0) or
+				(Pos('PvP Armor - Critical Down' ,sName) <> 0) or
+				(Pos('PvP Weapon - Casting' ,sName) <> 0) or
+				(Pos('Great Fury' ,sName) <> 0) or
+				(Pos('Maximum Ability' ,sName) <> 0) or
+				(Pos('Counter Rapid Shot' ,sName) <> 0) or
+				(Pos('Counter Dash' ,sName) <> 0) or
+				(Pos('Totem''s Energy',sName) <> 0) or
+				(Pos('Morale Boost' ,sName) <> 0));
+			end;
+			
+			function fBuffCount;
+			begin
+				Result := actor.Buffs.Count - fNotBuffCount(actor); 
+			end;
+			
+			function fNotBuffCount;
+			var 
+				i: integer;
+			begin
+				Result := 0;
+				for i:=0 to actor.Buffs.Count-1 do
+				begin
+					if fNotBuff(actor.Buffs.Items(i).Name) then
+						inc(Result);
+					if (actor.Buffs.Items(i).ID = 6059) then
+						inc(Result);
+					if (actor.Buffs.Items(i).ID = 4268) then
+						inc(Result);
+				end;
+			end;
+						
+			function fBuffSlotsLeft;
+			begin
+				Result := ifThen(actor = User, 20 + skillLevel(1405), defaultBuffSlotsCount) - fBuffCount(actor);
+			end;
+			
+			{--------------}
+			{listeners}
+			procedure cannotSeeTargetListener;
+			const
+				CANNOT_SEE_TARGET_MESSAGE = 181;
+			var
+				action: TL2Action;
+				p1, p2: pointer;
+			begin
+				while Engine.Status = lsOnline do
+					begin
+					delay(20);
+					action := Engine.WaitAction([laSysMsg], p1, p2);
+					if (action = laSysMsg) and (Cardinal(p1) = CANNOT_SEE_TARGET_MESSAGE) then
+					begin
+						User.Target.SetVar(GetTickCount + ignoreDelay * 1000);
+					end;
+				end;
+			end;
+			{--------------}
+			{win api}
+			function isKeyPressed;
+			begin
+				Result := GetAsyncKeyState(vKey) <> 0;
+			end;
+			
+			{--------------}
+			{actions}
+			
+			procedure doCast(actor: TL2Live; keyCode: byte);
+			begin
+				isActing := true;
+				
+				Engine.SetTarget(actor);
+				
+				PostMessageW(Engine.GameWindow, $0100, keyCode, 0);
+				
+				delay(200);
+				
+				if (User.Cast.EndTime > 0) then
+				begin
+					delay(user.cast.endTime);
+					
+					if Odd(movementCounter) then
+						Engine.MoveTo(User.X + 20, User.Y + 20, User.Z)
+					else	
+						Engine.MoveTo(User.X - 20, User.Y - 20, User.Z);
+	
+					inc(movementCounter);
+				end;
+				isActing := false;
+			end;
+			
+			function buffDispel(buffID: integer): boolean;
+			var
+				Buff: TL2Effect;
+			begin
+				print(user.cast.name + ' c end time: ' + inttostr(user.cast.endtime) + ' disp id: ' + inttostr(buffID) + ' isEffected: ' + boolToStr(User.Buffs.ByID(buffID, Buff)));
+				Result := User.Buffs.ByID(buffID, Buff); 
+				if (Result) then
+					Engine.Dispel(Buff.Name);
+			end;
+			
+			procedure actingAction;
+			begin
+				isActing := true;
+				refProc;
+				isActing := false;
+			end;
+			
+			{win api}
+			//wrappers
+			
+			{--------------}
+			{math functions}
+			
+			function distanceBetween;
+			begin
+				Result := sqrt(((x2 - x1)*(x2 - x1)) + ((y2 - y1)*(y2 - y1)));
+			end;
+			
+			function randomDispersion;
+			var
+				min, max: integer;
+			begin
+				min:= Trunc(x * 0.8);
+				max:= Trunc(x * 1.2);
+				Result := Random(max - min + 1) + min;  
+			end;
+			
+			function isContains;
+			var
+				i: integer;
+			begin
+			Result := false;
+			
+			if list.Count = 0 then
+				exit;
+			
+				for i:=0 to list.Count-1 do
+				begin
+					if AnsiSameText(list[i], inttostr(obj)) then
+					begin
+						Result := true;
+						exit;
+					end;
+				end;
+			end;
+			
+			function isContains;
+			var
+				i: integer;
+			begin
+				Result := false;
+			
+				if list.Count = 0 then
+					exit;
+			
+				for i:=0 to list.Count-1 do
+				begin
+					if TL2Live(list[i]) = obj then
+					begin
+						Result := true;
+						exit;
+					end;
+				end;
+			end;
+			
+			function isContains;
+			var
+				i: integer;
+			begin
+				Result := false;
+				
+				if arrSize = 0 then
+					exit;
+				
+				for i:=0 to arrSize-1 do
+				begin
+					if arr[i] = obj then
+					begin
+						Result := true;
+						exit;
+					end;
+				end;
+			end;
+			
+			function deleteFromList;
+			var
+				i: integer;
+				removeList: TList;
+			begin
+				Result := false;
+			
+				if list.count = 0 then
+					exit;
+			
+				removeList := TList.Create;
+				for i:=0 to list.Count-1 do
+				begin
+					if func(TL2Char(list[i])) then
+						removeList.add(list[i]);  
+				end;
+				
+				for i:=0 to removeList.count-1 do
+					list.remove(removeList[i]);
+				
+				removeList.Free;
+				Result := true;
+			end;
+			
+			function deleteFromList;
+			var
+				i: integer;
+				removeList: TStringList;
+			begin
+				Result := false;
+			
+				if list.count = 0 then
+					exit;
+			
+				removeList := TStringList.Create;
+				for i:=0 to list.Count-1 do
+				begin
+					if StrToInt(list[i]) = val then
+						removeList.add(list[i]);  
+				end;
+				
+				for i:=0 to removeList.count-1 do
+					list.delete(list.indexOf(removeList[i]));
+				
+				removeList.Free;
+				Result := true;
+			end;
+				
+			function ifThen;
+			begin
+				if val then
+					Result := ifTrue
+				else
+					Result := ifFalse;
+			end;
+			
+			function boolToStr;
+			begin
+				if val then
+					Result := 'true'
+				else
+					Result := 'false';
+			end;
+
+			{----------------}
+			{character status}
+		
+			function isStunned(obj: TL2Live): boolean;
+			begin
+				Result := obj.abnormalid = 64;
+			end;
+			
+			function isTranced(obj: TL2Live): boolean;
+			begin
+				Result := obj.abnormalid = 128;
+			end;
+			
+			function isAffraid(obj: TL2Live): boolean;
+			begin
+				Result := obj.abnormalid = 16; 
+			end;
+			
+			function isMedused(obj: TL2Live): boolean;
+			begin
+				Result := obj.abnormalid = 2048;
+			end;
+			
+			function isAnchored(obj: TL2Live): boolean;
+			begin
+				Result := obj.abnormalid = 1024; 
+			end;
+			
+			function isBleeding(obj: TL2Live): boolean;
+			begin
+				Result := obj.abnormalid = 1; 
+			end;
+			
+			function isRooted(obj: TL2Live): boolean;
+			begin
+				Result := obj.abnormalid = 512;
+			end;
+			
+			function isDeathMark(obj: TL2Live): boolean;
+			begin
+				Result := obj.abnormalid = 1073741824;
+			end;
+			
+			function isSilenced(obj: TL2Live): boolean;
+			begin
+				Result := obj.abnormalid = 256;
+			end;
+			
+			function isRealTarget(obj: TL2Live): boolean;
+			begin
+				Result := obj.abnormalid = 536870912; 
+			end;
+			
+			function isUltimateDefense(obj: TL2Live): boolean;
+			begin
+				Result := obj.abnormalid = 134217728;
+			end;
+			
+			function isShadowed(obj: TL2Live): boolean;
+			begin
+				Result := obj.abnormalid = 1048576;
+			end;
+	
+			//effs
+			function isInvincible;
+			var
+				buffsTemp: TL2Effect;
+			begin
+				Result := obj.Buffs.ByID(1418, buffsTemp) or obj.Buffs.ByID(1427, buffsTemp) or
+					obj.Buffs.ByID(1505, buffsTemp) or obj.Buffs.ByID(3158, buffsTemp) or
+					obj.Buffs.ByID(655, buffsTemp) or obj.Buffs.ByID(5576, buffsTemp) or
+					obj.Buffs.ByID(1540, buffsTemp) or obj.Buffs.ByID(837, buffsTemp);
+			end;
+			
+			function isDisabled;
+			var
+				buffsTemp: TL2Effect;
+			begin
+				Result := isStunned(obj) or isMedused(obj) 
+				or isTranced(obj) or isAnchored(obj) or isAffraid(obj) or
+				obj.Buffs.ByID(1376, buffsTemp);
+			end;
+			
+			function isSealOfLimit;
+			var
+				eff: TL2Buff;
+			begin
+				Result := obj.Buffs.ById(1509, eff) and (eff <> nil) and (eff.endtime > 480);
+			end;
+				
+			function isOverweight;
+			begin
+				Result := (User.Load >= limit);
+			end;
+			
+			function isCasting;
+			begin
+				Result := (obj.Cast.EndTime > 0);
+			end;
+			
+			//relations
+			function isFriend;
+			begin
+				Result := victim.Attackable
+				and (
+				not victim.pvp
+				or (victim.pvp and victim.isMember)
+				or (victim.pvp and isClanMember(victim))
+				);
+			end;
+			
+			function isClanMember;
+			begin
+				Result := (User.ClanID = victim.ClanID);
+			end;
+			
+			function isAllyMember;
+			begin
+				Result := (User.AllyID = victim.AllyID);
+			end;
+			{----------------}
+			{class defination}
+			
+			function getClassName;
+			begin
+				if isMage(obj) then
+					Result := 'Mage'
+				else if isHealer(obj) then
+					Result := 'Healer'
+				else if isKnight(obj) then
+					Result := 'Knight'
+				else if isEnchanter(obj) then
+					Result := 'Enchanter'
+				else if isWarrior(obj) then
+					Result := 'Warrior'
+				else if isBard(obj) then
+					Result := 'Enchanter'			
+			end;
+		
+		
+			function isHealer;
+			begin
+				Result := ((obj.ClassID = 30)
+					or (obj.ClassID = 43)
+					or (obj.ClassID = 16) 
+					or (obj.ClassID = 105) 
+					or (obj.ClassID = 112)
+					or (obj.ClassID = 146)
+					or (obj.ClassID = 179)
+					or (obj.ClassID = 180)
+					or (obj.ClassID = 181)
+					);  
+			end;
+			
+			function isMage;
+			begin
+				Result := (
+				(obj.ClassID = 12)  //neckromancer
+					or (obj.ClassID = 13)  //sorcerer
+					or (obj.ClassID = 27)  //spellsinger
+					or (obj.ClassID = 40)  //spellhawler
+					or (obj.ClassID = 128) //m soulbreaker
+					or (obj.ClassID = 129) //f soulbreaker
+					or (obj.ClassID = 94) {archmage}
+					or (obj.ClassID = 95) {soultaker}
+					or (obj.ClassID = 103) {mystic muse}
+					or (obj.ClassID = 110) {storm screamer}
+					or (obj.ClassID = 133) {female soul hound}
+					or (obj.ClassID = 132) {male soul hound}
+					or (obj.ClassID = 166) {archamge}
+					or (obj.ClassID = 167) {soultaker}
+					or (obj.ClassID = 168) {mystic muse}
+					or (obj.ClassID = 169) {storm screamer}
+					or (obj.ClassID = 170) {soul hound}
+					or (obj.ClassID = 143)
+					); 
+			end;
+			
+			function isWarrior;
+			begin
+				Result :=  ((obj.ClassID = 3)
+					or (obj.ClassID = 2) {gladiator} 
+					or (obj.ClassID = 3) {warlord} 
+					or (obj.ClassID = 46) {destroyer} 
+					or (obj.ClassID = 48) {monk} 
+					or (obj.ClassID = 127) {berserker}  
+					or (obj.ClassID = 88) {duelist} 
+					or (obj.ClassID = 89) {deadnought}
+					or (obj.ClassID = 113) {titan}
+					or (obj.ClassID = 114) {grand khautari}
+					or (obj.ClassID = 117) {forutne seeker}
+					or (obj.ClassID = 118) {maestro}
+					or (obj.ClassID = 131) {doombringer}
+					or (obj.ClassID = 152)
+					or (obj.ClassID = 153)
+					or (obj.ClassID = 154)
+					or (obj.ClassID = 155)
+					or (obj.ClassID = 156)
+					or (obj.ClassID = 157)
+					or (obj.ClassID = 140)
+					); 
+			end;
+			
+			function isArcher;
+			begin
+				Result := ((obj.ClassID = 92) {sagittarius} 
+				or (obj.ClassID = 102) {moonlight sentinel}
+				or (obj.ClassID = 109) {ghost sentinel}
+				or (obj.ClassID = 134) {trickster}
+				or (obj.ClassID = 162)
+				or (obj.ClassID = 163)
+				or (obj.ClassID = 164)
+				or (obj.ClassID = 165)
+				or (obj.ClassID = 142)
+				); 
+			end;
+			
+			function isRoque;
+			begin
+				Result :=  ((obj.ClassID = 101) {wind rider} 
+					or (obj.ClassID = 108) {ghost hunter}
+					or (obj.ClassID = 93) {adventurer}
+					or (obj.ClassID = 141)
+					or (obj.ClassID = 158)
+					or (obj.ClassID = 159)
+					or (obj.ClassID = 160)
+					or (obj.ClassID = 161)
+					); 
+			end;
+			
+			function isSummoner;
+			begin
+				Result := (
+					(obj.ClassID = 96) {arcana lord}
+					or (obj.ClassID = 104) {elemental summoner}
+					or (obj.ClassID = 111) {phantom summoner}
+					or (obj.ClassID = 176)
+					or (obj.ClassID = 177)
+					or (obj.ClassID = 178)
+					or (obj.ClassID = 145)
+					);
+			end;
+			
+			function isKnight;
+			begin
+				Result := ((obj.ClassID = 90) {phoenix knight}
+					or (obj.ClassID = 91) {hell knight}
+					or (obj.ClassID = 99) {eva templar}				
+					or (obj.ClassID = 106) {shillien templar}
+					or (obj.ClassID = 148)
+					or (obj.ClassID = 149)
+					or (obj.ClassID = 150)
+					or (obj.ClassID = 151)
+					or (obj.ClassID = 139)
+					);
+			end;
+			
+			function isBard;
+			begin
+				Result := (
+					(obj.ClassID = 21)
+					or (obj.ClassID = 34)
+					or (obj.ClassID = 100) {sword muse}
+					or (obj.ClassID = 107)
+					); {spectral dancer}
+			end;
+			
+			function isEnchanter;
+			begin
+				Result := (
+					(obj.ClassID = 51)
+					or (obj.ClassID = 52)
+					or (obj.ClassID = 115) {dominator}
+					or (obj.ClassID = 116) {doomcryer}				
+					or (obj.ClassID = 136)
+					or (obj.ClassID = 171)
+					or (obj.ClassID = 172)
+					or (obj.ClassID = 173)
+					or (obj.ClassID = 174)
+					or (obj.ClassID = 175)
+					or (obj.ClassID = 144)
+					);{judicator}
+			end;
+			
+			function isAnakim;
+			begin
+				isAnakim := (obj.Cast.EndTime > 0) and
+				((obj.Cast.ID = 720) or
+				(obj.Cast.ID = 721) or
+				(obj.Cast.ID = 722) or
+				(obj.Cast.ID = 723) or
+				(obj.Cast.ID = 724));
+			end;
+			
+			function isHellKnight;
+			begin
+				Result := (obj.ClassID = 91); 
+			end;
+			
+			{buffs status}			
+			function fHasClarity;
+			begin
+				Result := (effectTime(actor, 1397) > 60000) or (effectTime(actor, 22267) > 60000) 
+							or (effectTime(actor, 2889) > 60000)
+							or (effectTime(actor, 22069) > 60000)
+							or (effectTime(actor, 5647) > 60000); 
+			end;
+			
+			function fHasResistShock;
+			begin
+				Result := (effectTime(actor, 1259) > 60000);
+			end;
+			
+			function fHasMentalShield;
+			begin
+				Result := (effectTime(actor, 1035) > 60000);
+			end;
+			
+			function fHasWildMagic;
+			begin
+				Result := (effectTime(actor, 1303) > 60000)
+							or (effectTime(actor, 5646) > 60000)
+							or (effectTime(actor, 22070) > 60000)
+							or (effectTime(actor, 2890) > 60000);
+			end;
+			
+			function fHasConcentration;
+			begin
+				Result := (effectTime(actor, 1078) > 60000);
+			end;
+								
+			function fHasShield;
+			begin
+				Result := ((effectTime(actor, 1517) > 60000) or (effectTime(actor, 1536) > 60000) or (effectTime(actor, 1499) > 60000) or (effectTime(actor, 1009) > 60000) or (effectTime(actor, 1010) > 60000) or (effectTime(actor, 1040) > 60000)); 
+			end;
+			
+			function fHasBlockShield;
+			begin
+				Result := (effectTime(actor, 1358) > 480) or (effectTime(actor, 1360) > 480);
+			end;
+			
+			function fHasNoble;
+			begin
+				Result :=  ((effectTime(actor, 1323) > 60000) or (effectTime(actor, 1410) > 60000));
+			end;
+			 
+			function fHasSpirit;
+			begin
+				Result :=  ((effectTime(actor, 1354) > 60000) or (effectTime(actor, 1362) > 60000) or (effectTime(actor, 1415) > 60000));
+			end;
+			
+			function fHasWW;
+			begin
+				Result :=  ((effectTime(actor, 1535) > 60000) or (effectTime(actor, 1504) > 60000) or (effectTime(actor, 2034) > 60000) or (effectTime(actor, 1204) > 60000));
+			end;
+				 
+			function fHasBlockWW;
+			begin
+				Result := (effectTime(actor, 1359) > 480) or (effectTime(actor, 1361) > 480);
+			end;
+				 
+			function fHasAntiSummoning;
+			begin
+				Result := (effectTime(actor, 5134) > 480);
+			end;
+	
+			{class status}
+			function fClarityClass;
+			begin
+				Result := isMage(actor) or isHealer(actor) or isWarrior(actor) or isRoque(actor) or isBard(actor) or isEnchanter(actor);
+			end;
+			
+			function fWildMagicClass;
+			begin
+				Result := isMage(actor) or isHealer(actor) or isSummoner(actor);
+			end;
+			
+			function fConcentrationClass;
+			begin
+				Result := isMage(actor) or isHealer(actor) or isSummoner(actor);
+			end;
+			
+end.
+			
+      
+       
+  

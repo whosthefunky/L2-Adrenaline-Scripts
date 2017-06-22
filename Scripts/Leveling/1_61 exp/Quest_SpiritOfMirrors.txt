@@ -1,0 +1,269 @@
+﻿unit Quest_SpiritOfMirrors;
+
+interface
+
+uses 
+	SysUtils, Classes, LocationModule, SettingsModule, Functions, NpcFunctions, UserFunctions;
+	
+const
+	//npcs
+	QUEST_NAME = 'Spirit of mirrors';
+	QUEST_ID = 104;
+	GALLINT = 30017;
+	RAGARA = 50124;
+	SPIRIT_OF_MIRRORS = 27003;
+	SPIRIT_OF_MIRRORS2 = 27004;
+	SPIRIT_OF_MIRRORS3 = 27005;
+	
+	ROXXY = 50124; //averia |50124 ; orig | 30006
+	
+	//items
+	GALLINS_OAK_WAND = 748;
+	WAND_SPIRITBOUND1 = 1135;
+	WAND_SPIRITBOUND2 = 1136;
+	WAND_SPIRITBOUND3 = 1137;
+	WAND_OF_ADEPT = 747;    
+
+var
+	QuestStatus: integer;
+	
+	startPath: DimensionArray; //to temple
+	path1: DimensionArray; //to 1st npc
+	path2: DimensionArray; //to 2nd npc
+	path3: DimensionArray; //to 3rd npc
+	
+	procedure ExecuteSpiritOfMirrors;
+	procedure initArrays;
+	function spiritOfMirrorsDone: boolean;
+	
+implementation
+
+procedure ExecuteSpiritOfMirrors;
+var
+	i: integer;
+	questItem: TL2Item;
+	npc: TL2Npc;
+begin
+	initArrays;
+	QuestStatus := getState('Quests', QUEST_NAME + ' state', -1);
+	while (Engine.Status = lsOnline) and (QuestStatus <> -1) do
+	begin
+	case QuestStatus of
+		0 :
+		begin
+		if toRightCity(TALKING_ISLAND) and not inRange(User, -90344, 248472, -3568, 4000) then
+		begin
+			moveToLoc(startPath);
+				
+			if not startDialog(GALLINT) then
+				continue;
+				
+			Engine.DlgSel(1);
+			Engine.DlgSel(1);
+			Engine.DlgSel(1); 
+	
+			if (Engine.QuestStatus(QUEST_ID, 1)) then
+			begin
+				QuestStatus := 1;
+				updateState('Quests', QUEST_NAME + ' state', 1);
+			end;	
+		end;
+		end;
+		1 :
+		begin
+			if inRange(User, -90344, 248472, -3568, 4000) then
+			begin
+				moveToLoc(path1);
+			end;
+			
+			if not inRange(User, -90344, 248472, -3568, 4000) and not inRange(User, -97000, 248296, -3584, 1000) and toRightCity(TALKING_ISLAND) then
+			begin
+				moveToLoc(path2);
+			end;
+			
+			if not inRange(user, -97000, 248296, -3584, 1000) then
+				continue;
+			
+			while not User.Dead and (countItems(GALLINS_OAK_WAND) = 3) do
+			begin
+				if NpcList.ByID(SPIRIT_OF_MIRRORS, npc) then
+				begin
+					Engine.SetTarget(npc);
+					equipItem(GALLINS_OAK_WAND);
+					Engine.Attack;
+					Engine.UseSkill(1177);
+				end;
+				delay(200);
+			end;
+			
+			if (countItems(GALLINS_OAK_WAND) < 3) then
+			begin
+				QuestStatus := 2;
+				updateState('Quests', QUEST_NAME + ' state', 2);	
+			end;
+		end;
+		2 :
+		begin
+			if not inRange(User, -100040, 234520, -3312, 1500) and toRightCity(TALKING_ISLAND) then
+			begin
+				if not startDialog(ROXXY) then
+					continue;
+					
+				Engine.DlgSel(3);	
+				Engine.DlgSel(10);
+				
+				delay(2 * 1000);
+					
+				moveToLoc(path2);
+			end;
+			
+			if not inRange(User, -100040, 234520, -3312, 1500) then
+				continue;
+				
+			while not User.Dead and (countItems(GALLINS_OAK_WAND) = 2) do
+			begin
+				if NpcList.ByID(SPIRIT_OF_MIRRORS2, npc) then
+				begin
+					Engine.SetTarget(npc);
+					equipItem(GALLINS_OAK_WAND);
+					Engine.Attack;
+					Engine.UseSkill(1177);
+				end;
+			end;
+			
+			if (countItems(GALLINS_OAK_WAND) < 2) then
+			begin
+				QuestStatus := 3;
+				updateState('Quests', QUEST_NAME + ' state', 3);
+			end;
+			
+		end;
+		3 :
+		begin
+			if not inRange(User, -121489, 236779, -3608, 1500) and toRightCity(TALKING_ISLAND) then
+			begin
+				if not startDialog(ROXXY) then
+					continue;
+					
+				Engine.DlgSel(3);	
+				Engine.DlgSel(8);
+				
+				delay(2 * 1000);
+				
+				moveToLoc(path3);
+			end;
+			
+			if not inRange(User, -121489, 236779, -3608, 1500) then
+				continue;
+				
+			while not User.Dead and (countItems(GALLINS_OAK_WAND) = 1) do
+			begin
+				if NpcList.ByID(SPIRIT_OF_MIRRORS3, npc) then
+				begin
+					Engine.SetTarget(npc);
+					equipItem(GALLINS_OAK_WAND);
+					Engine.Attack;
+					Engine.UseSkill(1177);
+				end;
+			end;
+			
+			if (countItems(GALLINS_OAK_WAND) = 0) then
+			begin
+				QuestStatus := 4;
+				updateState('Quests', QUEST_NAME + ' state', 4);
+			end;
+
+		end;
+		4 :
+		begin
+		if toRightCity(TALKING_ISLAND) and not inRange(User, -90344, 248472, -3568, 4000) then
+		begin
+			moveToLoc(startPath);
+				
+			if not startDialog(GALLINT) then
+				continue;
+				
+			Engine.DlgSel(1);
+			Engine.DlgSel(1);
+			Engine.DlgSel(1); 
+	
+			if not (Engine.QuestStatus(QUEST_ID, 1)) then
+			begin
+				QuestStatus := -1;
+				updateState('Quests', QUEST_NAME + ' state', -1);
+				updateState('Current state', 'Should take newbie quest', 'true');
+			end;	
+		end;	
+		end;
+			
+		
+		
+		
+	//end of case
+	end;
+	delay(300);
+	end;
+end;
+
+procedure initArrays;
+begin
+
+	SetLength(startPath, 10, 3);        
+		
+	writeToArray(startPath[0], -83976, 244632, -3712);
+	writeToArray(startPath[1], -82760, 244696, -3712);
+	writeToArray(startPath[2], -82408, 245112, -3712);
+	writeToArray(startPath[3], -82795, 246073, -3645);
+	writeToArray(startPath[4], -84448, 248926, -3314);
+	writeToArray(startPath[5], -85652, 249699, -3344);
+	writeToArray(startPath[6], -86813, 250312, -3508);
+	writeToArray(startPath[7], -88255, 249224, -3559);
+	writeToArray(startPath[8], -88944, 248817, -3552);
+	writeToArray(startPath[9], -90292, 248312, -3552);
+	
+	SetLength(path1, 15, 3);
+
+	writeToArray(path1[0], -90344, 248472, -3552);
+	writeToArray(path1[1], -90010, 249312, -3552);
+	writeToArray(path1[2], -89481, 250277, -3552);
+	writeToArray(path1[3], -88699, 250413, -3563);
+	writeToArray(path1[4], -88081, 250542, -3591);
+	writeToArray(path1[5], -87869, 250942, -3605);
+	writeToArray(path1[6], -87752, 252888, -3648);
+	writeToArray(path1[7], -88521, 253091, -3626);
+	writeToArray(path1[8], -89627, 252849, -3516);
+	writeToArray(path1[9], -91058, 252267, -3405);
+	writeToArray(path1[10], -92492, 251981, -3440);
+	writeToArray(path1[11], -93351, 251653, -3473);
+	writeToArray(path1[12], -95358, 250272, -3573);
+	writeToArray(path1[13], -96842, 248504, -3584);
+	writeToArray(path1[14], -97000, 248296, -3584);
+	
+	SetLength(path2, 3, 3);
+
+	writeToArray(path2[0], -99976, 236776, -3504);
+	writeToArray(path2[1], -100023, 235829, -3440);
+	writeToArray(path2[2], -99896, 234872, -3304);
+	
+	
+	SetLength(path3, 10, 3);
+	writeToArray(path3[0], -113453, 244581, -3363);
+	writeToArray(path3[1], -114408, 245320, -3264);
+	writeToArray(path3[2], -115176, 245032, -3168);
+	writeToArray(path3[3], -116792, 244076, -3183);
+	writeToArray(path3[4], -118108, 243363, -3159);
+	writeToArray(path3[5], -118633, 242118, -3225);
+	writeToArray(path3[6], -119890, 240047, -3222);
+	writeToArray(path3[7], -119890, 240047, -3222);
+	writeToArray(path3[8], -120939, 239258, -3258);
+	writeToArray(path3[9], -121489, 236779, -3608);
+
+	
+end; 	
+
+function SpiritOfMirrorsDone;
+begin
+	Result := getState('Quests', QUEST_NAME + ' state', -1) = -1;
+end;
+begin
+end.

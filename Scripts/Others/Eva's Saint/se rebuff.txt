@@ -1,0 +1,741 @@
+uses
+	Classes, SysUtils;
+	
+type
+	TCharFunctor = function(actor: TL2Char): boolean;
+	
+const
+	wcEffectsCount = 11;
+	eeEffectsCount = 1;
+	seEffectsCount = 1;
+	tankEffectsCount = 1;
+	olEffectsCount = 1;
+	healEffectsCount = 2;
+	herbEffectsCount = 6;
+	
+	wcEffects: array[0..(wcEffectsCount - 1)] of integer = (1007, 1519, 1518, 1309, 1252, 1251, 1308, 1253, 1310, 1390, 1229);
+	eeEffects: array[0..(eeEffectsCount - 1)] of integer = (1073);
+	seEffects: array[0..(seEffectsCount - 1)] of integer = (-1);
+	tankEffects: array[0..(tankEffectsCount - 1)] of integer = (982);
+	olEffects: array[0..(olEffectsCount - 1)] of integer = (-1);
+	healEffects: array[0..(healEffectsCount - 1)] of integer = (1401, 1218);
+	herbEffects: array[0..(herbEffectsCount - 1)] of integer = (2282, 2284, 2514, 2246, 2280, 2512{, 2513}); //atk speed, critical atk, critical atk pwr, pwr, pwr, doubt   
+	
+	healPercent = 70;
+	awaitTime = 5 * 1000;
+
+var
+	dispelList: TStringList;
+
+//common	
+
+function isCasting(obj: TL2Live): boolean;
+begin
+	Result := (obj.Cast.EndTime > 0);
+end;
+
+function partyCount(functor: TCharFunctor; withMe: boolean = false): integer;
+var
+	i: integer;
+begin
+	Result := 0;
+	
+	if (Party.Chars.Count = 0) then
+		exit;
+		
+	for i:=0 to Party.Chars.Count-1 do
+		if (functor(Party.Chars.Items(i))) then
+			inc(Result);
+			
+	if (withMe) and functor(User) then
+		if functor(User) then
+			inc(Result);
+			
+end;
+
+function partyFind(functor: TCharFunctor; withMe: boolean = false): TList; overload;
+var
+	i: integer;
+begin
+	Result := TList.Create;
+	
+	if (Party.Chars.Count = 0) then
+		exit;
+	
+	for i:=0 to Party.Chars.Count-1 do
+		if (functor(Party.Chars.Items(i))) then
+			Result.add(Party.Chars.Items(i));
+	
+	if withMe and functor(User) then
+		Result.add(User);
+
+end;
+
+function getPartyMember(functor: TCharFunctor; withMe: boolean = false): TL2Live;
+var
+i: integer;
+begin
+Result := nil;
+for i:=0 to Party.Chars.Count-1 do
+	begin
+	if (functor(Party.Chars.Items(i))) then
+	begin
+			Result := Party.Chars.Items(i);
+			break;
+	end;
+	end;
+	if (withMe) and functor(User) then
+		Result := User;
+end;
+
+function partyFind(functor: TCharFunctor; weightFunctor: TCharFunctor; withMe: boolean = false): TList; overload; 
+var
+	i, j: integer;
+begin
+	Result := TList.Create;
+	
+	if (Party.Chars.Count = 0) then
+		exit;
+	
+	for i:=0 to Charlist.Count-1 do
+		if functor(Charlist.Items(i)) then
+			Result.add(Charlist.Items(i));
+	
+	if withMe and functor(User) then
+		Result.add(User);
+		
+	for i:=Result.count-1 downto 0  do
+	begin
+		for j:=0 to i-1 do
+		begin
+			if (not weightFunctor(TL2Char(Result.Items(j))) and weightFunctor(TL2Char(Result.Items(j+1)))) then
+				Result.Exchange(j, j+1);
+		end;
+	end;
+
+end;
+
+//
+function ifThen(val: boolean; ifTrue: integer; ifFalse: integer): integer;
+begin
+	if val then
+		Result := ifTrue
+	else
+		Result := ifFalse;
+end;
+
+function liveToChar(actor: TL2Live):TL2Char;
+var
+	char: tl2char;
+begin
+	if (actor <> User) then
+		Charlist.byName(actor.name, Result)
+	else
+		Result := User;
+end;
+
+function skillCoolTime(ID: integer): integer;
+var
+	skill: TL2Skill;
+begin
+	if Skilllist.byID(id, skill) then
+		Result := skill.Endtime
+	else  
+		Result := -1;	
+end;
+
+function effectTime(actor: TL2Live; effect: integer): Cardinal;
+var
+	tmpEffect: TL2Effect;
+begin
+	if (actor.Buffs.ByID(effect, tmpEffect)) then
+		Result := tmpEffect.EndTime
+	else
+		Result := 0;
+end;
+
+function skillLevel(ID: integer): integer;
+var
+	eff: TL2Effect;
+begin
+	Result := ifThen(SkillList.ById(ID, eff), eff.Level, 0);
+end;
+
+function itemCount(ID: integer): integer;
+var
+	tmpItem: TL2Item;
+begin
+	if (Inventory.User.ByID(Id, tmpItem)) then
+		Result := tmpItem.Count
+	else
+		Result := 0;
+end;
+
+//common
+function fManaCheck(manaPerCount: integer): boolean;
+var
+	effect: TL2Effect;
+begin
+	Result := (User.Buffs.ByID(1533, effect) or User.Buffs.ByID(1532, effect) or User.Buffs.ByID(3282, effect) or (User.MP > manaPerCount));
+end;
+
+function fBuffable(actor: TL2Live): boolean;
+var
+	effect: TL2Effect;
+begin
+	Result := not User.Dead and not actor.Dead and (User.DistTo(actor) < 700) and not isMedused(actor) and not actor.Buffs.ByID(1422, effect){ and (getIgnoreTime(actor) < GetTickCount)};
+end;
+
+function fHealable(actor: TL2Live): boolean;
+begin
+	Result := not User.Dead and not actor.Dead and (User.DistTo(actor) < 900) and not isMedused(actor) and not isInvincible(actor){ and (getIgnoreTime(actor) < GetTickCount + 7 * 1000)};
+end;
+
+function fShouldCast(actor: TL2Live; hpAmount: integer = 30; mpAmount: integer = 10): boolean;
+begin
+	Result := not actor.Dead and (actor.HP > hpAmount) and fManaCheck(mpAmount) and not isSilenced(actor) and not isDisabled(actor) and not isInvincible(actor) and (effectTime(User, 1520) = 0) and not User.Sitting;
+end;
+	
+function isStunned(obj: TL2Live): boolean;
+begin
+	Result := obj.abnormalid = 64;
+end;
+
+function isTranced(obj: TL2Live): boolean;
+begin
+	Result := obj.abnormalid = 128;
+end;
+
+function isAffraid(obj: TL2Live): boolean;
+begin
+	Result := obj.abnormalid = 16; 
+end;
+
+function isMedused(obj: TL2Live): boolean;
+begin
+	Result := obj.abnormalid = 2048;
+end;
+
+function isAnchored(obj: TL2Live): boolean;
+begin
+	Result := obj.abnormalid = 1024; 
+end;
+
+function isBleeding(obj: TL2Live): boolean;
+begin
+	Result := obj.abnormalid = 1; 
+end;
+
+function isRooted(obj: TL2Live): boolean;
+begin
+	Result := obj.abnormalid = 512;
+end;
+
+function isDeathMark(obj: TL2Live): boolean;
+begin
+	Result := obj.abnormalid = 1073741824;
+end;
+
+function isSilenced(obj: TL2Live): boolean;
+begin
+	Result := obj.abnormalid = 256;
+end;
+
+function isRealTarget(obj: TL2Live): boolean;
+begin
+	Result := obj.abnormalid = 536870912; 
+end;
+
+function isUltimateDefense(obj: TL2Live): boolean;
+begin
+	Result := obj.abnormalid = 134217728;
+end;
+
+function isShadowed(obj: TL2Live): boolean;
+begin
+	Result := obj.abnormalid = 1048576;
+end;
+
+//effs
+function isInvincible(obj: TL2Live): boolean;
+var
+	buffsTemp: TL2Effect;
+begin
+	Result := obj.Buffs.ByID(1418, buffsTemp) or obj.Buffs.ByID(1427, buffsTemp) or
+		obj.Buffs.ByID(1505, buffsTemp) or obj.Buffs.ByID(3158, buffsTemp) or
+		obj.Buffs.ByID(655, buffsTemp) or obj.Buffs.ByID(5576, buffsTemp) or
+		obj.Buffs.ByID(1540, buffsTemp) or obj.Buffs.ByID(837, buffsTemp);
+end;
+
+function isDisabled(obj: TL2Live): boolean;	
+var
+	buffsTemp: TL2Effect;
+begin
+	Result := isStunned(obj) or isMedused(obj) 
+	or isTranced(obj) or isAnchored(obj) or isAffraid(obj) or
+	obj.Buffs.ByID(1376, buffsTemp);
+end;
+
+function isSealOfLimit(obj: TL2Live): boolean;
+var
+	eff: TL2Buff;
+begin
+	Result := obj.Buffs.ById(1509, eff) and (eff <> nil) and (eff.endtime > 480);
+end;	
+
+
+//etc
+function isRechargeable(actor: TL2Char; mpVal: integer; dist: integer): boolean;
+begin
+Result := not (actor.ClassID = 30)
+	and not (actor.ClassID = 43)
+	and not (actor.ClassID = 105)
+	and not (actor.ClassID = 112)
+	and not actor.Dead
+	and (User.DistTo(actor) < dist)
+	and (actor.mp < mpVal)
+	and not isMedused(actor)
+	and not isInvincible(actor);
+end;
+
+//functors
+
+function fHasClarity(actor: TL2Live): boolean;
+begin
+	Result := (effectTime(actor, 1397) > 60000) or (effectTime(actor, 22267) > 60000) 
+				or (effectTime(actor, 2889) > 60000)
+				or (effectTime(actor, 22069) > 60000)
+				or (effectTime(actor, 5647) > 60000); 
+end;
+
+function fHasResistShock(actor: TL2Live): boolean;
+begin
+	Result := (effectTime(actor, 1259) > 60000);
+end;
+
+function fHasMentalShield(actor: TL2Live): boolean;
+begin
+	Result := (effectTime(actor, 1035) > 60000);
+end;
+
+function fHasWildMagic(actor: TL2Live): boolean;
+begin
+	Result := (effectTime(actor, 1303) > 60000)
+				or (effectTime(actor, 5646) > 60000)
+				or (effectTime(actor, 22070) > 60000)
+				or (effectTime(actor, 2890) > 60000);
+end;
+
+function fHasConcentration(actor: TL2Live): boolean;
+begin
+	Result := (effectTime(actor, 1078) > 60000);
+end;
+
+function fClarityClass(actor: TL2Char): boolean;
+begin
+	Result := isMage(actor) or isHealer(actor) or isWarrior(actor) or isRoque(actor) or isBard(actor) or isEnchanter(actor);
+end;
+
+function fWildMagicClass(actor: TL2Char): boolean;
+begin
+	Result := isMage(actor) or isHealer(actor) or isSummoner(actor);
+end;
+
+function fConcentrationClass(actor: TL2Char): boolean;
+begin
+	Result := isMage(actor) or isHealer(actor) or isSummoner(actor);
+end;
+
+//rebuff
+function pClarityF(actor: TL2Char): boolean;
+begin
+	Result := fBuffable(actor) and not fHasClarity(actor) and fClarityClass(actor);
+end;
+
+function pMentalF(actor: TL2Char): boolean;
+begin
+	Result := fBuffable(actor) and not fHasMentalShield(actor);
+end;
+
+function pResistShockF(actor: TL2Char): boolean;
+begin
+	Result := fBuffable(actor) and not fHasResistShock(actor);
+end;
+
+function pWildMagicF(actor: TL2Char): boolean;
+begin
+	Result := fBuffable(actor) and not fHasWildMagic(actor) and fWildMagicClass(actor);
+end;
+
+function pSpiritF(actor: TL2Char): boolean;
+begin
+	Result := fBuffable(actor) and not fHasSpirit(actor);
+end;
+
+function pConcentrationF(actor: TL2Char): boolean;
+begin
+	Result := fBuffable(actor) and not fHasConcentration(actor) and fConcentrationClass(actor);
+end;
+
+function fHasNoble(actor: TL2Live) : boolean; 	
+begin
+	Result :=  ((effectTime(actor, 1323) > 60000) or (effectTime(actor, 1410) > 60000));
+end;
+
+function fHasSpirit(actor: TL2Live) : boolean;
+begin
+	Result :=  ((effectTime(actor, 1354) > 60000) or (effectTime(actor, 1362) > 60000) or (effectTime(actor, 1415) > 60000));
+end;
+
+function pNobleF(actor: TL2Char): boolean;
+begin
+	Result := fBuffable(actor) and not fHasNoble(actor);
+end;
+
+//recharge
+function pBardRechF(actor: TL2Live): boolean;
+begin
+	Result := isBard(liveToChar(actor)) and isRechargeable(liveToChar(actor), 40, 400);
+end;
+
+function pMageRechF(actor: TL2Live): boolean;
+begin
+	Result := isMage(liveToChar(actor)) and isRechargeable(liveToChar(actor), 70, 400);
+end;
+
+function pCardiRechF(actor: TL2Live): boolean;
+begin
+	Result := isHealer(liveToChar(actor)) and isRechargeable(liveToChar(actor), 70, 500);
+end;
+
+function pWarriorRechF(actor: TL2Live): boolean;
+begin
+	Result := isWarrior(liveToChar(actor)) and isRechargeable(liveToChar(actor), 30, 400);
+end;
+
+//etc v2
+
+function isHealer(obj: TL2Char): boolean;
+begin
+	Result := ((obj.ClassID = 30)
+		or (obj.ClassID = 43)
+		or (obj.ClassID = 16) 
+		or (obj.ClassID = 105) 
+		or (obj.ClassID = 112)
+		or (obj.ClassID = 146)
+		or (obj.ClassID = 179)
+		or (obj.ClassID = 180)
+		or (obj.ClassID = 181)
+		);  
+end;
+
+function isMage(obj: TL2Char): boolean;
+begin
+	Result := (
+	(obj.ClassID = 12)  //neckromancer
+		or (obj.ClassID = 13)  //sorcerer
+		or (obj.ClassID = 27)  //spellsinger
+		or (obj.ClassID = 40)  //spellhawler
+		or (obj.ClassID = 128) //m soulbreaker
+		or (obj.ClassID = 129) //f soulbreaker
+		or (obj.ClassID = 94) {archmage}
+		or (obj.ClassID = 95) {soultaker}
+		or (obj.ClassID = 103) {mystic muse}
+		or (obj.ClassID = 110) {storm screamer}
+		or (obj.ClassID = 133) {female soul hound}
+		or (obj.ClassID = 132) {male soul hound}
+		or (obj.ClassID = 166) {archamge}
+		or (obj.ClassID = 167) {soultaker}
+		or (obj.ClassID = 168) {mystic muse}
+		or (obj.ClassID = 169) {storm screamer}
+		or (obj.ClassID = 170) {soul hound}
+		or (obj.ClassID = 143)
+		); 
+end;
+
+function isWarrior(obj: TL2Char): boolean;
+begin
+	Result :=  ((obj.ClassID = 3)
+		or (obj.ClassID = 2) {gladiator} 
+		or (obj.ClassID = 3) {warlord} 
+		or (obj.ClassID = 46) {destroyer} 
+		or (obj.ClassID = 48) {monk} 
+		or (obj.ClassID = 127) {berserker}  
+		or (obj.ClassID = 88) {duelist} 
+		or (obj.ClassID = 89) {deadnought}
+		or (obj.ClassID = 113) {titan}
+		or (obj.ClassID = 114) {grand khautari}
+		or (obj.ClassID = 117) {forutne seeker}
+		or (obj.ClassID = 118) {maestro}
+		or (obj.ClassID = 131) {doombringer}
+		or (obj.ClassID = 152)
+		or (obj.ClassID = 153)
+		or (obj.ClassID = 154)
+		or (obj.ClassID = 155)
+		or (obj.ClassID = 156)
+		or (obj.ClassID = 157)
+		or (obj.ClassID = 140)
+		); 
+end;
+
+function isArcher(obj: TL2Char): boolean;
+begin
+	Result := ((obj.ClassID = 92) {sagittarius} 
+	or (obj.ClassID = 102) {moonlight sentinel}
+	or (obj.ClassID = 109) {ghost sentinel}
+	or (obj.ClassID = 134) {trickster}
+	or (obj.ClassID = 162)
+	or (obj.ClassID = 163)
+	or (obj.ClassID = 164)
+	or (obj.ClassID = 165)
+	or (obj.ClassID = 142)
+	); 
+end;
+
+
+function isRoque(obj: TL2Char): boolean;
+begin
+	Result :=  ((obj.ClassID = 101) {wind rider} 
+		or (obj.ClassID = 108) {ghost hunter}
+		or (obj.ClassID = 93) {adventurer}
+		or (obj.ClassID = 141)
+		or (obj.ClassID = 158)
+		or (obj.ClassID = 159)
+		or (obj.ClassID = 160)
+		or (obj.ClassID = 161)
+		); 
+end;
+
+function isSummoner(obj: TL2Char): boolean;
+begin
+	Result := (
+		(obj.ClassID = 96) {arcana lord}
+		or (obj.ClassID = 104) {elemental summoner}
+		or (obj.ClassID = 111) {phantom summoner}
+		or (obj.ClassID = 176)
+		or (obj.ClassID = 177)
+		or (obj.ClassID = 178)
+		or (obj.ClassID = 145)
+		);
+end;
+
+function isKnight(obj: TL2Char): boolean;
+begin
+	Result := ((obj.ClassID = 90) {phoenix knight}
+		or (obj.ClassID = 91) {hell knight}
+		or (obj.ClassID = 99) {eva templar}				
+		or (obj.ClassID = 106) {shillien templar}
+		or (obj.ClassID = 148)
+		or (obj.ClassID = 149)
+		or (obj.ClassID = 150)
+		or (obj.ClassID = 151)
+		or (obj.ClassID = 139)
+		);
+end;
+
+function isBard(obj: TL2Char): boolean;
+begin
+	Result := (
+		(obj.ClassID = 21)
+		or (obj.ClassID = 34)
+		or (obj.ClassID = 100) {sword muse}
+		or (obj.ClassID = 107)
+		); {spectral dancer}
+end;
+
+function isEnchanter(obj: TL2Char): boolean;
+begin
+	Result := (
+		(obj.ClassID = 51)
+		or (obj.ClassID = 52)
+		or (obj.ClassID = 115) {dominator}
+		or (obj.ClassID = 116) {doomcryer}				
+		or (obj.ClassID = 136)
+		or (obj.ClassID = 171)
+		or (obj.ClassID = 172)
+		or (obj.ClassID = 173)
+		or (obj.ClassID = 174)
+		or (obj.ClassID = 175)
+		or (obj.ClassID = 144)
+		);{judicator}
+end;
+
+//heal
+function pShouldHealF(actor: TL2Live): boolean;
+begin
+	Result := fHealable(actor)
+		and (actor.HP < ifThen(isSealOfLimit(actor), 20, healPercent))
+		and (actor.HP > 5);
+end;
+
+//acting 
+function isContains(arr: array of integer; arrSize: integer; obj: integer): boolean; overload;
+var
+	i: integer;
+begin
+	Result := false;
+	
+	if arrSize = 0 then
+		exit;
+	
+	for i:=0 to arrSize-1 do
+	begin
+		if arr[i] = obj then
+		begin
+			Result := true;
+			exit;
+		end;
+	end;
+end;
+	
+function pIsHealingF(actor: TL2Live): boolean;
+begin
+	Result := isHealer(TL2Char(actor)) and (actor.Cast.EndTime > 0)
+		and pShouldHealF(actor.target)
+		and ((isContains(healEffects, healEffectsCount, actor.cast.ID)
+		and (actor.target = getPartyMember(pShouldHealF, false)))
+		or (actor.Cast.ID = 1402));
+end;
+
+//threads
+procedure rechargeProc;
+begin
+	{while Engine.Status = lsOnline do
+	begin
+		delay(50);
+	
+		if (party.chars.count = 0) then
+		begin
+			delay(10000);
+			continue;
+		end;
+	
+		if (skillCoolTime(1013) > 950) then
+		begin
+			delay(skillCoolTime(1013) - 850); 
+			continue;
+		end;
+	
+		if isCasting(User) then
+			continue;
+			
+		if Assigned(getPartyMember(pBardRechF)) and fShouldCast(User, 60, 10) then
+		begin
+			doCast(getPartyMember(pBardRechF), $73);
+			continue;
+		end;
+	
+		if Assigned(getPartyMember(pCardiRechF)) and fShouldCast(User, 60, 10) then
+		begin
+			doCast(getPartyMember(pCardiRechF), $73);
+			continue;
+		end;
+		
+		if Assigned(getPartyMember(pMageRechF)) and fShouldCast(User, 60, 10) then
+		begin
+			doCast(getPartyMember(pMageRechF), $73);
+			continue;
+		end;
+		
+		if Assigned(getPartyMember(pWarriorRechF)) and fShouldCast(User, 60, 10) then
+		begin
+			doCast(getPartyMember(pWarriorRechF), $73);
+			continue;
+		end;
+			
+	end;}
+end;
+
+procedure rebufProc;
+begin
+while Engine.Status = lsOnline do
+begin
+	delay(250);
+	
+	if isCasting(User) then
+		continue;
+	
+	if (Assigned(getPartyMember(pClarityF, true)) and fShouldCast(User, 60, 10) and (itemCount(3031) > 4)) then
+	begin
+		Engine.SetTarget(getPartyMember(pClarityF, true));
+		Engine.UseSkill(1397);
+		delay(200);
+		delay(User.Cast.EndTime + 200);
+		continue;
+	end;
+	
+	if (Assigned(getPartyMember(pMentalF, true)) and fShouldCast(User, 10, 5)) then
+	begin
+		Engine.SetTarget(getPartyMember(pMentalF, true));
+		Engine.UseSkill(1035);
+		delay(200);
+		delay(User.Cast.EndTime + 200);
+		continue;
+	end;
+	
+	if (Assigned(getPartyMember(pResistShockF, true)) and fShouldCast(User, 60, 10)) then
+	begin
+		Engine.SetTarget(getPartyMember(pResistShockF, true));
+		Engine.UseSkill(1259);
+		delay(200);
+		delay(User.Cast.EndTime + 200);
+		continue;
+	end;
+	
+	if (Assigned(getPartyMember(pWildMagicF, true)) and fShouldCast(User, 60, 10)) then
+	begin
+		Engine.SetTarget(getPartyMember(pWildMagicF, true));
+		Engine.UseSkill(1303);
+		delay(200);
+		delay(User.Cast.EndTime + 200);
+		continue;
+	end;
+	
+	if (Assigned(getPartyMember(pConcentrationF, true)) and fShouldCast(User, 60, 10)) then
+	begin
+		Engine.SetTarget(getPartyMember(pConcentrationF, true));
+		Engine.UseSkill(1078);
+		delay(200);
+		delay(User.Cast.EndTime + 200);
+		continue;
+	end;
+	
+	if (Assigned(getPartyMember(pSpiritF, true)) and fShouldCast(User, 60, 10)) then
+	begin
+		Engine.SetTarget(getPartyMember(pSpiritF, true));
+		Engine.UseSkill(1354);
+		delay(200);
+		delay(User.Cast.EndTime + 200);
+		continue;
+	end;
+	
+	if (Assigned(getPartyMember(pNobleF, true)) and fShouldCast(User, 10, 5) and (itemCount(3031) > 5)) then
+	begin
+		Engine.SetTarget(getPartyMember(pNobleF, true));
+		Engine.UseSkill(1323);
+		delay(200);
+		delay(User.Cast.EndTime + 200);
+		continue;
+	end;
+	
+	end;
+end;
+
+procedure healProc;
+begin
+{while Engine.Status = lsOnline do
+begin
+	delay(50);
+
+	if (skillCoolTime(1401) > 1000) or isCasting(User) then
+		continue;
+
+	if (partyCount(pIsHealingF) = 0) and Assigned(getPartyMember(pShouldHealF, true)) and fShouldCast(User, 60, 10) and (itemCount(3031) > 0)  then
+		doCast(getPartyMember(pShouldHealF, true), $70);
+	
+end;}
+end;
+
+begin
+  script.newThread(@rebufProc);
+end.

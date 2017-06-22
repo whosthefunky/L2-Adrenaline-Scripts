@@ -1,0 +1,4227 @@
+uses
+	SysUtils, Classes, SettingsModule, ModuleFunctions,
+	Functions;
+  
+type
+	TCity = (DWARVEN = 0, ORC = 1, DARK_ELVEN = 2, ELVEN = 3, KAMAEL = 4,
+	TALKING_ISLAND = 5, HEINE = 6, DION = 7, GIRAN = 8, ADEN = 9, GODDARD = 10,
+	GLUDIO = 11, GLUDIN = 12, SHTUTTGART = 13, RUNE = 14, OREN = 15, HUNTER = 15, NON_CITY = 17);
+	
+	TSecondClass = (NONE, FIGHTER, MAGE, WARRIOR, KNIGHT, ROGUE, HEALER, ENCHANTER, SUMMONER, WIZARD);
+	TClassType = record
+		isMage: boolean;
+		secondClass: TSecondClass;
+	end;
+	
+	//DimensionArray = array of array of integer;
+	IntArr = array of integer;
+	CardArr = array of cardinal;
+	ITEM_TYPE = (WEAPON, ARMOR, ACCESSORY);
+	
+	TFarmZone = record
+		range: integer;
+		mili: integer;
+	end;	
+	
+	TCity2 = record
+		Enum: TCity;
+		ID: integer;
+		Name: String;
+		gateKeeperID: integer;
+		supplyManagerID: integer;
+		newbieBufferID: integer;
+		pathToBuffer: DimensionArray;
+		pathToSupply: DimensionArray;
+		GateKeepersString: String;
+	end;
+
+const
+  Reciver = 'RevReSeller';
+  afterDeathEvtDelay = 30;
+	SCROLL_TO_KAMAEL_VILLAGE = 9716;
+	KAMAEL_NEWBIE_GUIDE = 32135;
+	TCities : array[0..17] of TCity = (DWARVEN, ORC, DARK_ELVEN, ELVEN, KAMAEL,
+	TALKING_ISLAND, HEINE, DION, GIRAN, ADEN, GODDARD,
+	GLUDIO, GLUDIN, SHTUTTGART, RUNE, OREN, HUNTER, NON_CITY);
+	MARCELA = 32173;
+	BENIS = 32170;
+	NIKA = 32167;
+	ERINU = 32164;
+	CASCA = 32139;
+	ELIAS = 30050;
+	YOHANES = 30032;
+	
+	GIANT_SPIDER = 20103;
+	
+	ROXXY = 30006; //averia |50124 ; orig | 30006
+	
+	//items
+	POISON_SAC = 703;
+	FEVER_MEDICINE = 704;
+
+		//NPC
+	KENDELL = 30218;
+	//QuestItem
+	KENDELLS_1ST_ORDER = 1836;
+	KENDELLS_2ST_ORDER = 1837;
+	KENDELLS_3ST_ORDER = 1838;
+	KENDELLS_4ST_ORDER = 1839;
+	KENDELLS_5ST_ORDER = 1840;
+	KENDELLS_6ST_ORDER = 1841;
+	KENDELLS_7ST_ORDER = 1842;
+	KENDELLS_8ST_ORDER = 1843;
+	KABOO_CHIEFS_1_STTORQUE = 1844;
+	KABOO_CHIEFS_2_STTORQUE = 1845;
+	RED_SUNSET_SWORD = 981;
+	RED_SUNSET_STAFF = 754;
+	//NPC
+	KABOO_CHIEF_UOPH = 27059;
+	KABOO_CHIEF_KRACHA = 27060;
+	KABOO_CHIEF_BATOH = 27061;
+	KABOO_CHIEF_TANUKIA = 27062;
+	KABOO_CHIEF_TUREL = 27064;
+	KABOO_CHIEF_ROKO = 27065;
+	KABOO_CHIEF_KAMUT = 27067;
+	KABOO_CHIEF_MURTIKA = 27068;
+
+
+	MANUEL = 30293;
+	ALLANA = 30424;
+	PERRIN = 30428;
+	RAYMOND = 30289;
+	TAMIL = 27035;
+	LIZARD_WARRIOR = 27032;
+	LIZARD_SOLDIER = 27033;
+	LIZARD_SOLDIER2 = 27034;
+	//quest items
+	CRYSTAL_MEDALLION = 1231;
+	SWINDLERS_MONEY = 1232;
+	ALLANAS_DIARY = 1233;
+	LIZARD_CAPTIAN_ORDER = 1234;	
+	LEAF_OF_ORACLE = 1235;
+	HALF_DIARY = 1236;
+	TAMILS_NECKLACE = 1275;
+
+	MOIRA = 31979;
+	KARUDA = 32017;
+	
+	BILIA = 31964; //averia |50124 ; orig | 31964
+
+	LIVINA = 30572;
+	
+	TAMILA = 30576; //averia |50124 ; orig | 30576
+	//GkDlg  = 'Телепортироваться';
+	GkDlg  = 'Телепортация';
+	CityNames : array[0..16] of string = ('dwarven village','orc village','dark elf village','elf village','kamael village','talking island',
+	'heine','dion','giran','aden','goddard','gludio','gludin','schuttgart','rune','oren','hunter village');
+
+	nbArr : array[0..8] of integer = (30598, 30599, 30600, 30601, 30602, 32135, 31076, 31077, 32327);
+	spArr : array[0..16] of integer = (30519, 30561, 30137, 30150, 32167, 30004, 30893, 30063, 30081, 30893, 31263, 30254, 30313, 31952, 31307, 30180, 30301);	
+	//loc end
+	
+	{
+    Array with all the locations to which the gatekeeper of a city can teleport
+    }
+    GateKeepers : array[0..16] of integer = (30540, 30576, 30134, 30146, 32163, 30006, 30899, 30059, 30080, 30848, 31275, 30256, 30320, 31964, 31320, 30177, 30233);
+    GateKeepers1 : array[0..16] of integer = (50124, 50124, 50124, 50124, 50124, 50124, 50124, 50124, 50124, 50124, 50124, 50124, 50124, 50124, 50124, 50124, 50124);
+    TPDelay = 1000;
+    GateKeepersStrings   : array[0..16] of string = (
+      'gludio,gludin,schuttgart,"dark elf village","talking island","elf village","orc village","kamael village","abandoned coal mines","eastern mining zone","western mining zone","mithril mines w","mithril mines e"', //dwarven
+      'gludio,gludin,schuttgart,"dark elf village","dwarven village","talking island","elf village","kamael village","immortal plateau","cave of trials","fozen waterfall"', //orc
+      'gludio,gludin,"dwarven village","talking island","orc village","kamael village","dark forest","swampland","spider nest","neutral zone"', //darkelven
+      'gludio,gludin,"dwarven village","talking island","orc village","kamael village","elven forest","elven fortress","neutral zone"', //elven
+      'gludio,gludin,aden,"talking island","dark elf village","elf village","orc village","stronghold 1","stronghold 2","stronghold 3","isle of souls harbor"', //kamael
+      'gludin,"dark elf village","dwarven village","elf village","orc village","kamael village","elven ruins","singing waterfall","northen territory","obelisk of victory"', //talking island
+      'giran,oren,dion,aden,goddard,rune,schuttgart,gludio,"giran harbor","field of silence","field of whispers","alligator island","garden of eva","isle of prayer"', //heine
+      'giran,heine,gludio,goddard,rune,schuttgart,aden,oren,"cruma marshland","cruma tower","fortress of resistance","plains of dion","bee hive","tanor canyon"', //dion
+      'oren,heine,dion,goddard,rune,schuttgart,gludio,aden,"giran harbor","hardins private academy","devils isle","breka stronghold"', //giran
+      'goddard,oren,giran,heine,schuttgart,dion,gludio,rune,"kamael village","hunter village","coliseum","forsaken plains","seal of shilen","forest of mirrors","blazing swamp","field of massacre","ancient battleground","silent valley","tower of insolence","giant cave"', //aden
+      'gludio,giran,dion,rune,heine,schuttgart,aden,oren,"varka","ketra","hot springs","wall of argos","monastery of silence","forge of gods"', //goddard
+      'schuttgart,heine,aden,oren,dion,goddard,giran,rune,gludin,"elf village","dark elf village","dwarven village","orc village","kamael village","ruins of agony","ruins of despair","ant nest","windawood manor"', //gludio
+      'gludio,"talking island","elf village","dark elf village","dwarven village","orc village","kamael village","langk lizardman dwellings","windmill hill","fellmere harvesting grounds","forgotten temple","orc barracks","windy hill",wasteland,"red rock ridge"', //gludin
+      'rune,goddard,aden,oren,heine,giran,dion,gludio,"orc village","dwarven village","den of evil","plunderous plains","iceman hat","crypts of disgrace","pavel ruines","mithril mines"', //schuttgart
+      'goddard,gludio,giran,dion,heine,schuttgart,aden,oren,"wild beast pastues","valley of saints","forest of the dead","swamp of screams","monasterty of silence","stakato nest","primeval isle wharf"', //rune
+      'aden,giran,rune,goddard,heine,dion,schuttgart,gludio,"ivory tower","hunter village","hardins private academy","sel mahum west","sel mahum south","sel mahum center","plains of the lizardmen","outlaw forest","sea of spores"', //oren
+      'aden,oren,"hardins private academy","enchanted valley south","enchanted valley north","forest of mirrors","dragon valley","antharas lair","ivory tower"' //hunter
+	);
+	
+	//users start
+	CLASS_TYPE : array[0..136] of TClassType = (
+	(isMage: false; secondClass: FIGHTER), //0
+	(isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: WARRIOR), (isMage: false; secondClass: WARRIOR), (isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: KNIGHT), (isMage: false; secondClass: KNIGHT), (isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: ROGUE), (isMage: false; secondClass: ROGUE), //1 => 9
+	(isMage: true; secondClass: MAGE), (isMage: true; secondClass: MAGE), (isMage: true; secondClass: WIZARD), (isMage: true; secondClass: WIZARD), (isMage: true; secondClass: SUMMONER), (isMage: true; secondClass: MAGE), (isMage: true; secondClass: HEALER), (isMage: true; secondClass: ENCHANTER), //10 => 17
+	(isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: KNIGHT), (isMage: false; secondClass: ENCHANTER), (isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: ROGUE), (isMage: false; secondClass: ROGUE), //18 => 24
+	(isMage: true; secondClass: MAGE), (isMage: true; secondClass: MAGE), (isMage: true; secondClass: WIZARD), (isMage: true; secondClass: SUMMONER), (isMage: true; secondClass: MAGE), (isMage: true; secondClass: HEALER), //25 => 30
+	(isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: KNIGHT), (isMage: false; secondClass: ENCHANTER), (isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: ROGUE), (isMage: false; secondClass: ROGUE), //31 => 37
+	(isMage: true; secondClass: MAGE), (isMage: true; secondClass: MAGE), (isMage: true; secondClass: WIZARD), (isMage: true; secondClass: SUMMONER), (isMage: true; secondClass: MAGE), (isMage: true; secondClass: HEALER), //38 => 43
+	(isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: WARRIOR), (isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: WARRIOR), //44 => 48
+	(isMage: true; secondClass: MAGE), (isMage: true; secondClass: MAGE), (isMage: true; secondClass: ENCHANTER), (isMage: true; secondClass: ENCHANTER), //49 => 52
+	(isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: WARRIOR), (isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: WARRIOR), //53 => 57
+	(isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), //58 => 87 DUMMY//88 => 93
+	(isMage: false; secondClass: WARRIOR), (isMage: false; secondClass: WARRIOR), (isMage: false; secondClass: KNIGHT), (isMage: false; secondClass: KNIGHT), (isMage: false; secondClass: ROGUE), (isMage: false; secondClass: ROGUE), //87 => 93
+	(isMage: true; secondClass: WIZARD), (isMage: true; secondClass: WIZARD), (isMage: true; secondClass: SUMMONER), (isMage: true; secondClass: HEALER), (isMage: true; secondClass: SUMMONER), //94 => 98
+	(isMage: false; secondClass: KNIGHT), (isMage: false; secondClass: ENCHANTER), (isMage: false; secondClass: ROGUE), (isMage: false; secondClass: ROGUE), //99 => 102
+	(isMage: true; secondClass: WIZARD), (isMage: true; secondClass: SUMMONER), (isMage: true; secondClass: HEALER), //103 => 105
+	(isMage: false; secondClass: KNIGHT), (isMage: false; secondClass: ENCHANTER), (isMage: false; secondClass: ROGUE), (isMage: false; secondClass: ROGUE), //106 => 109
+	(isMage: true; secondClass: WIZARD), (isMage: true; secondClass: SUMMONER), (isMage: true; secondClass: HEALER), //110 => 112
+	(isMage: false; secondClass: WARRIOR), (isMage: false; secondClass: WARRIOR), //113 => 114
+	(isMage: true; secondClass: ENCHANTER), (isMage: true; secondClass: ENCHANTER), //115 => 116
+	(isMage: false; secondClass: WARRIOR), (isMage: false; secondClass: WARRIOR), //117 => 118
+	(isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), (isMage: false; secondClass: NONE), //119 => 122
+	(isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: FIGHTER), //123 => 136
+	(isMage: false; secondClass: WARRIOR), //127
+	(isMage: true; secondClass: WIZARD), (isMage: true; secondClass: WIZARD), //128 => 129 | SLB!!! in original they are WARRIORs
+	(isMage: false; secondClass: ROGUE), (isMage: false; secondClass: WARRIOR), //130 => 131
+	(isMage: true; secondClass: WIZARD), (isMage: true; secondClass: WIZARD), //132 => 133 | SLB!!! in original they are WARRIORs
+	(isMage: false; secondClass: ROGUE), (isMage: false; secondClass: ENCHANTER), (isMage: false; secondClass: ENCHANTER) //134 => 136	
+	);
+	WOODENBREASTPLATE = 23;
+	WOODENGAITERS = 2386;
+	//LEATHERTUNIC = 429; for mages
+	//LEATHERSTOCKINGS = 464;
+	WOODENHELMET = 43;
+	LEATHERSHOES = 37;
+	GLOVES = 49;
+	COUPON = 7832;
+	//users end
+	RAGARA = 32163;
+	HILLSOFGOLDMONSTERCLAW = 9796;
+	
+	
+var
+	buffCheckId: integer; //config
+	Settings: TSettings;
+	effectsArray: array of integer;
+	
+	list: TNpcList;
+
+	iCity : TCity;
+	
+	tmpItem: tl2item;
+	tmpeff: tl2effect;
+	tmpobj: tl2live;
+	tmpint: integer;
+	tmpint1: integer;
+	items : array of cardinal;
+	
+	//loc module
+	language: boolean = false;
+	talkingIslandToBuffer: DimensionArray;
+	heineToBuffer: DimensionArray;
+	dionToBuffer: DimensionArray;
+	giranToBuffer: DimensionArray;
+	adenToBuffer: DimensionArray;
+	goddardToBuffer: DimensionArray;
+	gludioToBuffer: DimensionArray;
+	gludinToBuffer: DimensionArray;
+	shtuttgartToBuffer: DimensionArray;
+	runeToBuffer: DimensionArray;
+	orenToBuffer: DimensionArray;
+	kamaelToBuffer: DimensionArray;
+	
+	talkingIslandToSupply: DimensionArray;
+	heineToSupply: DimensionArray;
+	dionToSupply: DimensionArray;
+	giranToSupply: DimensionArray;
+	adenToSupply: DimensionArray;
+	goddardToSupply: DimensionArray;
+	gludioToSupply: DimensionArray;
+	gludinToSupply: DimensionArray;
+	shtuttgartToSupply: DimensionArray;
+	runeToSupply: DimensionArray;
+	orenToSupply: DimensionArray;
+	kamaelToSupply: DimensionArray;
+	
+	giranToWeaponShop: DimensionArray;
+	giranToAccessoryShop: DimensionArray;
+	giranToArmorShop: DimensionArray;
+	//loc module end
+	
+	//users
+	FIGHTER_NEWBIE_EQUIP : array[0..4] of integer = (23, 2386, 43, 37, 49);
+	//users end
+
+	//suply
+	suplyQuestStatus: integer;
+	QuestStatus: integer;
+	
+	suplyCheckStartPath: DimensionArray; //to marcela
+	suplyCheck1: DimensionArray; //from marcela to benis
+	suplyCheck2: DimensionArray; //from marcela to Nika	
+	suplyCheck3: DimensionArray; //from marcela to Erinu	
+	suplyCheck4: DimensionArray; //from marcela to Casca
+
+	HeadStartPath: DimensionArray; //to marcela
+	headPath1: DimensionArray; //from marcela gk
+	headPath2: DimensionArray; //from strong hold 1 to farm loc
+
+	CureStartPath: DimensionArray; //null
+	curePath1: DimensionArray; //to spiders spawn
+	curePath2: DimensionArray; //to yohanes
+	curePath3: DimensionArray; //to elias
+
+	SkirmishStartPath: DimensionArray; //
+	SkirmishPath1: DimensionArray; //
+	SkirmishPath2: DimensionArray; //
+	SkirmishPath3: DimensionArray; //
+	SkirmishPath4: DimensionArray; //
+	SkirmishPath5: DimensionArray; //
+	SkirmishPath6: DimensionArray; //
+	SkirmishPath7: DimensionArray; //
+	SkirmishPath8: DimensionArray; //
+
+	pathOfTheElvenOracleQuestState: integer;
+	
+	pathOfTheElvenOracleArray1: DimensionArray;
+	pathOfTheElvenOracleArray2: DimensionArray;
+	pathOfTheElvenOracleArray3: DimensionArray;
+	pathOfTheElvenOracleArray4: DimensionArray;
+	pathOfTheElvenOracleArray5: DimensionArray;
+
+
+	OQuestStatus: integer;
+	
+	walkStartPath: DimensionArray; //to start npc
+	path1: DimensionArray; 
+	path2: DimensionArray; 
+	path3: DimensionArray;
+
+	OminusStartPath: DimensionArray; //to start npc
+	walkPath1: DimensionArray; 
+	walkPath2: DimensionArray; 
+	walkPath3: DimensionArray; 
+
+	
+	//suply end
+	afterDeathEvt: int64;
+
+//npc
+function getNpcById(id: integer): TL2Live;
+var
+	res: TL2Live;
+begin
+	res := nil;
+	NpcList.ById(id, res);
+	Result := res;
+end;
+
+
+function startDialog(npcId: integer): boolean;
+begin
+	if getNpcById(npcId) = nil then
+	begin
+		Result := false;
+		exit;
+	end;
+	Result := Engine.MoveTo(getNpcById(npcId));
+	Result := Engine.SetTarget(npcId);
+	Result := Engine.DlgOpen();
+end;
+	
+//users
+procedure equipNewbieItems;
+var
+	i: integer;
+	item: TL2Item;
+begin
+	for i:=0 to 4 do
+	begin
+		if Inventory.User.ByID(FIGHTER_NEWBIE_EQUIP[i], item) and not item.Equipped then
+			Engine.UseItem(FIGHTER_NEWBIE_EQUIP[i]);
+	end;
+end;
+
+function isMage1: boolean;
+begin
+	Result := CLASS_TYPE[User.ClassID].isMage;
+end;
+
+procedure getCoupon;
+var	
+	couponItem: TL2Item;
+begin
+	if getNewbieBuffer = nil then
+	begin
+		print('Cant get coupon, newbie npc not found');
+		exit;
+	end;
+	
+	Engine.MoveTo(getNewbieBuffer);
+	Engine.SetTarget(getNewbieBuffer);
+	Engine.DlgOpen;
+	delay(500);
+	Engine.DlgSel(6);//in HF 6
+	delay(500);
+	Engine.DlgSel(1);
+	delay(500);
+	
+	if Inventory.User.ByID(COUPON, couponItem) then
+	begin
+		updateState('Etc', 'Is coupon taken', 'true');
+	end;
+	
+end;
+
+procedure getShadowWeaponFromCoupon(itemID: integer);
+var
+	item: TL2Item;
+begin
+					
+	Engine.MoveTo(getNewbieBuffer);
+	Engine.SetTarget(getNewbieBuffer);
+	Engine.DlgOpen;
+	Engine.DlgSel(6); //in hf 6
+	Engine.DlgSel(2);
+	
+	Engine.NpcExchange(itemID, 1);
+    
+	while not Inventory.User.ByID(itemID, item) do
+	begin
+		delay(30);
+	end;
+end;
+
+function couponItemTaken(itemID: integer): boolean;
+var
+	item: TL2Item;
+begin
+	Result := Inventory.User.ByID(itemID, item);
+end;
+
+procedure equipItem(itemID: integer);
+var
+	item: TL2Item;
+begin
+	if Inventory.User.ByID(itemID, item) and not item.Equipped then
+		Engine.UseItem(itemID);	
+end;
+
+function getNewbieBuffer: TL2Live;
+var
+	i: integer;
+begin
+	for i:=0 to 8 do
+	begin
+		if NpcList.ByID(nbArr[i], Result) then
+			exit;
+	end;
+	Result := nil;
+end;
+
+function countItems(itemID: integer): integer;
+var
+	i: integer;
+	counter: integer;
+begin
+	counter := 0;
+	for i:=0 to Inventory.User.Count-1 do
+	begin
+		if Inventory.User.Items(i).ID = itemID then
+			inc(counter);
+	end;
+	Result := counter;
+end;
+
+function shouldRebuff: boolean;
+var
+	eff: TL2Buff;
+	i: integer;
+	effectsArray: array of integer; 
+begin
+	effectsArray := getArray('Effects', 'Effects for check', '0;0');
+	
+	if Length(effectsArray) = 0 then
+	begin
+		Result := false;
+		exit;
+	end;
+	
+	for i:=0 to Length(effectsArray)-1 do
+	begin
+		if not User.Buffs.ByID(effectsArray[i], eff) or (User.Buffs.ByID(effectsArray[i], eff) and (eff.EndTime <= 10 * 1000)) then
+		begin
+			print(effectsArray[i]);
+			Result := true;
+			exit;
+		end;
+	end;	
+	
+	Result := false;
+end;
+//users end	
+	
+//loc start
+function GetCity(shouldGoHome: boolean = true; inCityEvt: boolean = false): TCity; //todo hunter, dark elv, 
+var
+	City : TCity;
+begin
+	City := NON_CITY;
+	if User.InRange(-83139,243145,User.Z,5000,10) then City := TALKING_ISLAND;
+	if User.InRange(116569,-179848,User.Z,7000,10) then City := DWARVEN;
+	if User.InRange(-118184, 46024, User.Z, 7000, 10) then City := KAMAEL;
+	if User.InRange(44904, 49800, User.Z, 7000, 10) then City := ELVEN;
+	if User.InRange(-45080, -113576, User.Z, 5000, 10) then City := ORC;
+	if User.InRange(111434,220426,User.Z,5000,10)  then City := HEINE;
+	if User.InRange(18591,144708,User.Z,5000,10)   then City := DION;
+	if User.InRange(82876,148960,User.Z,5000,10)   then City := GIRAN;
+	if User.InRange(147509,25928,User.Z,5000,10)   then City := ADEN;
+	if User.InRange(147713,-56202,User.Z,5000,10)  then City := GODDARD;
+	if User.InRange(-14236,123701,User.Z,5000,10)  then City := GLUDIO;
+	if User.InRange(-81311,152663,User.Z,5000,10)  then City := GLUDIN;
+	if User.InRange(88041,-142502,User.Z,5000,10)  then City := SHTUTTGART;
+	if User.InRange(43838,-48222,User.Z,5000,10) or User.InRange(38283,-48102,User.Z,5000,10) then City := RUNE;
+	if User.InRange(81150,54880,User.Z,5000,10)    then City := OREN;
+	if (City = NON_CITY) and (shouldGoHome) then
+	begin
+		GoHome(-1, -1, inCityEvt);
+		City := GetCity;
+	end;
+	Result := City;
+end;
+
+procedure GoHome(ItemID: integer = -1; skillID: integer = -1; Val: boolean = false);
+var
+	Skill: TL2Skill;
+	Item: TL2Item;
+	Item2: TL2Item;
+	Item3: TL2Item;
+begin
+  if not User.Dead then
+  begin
+	if (itemID <> -1) and Inventory.User.ByID(itemID, Item) then
+	begin
+		Engine.UseItem(itemID);
+		delay(100);
+		delay(User.Cast.EndTime + 100);
+	end;
+
+	if (skillID <> -1) and (itemID = -1) and SkillList.ByID(skillID, Skill) then
+	begin
+		Engine.UseSkill(skillID);
+		delay(100);
+		delay(User.Cast.EndTime + 100);
+	end;
+	
+	if (skillID = -1) and (itemID = -1)
+	  and Inventory.User.ByID(10650, Item) and not Inventory.User.ByID(760, Item2) then
+	begin
+		Engine.UseItem(Item); //Свиток телепорта
+		delay(10 * 1000);
+	end;
+
+	if (skillID = -1) and (itemID = -1)
+	and Inventory.User.ByID(12753, Item) and not Inventory.User.ByID(10650, Item3)  and not Inventory.User.ByID(760, Item2) then
+	begin
+		Engine.UseItem(Item); //Свиток телепорта
+		delay(10 * 1000);
+	end;
+
+	if (skillID = -1) and (itemID = -1) and Inventory.User.ByID(760, Item) then
+	begin
+		Engine.UseItem(Item); //Свиток телепорта
+		delay(10 * 1000);
+	end;
+	
+	{if (skillID = -1) and (itemID = -1) and not Inventory.User.ByID(736, Item) then
+	begin
+		delay(100);
+		delay(5 * 60 * 1000);
+	end;  }
+	
+  end else
+	Engine.GoHome;
+
+  Delay(5 * 1000);
+  if Val then
+	InCity;
+end;
+
+//Пушествия от места появления в городе до гейткипера города.
+procedure InCity;
+var
+	City: TCity;
+	Moved : Boolean;
+	NPC: TL2Npc;
+	NewResp : TStringList;
+begin
+  City := GetCity;
+  //-----------------------talking island--------------------------------
+  if City = TALKING_ISLAND then begin
+    if User.InRange(-84376,242824,-3712, 3000, 150) then begin
+      Engine.MoveTo(-84184, 243448, -3712);
+      Engine.MoveTo(-84280, 243800, -3712);
+      Engine.MoveTo(-84552, 244040, -3712);
+      Engine.MoveTo(-84184, 244504, -3712);
+    end;
+    if User.InRange(-84200, 244488, -3728, 500, 150) then Moved := true;
+  end;
+  //-----------------------heine--------------------------------
+  if City = HEINE then begin
+    if User.InRange(110912,219584,-3664, 250, 150) then begin
+      Engine.MoveTo(110912,219584,-3664);
+      Engine.MoveTo(111154,219735,-3675);
+      Engine.MoveTo(111176,219395,-3546);
+      Engine.MoveTo(111387,219387,-3544);
+    end;
+    if User.InRange(111888,219584,-3664, 250, 150) then begin
+      Engine.MoveTo(111888,219584,-3664);
+      Engine.MoveTo(111617,219703,-3674);
+      Engine.MoveTo(111591,219371,-3544);
+      Engine.MoveTo(111387,219387,-3544);
+    end;
+    if User.InRange(112064,219792,-3664, 250, 150) then begin
+      Engine.MoveTo(112064,219792,-3664);
+      Engine.MoveTo(111665,219800,-3675);
+      Engine.MoveTo(111580,219329,-3544);
+      Engine.MoveTo(111387,219387,-3544);
+    end;
+    if User.InRange(107808,217856,-3672, 250, 150) then begin
+      Engine.MoveTo(107808,217856,-3672);
+      Engine.MoveTo(107769,217524,-3673);
+      Engine.MoveTo(109387,217509,-3747);
+      Engine.MoveTo(110037,217257,-3747);
+      Engine.MoveTo(110072,219029,-3477);
+      Engine.MoveTo(111202,219130,-3541);
+      Engine.MoveTo(111387,219387,-3544);
+    end;
+    if User.InRange(110896,220768,-3664, 250, 150) then begin
+      Engine.MoveTo(110896,220768,-3664);
+      Engine.MoveTo(111191,219621,-3663);
+      Engine.MoveTo(111190,219303,-3544);
+      Engine.MoveTo(111387,219387,-3544);
+    end;
+    if User.InRange(110768,219824,-3664, 250, 150) then begin
+      Engine.MoveTo(110768,219824,-3664);
+      Engine.MoveTo(111163,219763,-3671);
+      Engine.MoveTo(111199,219319,-3544);
+      Engine.MoveTo(111387,219387,-3544);
+    end;
+    if User.InRange(112112,220576,-3664, 250, 150) then begin
+      Engine.MoveTo(112112,220576,-3664);
+      Engine.MoveTo(111600,219666,-3669);
+      Engine.MoveTo(111586,219305,-3544);
+      Engine.MoveTo(111387,219387,-3544);
+    end;
+    if User.InRange(110688,220576,-3664, 250, 150) then begin
+      Engine.MoveTo(110688,220576,-3664);
+      Engine.MoveTo(111183,219655,-3669);
+      Engine.MoveTo(111201,219292,-3544);
+      Engine.MoveTo(111387,219387,-3544);
+    end;
+    if User.InRange(108032,218048,-3672, 250, 150) then begin
+      Engine.MoveTo(108032,218048,-3672);
+      Engine.MoveTo(107862,218003,-3673);
+      Engine.MoveTo(107840,217532,-3673);
+      Engine.MoveTo(109383,217465,-3747);
+      Engine.MoveTo(110036,217280,-3747);
+      Engine.MoveTo(110096,219040,-3478);
+      Engine.MoveTo(111086,219100,-3541);
+      Engine.MoveTo(111387,219387,-3544);
+    end;
+    if User.InRange(107568,218256,-3672, 250, 150) then begin
+      Engine.MoveTo(107568,218256,-3672);
+      Engine.MoveTo(107542,217872,-3673);
+      Engine.MoveTo(107840,217532,-3673);
+      Engine.MoveTo(109383,217465,-3747);
+      Engine.MoveTo(110036,217280,-3747);
+      Engine.MoveTo(110096,219040,-3478);
+      Engine.MoveTo(111086,219100,-3541);
+      Engine.MoveTo(111387,219387,-3544);
+    end;
+    if User.InRange(107552,218000,-3672, 250, 150) then begin
+      Engine.MoveTo(107552,218000,-3672);
+      Engine.MoveTo(107862,218003,-3673);
+      Engine.MoveTo(107840,217532,-3673);
+      Engine.MoveTo(109383,217465,-3747);
+      Engine.MoveTo(110036,217280,-3747);
+      Engine.MoveTo(110096,219040,-3478);
+      Engine.MoveTo(111086,219100,-3541);
+      Engine.MoveTo(111387,219387,-3544);
+    end;
+    if User.InRange(111856,220752,-3664, 250, 150) then begin
+      Engine.MoveTo(111856,220752,-3664);
+      Engine.MoveTo(111573,219730,-3675);
+      Engine.MoveTo(111589,219342,-3544);
+      Engine.MoveTo(111387,219387,-3544);
+    end;
+    if User.InRange(111387,219387,-3544, 250, 150) then Moved := true;
+  end;
+  //-----------------------dion--------------------------------
+  if City = DION then begin
+    if User.InRange(19134,144847,-3096, 250, 150) then begin
+      Engine.MoveTo(19134,144847,-3096);
+      Engine.MoveTo(18041,144052,-3057);
+      Engine.MoveTo(16727,144111,-2980);
+      Engine.MoveTo(15933,143331,-2771);
+      Engine.MoveTo(15628,142920,-2704);
+    end;
+    if User.InRange(18954,144428,-3096, 250, 150) then begin
+      Engine.MoveTo(18954,144428,-3096);
+      Engine.MoveTo(18600,144387,-3070);
+      Engine.MoveTo(17733,143924,-3037);
+      Engine.MoveTo(16711,144167,-2980);
+      Engine.MoveTo(16622,144034,-2932);
+      Engine.MoveTo(15963,143381,-2784);
+      Engine.MoveTo(15628,142920,-2704);
+    end;
+    if User.InRange(19012,145140,-3120, 250, 150) then begin
+      Engine.MoveTo(19012,145140,-3120);
+      Engine.MoveTo(19021,145126,-3123);
+      Engine.MoveTo(17600,145497,-3079);
+      Engine.MoveTo(16468,144129,-2964);
+      Engine.MoveTo(15628,142920,-2704);
+    end;
+    if User.InRange(19613,145607,-3104, 250, 150) then begin
+      Engine.MoveTo(19613,145607,-3104);
+      Engine.MoveTo(17638,145591,-3084);
+      Engine.MoveTo(16214,143659,-2863);
+      Engine.MoveTo(15628,142920,-2704);
+    end;
+    if User.InRange(18576,145136,-3104, 250, 150) then begin
+      Engine.MoveTo(18576,145136,-3104);
+      Engine.MoveTo(17727,145541,-3082);
+      Engine.MoveTo(16414,144174,-2969);
+      Engine.MoveTo(15628,142920,-2704);
+    end;
+    if User.InRange(17398,145456,-3048, 250, 150) then begin
+      Engine.MoveTo(17398,145456,-3048);
+      Engine.MoveTo(17727,145541,-3082);
+      Engine.MoveTo(16414,144174,-2969);
+      Engine.MoveTo(15628,142920,-2704);
+    end;
+    if User.InRange(17144,145055,-3024, 250, 150) then begin
+      Engine.MoveTo(17144,145055,-3024);
+      Engine.MoveTo(16350,143905,-2923);
+      Engine.MoveTo(15628,142920,-2704);
+    end;
+    if User.InRange(18078,145925,-3112, 250, 150) then begin
+      Engine.MoveTo(18078,145925,-3112);
+      Engine.MoveTo(16559,144353,-2987);
+      Engine.MoveTo(15628,142920,-2704);
+    end;
+    if User.InRange(19150,143941,-3056, 250, 150) then begin
+      Engine.MoveTo(19150,143941,-3056);
+      Engine.MoveTo(18112,145633,-3104);
+      Engine.MoveTo(17108,145059,-3031);
+      Engine.MoveTo(16469,144176,-2969);
+      Engine.MoveTo(15628,142920,-2704);
+    end;
+    if User.InRange(18512,145536,-3120, 250, 150) then begin
+      Engine.MoveTo(18512,145536,-3120);
+      Engine.MoveTo(17226,145360,-3048);
+      Engine.MoveTo(16419,143955,-2935);
+      Engine.MoveTo(15628,142920,-2704);
+    end;
+    if User.InRange(18717,145711,-3080, 250, 150) then begin
+      Engine.MoveTo(18717,145711,-3080);
+      Engine.MoveTo(17226,145360,-3048);
+      Engine.MoveTo(16419,143955,-2935);
+      Engine.MoveTo(15628,142920,-2704);
+    end;
+    if User.InRange(15628,142920,-2704, 250, 150) then Moved := true;
+  end;
+  //-----------------------giran--------------------------------
+  if CITY = giran then begin
+    if User.InRange(81376,148095,-3464, 250, 150) then begin
+      Engine.MoveTo(81376,148095,-3464);
+      Engine.MoveTo(81881,148025,-3467);
+      Engine.MoveTo(83027,148020,-3467);
+      Engine.MoveTo(83402,147946,-3403);
+    end;
+    if User.InRange(82292,149450,-3464, 250, 150) then begin
+      Engine.MoveTo(82292,149450,-3464);
+      Engine.MoveTo(82865,148876,-3467);
+      Engine.MoveTo(83054,148281,-3467);
+      Engine.MoveTo(83402,147946,-3403);
+    end;
+    if User.InRange(81562,147782,-3464, 250, 150) then begin
+      Engine.MoveTo(81562,147782,-3464);
+      Engine.MoveTo(82284,148077,-3467);
+      Engine.MoveTo(83077,148159,-3467);
+      Engine.MoveTo(83402,147946,-3403);
+    end;
+    if User.InRange(83409,148578,-3400, 250, 150) then begin
+      Engine.MoveTo(83409,148578,-3400);
+      Engine.MoveTo(83427,148206,-3403);
+      Engine.MoveTo(83402,147946,-3403);
+    end;
+    if User.InRange(81440,149119,-3464, 250, 150) then begin
+      Engine.MoveTo(81440,149119,-3464);
+      Engine.MoveTo(82200,149222,-3467);
+      Engine.MoveTo(82722,148485,-3467);
+      Engine.MoveTo(83087,148101,-3467);
+      Engine.MoveTo(83402,147946,-3403);
+    end;
+    if User.InRange(82496,148095,-3464, 250, 150) then begin
+      Engine.MoveTo(82496,148095,-3464);
+      Engine.MoveTo(83092,148094,-3467);
+      Engine.MoveTo(83402,147946,-3403);
+    end;
+    if User.InRange(83473,149223,-3400, 250, 150) then begin
+      Engine.MoveTo(83473,149223,-3400);
+      Engine.MoveTo(83355,148728,-3403);
+      Engine.MoveTo(83358,148292,-3403);
+      Engine.MoveTo(83402,147946,-3403);
+    end;
+    if User.InRange(82272,147801,-3464, 250, 150) then begin
+      Engine.MoveTo(82272,147801,-3464);
+      Engine.MoveTo(82565,148080,-3467);
+      Engine.MoveTo(83101,148099,-3467);
+      Engine.MoveTo(83402,147946,-3403);
+    end;
+    if User.InRange(82480,149087,-3464, 250, 150) then begin
+      Engine.MoveTo(82480,149087,-3464);
+      Engine.MoveTo(82623,148694,-3467);
+      Engine.MoveTo(83087,148157,-3467);
+      Engine.MoveTo(83402,147946,-3403);
+    end;
+    if User.InRange(81637,149427,-3464, 250, 150) then begin
+      Engine.MoveTo(81637,149427,-3464);
+      Engine.MoveTo(82229,149197,-3467);
+      Engine.MoveTo(82610,148669,-3467);
+      Engine.MoveTo(83088,148170,-3467);
+      Engine.MoveTo(83402,147946,-3403);
+    end;
+    if User.InRange(81062,148144,-3464, 250, 150) then begin
+      Engine.MoveTo(81062,148144,-3464);
+      Engine.MoveTo(81574,147997,-3467);
+      Engine.MoveTo(82302,147975,-3467);
+      Engine.MoveTo(83070,148109,-3467);
+      Engine.MoveTo(83402,147946,-3403);
+    end;
+    if User.InRange(83426,148835,-3400, 250, 150) then begin
+      Engine.MoveTo(83426,148835,-3400);
+      Engine.MoveTo(83422,148276,-3403);
+      Engine.MoveTo(83402,147946,-3403);
+    end;
+    if User.InRange(81033,148883,-3464, 250, 150) then begin
+      Engine.MoveTo(81033,148883,-3464);
+      Engine.MoveTo(81769,149191,-3467);
+      Engine.MoveTo(82322,149192,-3467);
+      Engine.MoveTo(82622,148656,-3467);
+      Engine.MoveTo(83079,148163,-3467);
+      Engine.MoveTo(83402,147946,-3403);
+    end;
+    if User.InRange(83415,148235,-3400, 250, 150) then begin
+      Engine.MoveTo(83415,148235,-3400);
+      Engine.MoveTo(83402,147946,-3403);
+    end;
+    if User.InRange(83402,147946,-3403,250,150) then Moved := true;
+  end;
+  //-----------------------aden--------------------------------
+  if CITY = ADEN then begin
+    if User.inrange(146811,27109,-2231,500)  then begin
+      Engine.MoveTo(146811,27109,-2231);
+      Engine.MoveTo(147289,26926,-2229);
+      Engine.MoveTo(147267,26400,-2185);
+      Engine.MoveTo(147266,26195,-2103);
+      Engine.MoveTo(147250,25969,-2039);
+      Engine.MoveTo(147206,25899,-2039);
+      Engine.MoveTo(147138,25906,-2039);
+    end;
+    if User.inrange(146810,28059,-2294,500)  then begin
+      Engine.MoveTo(146810,28059,-2294);
+      Engine.MoveTo(146847,27874,-2294);
+      Engine.MoveTo(147004,27611,-2294);
+      Engine.MoveTo(147004,27611,-2294);
+      Engine.MoveTo(147004,27611,-2232);
+      Engine.MoveTo(147244,26822,-2230);
+      Engine.MoveTo(147267,26400,-2185);
+      Engine.MoveTo(147266,26195,-2103);
+      Engine.MoveTo(147250,25969,-2039);
+      Engine.MoveTo(147206,25899,-2039);
+      Engine.MoveTo(147138,25906,-2039);
+    end;
+    if User.inrange(145686,21112,-2167,500)  then begin
+      Engine.MoveTo(145686,21112,-2167);
+      Engine.MoveTo(145697,21616,-2167);
+      Engine.MoveTo(145050,22609,-2167);
+      Engine.MoveTo(145218,23947,-2167);
+      Engine.MoveTo(146377,24455,-2039);
+      Engine.MoveTo(146484,25685,-2039);
+      Engine.MoveTo(147130,25700,-2039);
+      Engine.MoveTo(147112,25921,-2039);
+    end;
+    if User.inrange(148076,27069,-2231,500)  then begin
+      Engine.MoveTo(148076,27069,-2231);
+      Engine.MoveTo(147666,27110,-2230);
+      Engine.MoveTo(147308,26954,-2230);
+      Engine.MoveTo(147267,26400,-2185);
+      Engine.MoveTo(147266,26195,-2103);
+      Engine.MoveTo(147250,25969,-2039);
+      Engine.MoveTo(147206,25899,-2039);
+      Engine.MoveTo(147138,25906,-2039);
+    end;
+    if User.inrange(148949,21125,-2167,500)  then begin
+      Engine.MoveTo(148949,21125,-2167);
+      Engine.MoveTo(146122,21227,-2167);
+      Engine.MoveTo(145697,21616,-2167);
+      Engine.MoveTo(145050,22609,-2167);
+      Engine.MoveTo(145218,23947,-2167);
+      Engine.MoveTo(146377,24455,-2039);
+      Engine.MoveTo(146484,25685,-2039);
+      Engine.MoveTo(147130,25700,-2039);
+      Engine.MoveTo(147112,25921,-2039);
+    end;
+    if User.inrange(144549,22828,-2167,500)  then begin
+      Engine.MoveTo(144549,22828,-2167);
+      Engine.MoveTo(145697,21616,-2167);
+      Engine.MoveTo(145050,22609,-2167);
+      Engine.MoveTo(145218,23947,-2167);
+      Engine.MoveTo(146377,24455,-2039);
+      Engine.MoveTo(146484,25685,-2039);
+      Engine.MoveTo(147130,25700,-2039);
+      Engine.MoveTo(147112,25921,-2039);
+    end;
+    if User.inrange(144543,24666,-2167,500)  then begin
+      Engine.MoveTo(144543,24666,-2167);
+      Engine.MoveTo(145279,24307,-2167);
+      Engine.MoveTo(146377,24455,-2039);
+      Engine.MoveTo(146484,25685,-2039);
+      Engine.MoveTo(147130,25700,-2039);
+      Engine.MoveTo(147112,25921,-2039);
+    end;
+    if User.inrange(146497,30582,-2487,500)  then begin
+      Engine.MoveTo(146497,30582,-2487);
+      Engine.MoveTo(147058,30323,-2487);
+      Engine.MoveTo(147427,29959,-2487);
+      Engine.MoveTo(147427,29339,-2295);
+      Engine.MoveTo(147373,28351,-2294);
+      Engine.MoveTo(147100,27643,-2294);
+      Engine.MoveTo(147246,26930,-2230);
+      Engine.MoveTo(147267,26400,-2185);
+      Engine.MoveTo(147266,26195,-2103);
+      Engine.MoveTo(147250,25969,-2039);
+      Engine.MoveTo(147206,25899,-2039);
+      Engine.MoveTo(147138,25906,-2039);
+    end;
+    if User.inrange(144648,29158,-2487,500)  then begin
+      Engine.MoveTo(144648,29158,-2487);
+      Engine.MoveTo(144966,28868,-2487);
+      Engine.MoveTo(145110,27659,-2295);
+      Engine.MoveTo(146220,27622,-2231);
+      Engine.MoveTo(147108,27272,-2231);
+      Engine.MoveTo(147224,26929,-2230);
+      Engine.MoveTo(147267,26400,-2185);
+      Engine.MoveTo(147266,26195,-2103);
+      Engine.MoveTo(147250,25969,-2039);
+      Engine.MoveTo(147206,25899,-2039);
+      Engine.MoveTo(147138,25906,-2039);
+    end;
+    if User.inrange(150247,29109,-2487,500)  then begin
+      Engine.MoveTo(150247,29109,-2487);
+      Engine.MoveTo(149921,28836,-2487);
+      Engine.MoveTo(149859,28063,-2339);
+      Engine.MoveTo(149776,27675,-2295);
+      Engine.MoveTo(148731,27683,-2231);
+      Engine.MoveTo(148224,27383,-2231);
+      Engine.MoveTo(147306,26932,-2230);
+    end;
+    if User.inrange(147848,30309,-2487,500)  then begin
+      Engine.MoveTo(147848,30309,-2487);
+      Engine.MoveTo(147677,30089,-2487);
+      Engine.MoveTo(147462,29870,-2447);
+      Engine.MoveTo(147462,29413,-2295);
+      Engine.MoveTo(147335,28272,-2294);
+      Engine.MoveTo(147108,27664,-2294);
+      Engine.MoveTo(147194,26961,-2229);
+      Engine.MoveTo(147267,26400,-2185);
+      Engine.MoveTo(147266,26195,-2103);
+      Engine.MoveTo(147250,25969,-2039);
+      Engine.MoveTo(147206,25899,-2039);
+      Engine.MoveTo(147138,25906,-2039);
+    end;
+    if User.inrange(144651,26680,-2295,500)  then begin
+      Engine.MoveTo(144651,26680,-2295);
+      Engine.MoveTo(144681,27050,-2294);
+      Engine.MoveTo(144936,27135,-2295);
+      Engine.MoveTo(145145,27605,-2295);
+      Engine.MoveTo(146182,27682,-2231);
+      Engine.MoveTo(146921,27360,-2231);
+      Engine.MoveTo(147218,26948,-2229);
+      Engine.MoveTo(147267,26400,-2185);
+      Engine.MoveTo(147266,26195,-2103);
+      Engine.MoveTo(147250,25969,-2039);
+      Engine.MoveTo(147206,25899,-2039);
+      Engine.MoveTo(147138,25906,-2039);
+    end;
+    if User.inrange(148557,30461,-2487,500)  then begin
+      Engine.MoveTo(148557,30461,-2487);
+      Engine.MoveTo(148114,30076,-2487);
+      Engine.MoveTo(147453,30049,-2487);
+      Engine.MoveTo(147474,29710,-2368);
+      Engine.MoveTo(147397,28461,-2294);
+      Engine.MoveTo(147044,27389,-2231);
+      Engine.MoveTo(147242,26823,-2230);
+      Engine.MoveTo(147267,26400,-2185);
+      Engine.MoveTo(147266,26195,-2103);
+      Engine.MoveTo(147250,25969,-2039);
+      Engine.MoveTo(147206,25899,-2039);
+      Engine.MoveTo(147138,25906,-2039);
+    end;
+    if User.inrange(147971,27982,-2294,500)  then begin
+      Engine.MoveTo(147971,27982,-2294);
+      Engine.MoveTo(147846,27354,-2231);
+      Engine.MoveTo(147265,26878,-2230);
+      Engine.MoveTo(147267,26400,-2185);
+      Engine.MoveTo(147266,26195,-2103);
+      Engine.MoveTo(147250,25969,-2039);
+      Engine.MoveTo(147206,25899,-2039);
+      Engine.MoveTo(147138,25906,-2039);
+    end;
+    if User.InRange(147138,25906,-2039,250,150) then Moved := true;
+  end;
+  //-----------------------goddard--------------------------------
+  if CITY = GODDARD then begin
+    if User.InRange(146272, -58176, -2976, 250, 150) then begin // Near storage
+      Engine.MoveTo(147593, -58103, -3007);
+      Engine.MoveTo(147727, -57141, -2807);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(145264, -57680, -2976, 250, 150) then begin // Near storage 2
+      Engine.MoveTo(145588, -56926, -3007);
+      Engine.MoveTo(146673, -56095, -2807);
+      Engine.MoveTo(147543, -56054, -2807);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(145696, -57696, -2976, 250, 150) then begin // Near storage 3
+      Engine.MoveTo(145510, -56930, -3007);
+      Engine.MoveTo(146499, -56202, -2807);
+      Engine.MoveTo(147481, -56031, -2807);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(144944, -55392, -2976, 250, 150) then begin // The very edge
+      Engine.MoveTo(145153, -56813, -3007);
+      Engine.MoveTo(145569, -56855, -3007);
+      Engine.MoveTo(146467, -56271, -2807);
+      Engine.MoveTo(147566, -56034, -2807);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(144752, -56752, -2976, 250, 150) then begin // The very edge
+      Engine.MoveTo(145534, -56884, -3007);
+      Engine.MoveTo(146265, -56418, -2807);
+      Engine.MoveTo(147407, -56063, -2807);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    // East stairs
+    if User.InRange(149120, -58064, -2976, 250, 150 )then begin // score
+      Engine.MoveTo(147706, -58107, -3007);
+      Engine.MoveTo(147751, -56737, -2807);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(150400, -56752, -2976, 250, 150) then begin // The very edge
+      Engine.MoveTo(149935, -56870, -3007);
+      Engine.MoveTo(149139, -56390, -2807);
+      Engine.MoveTo(147929, -56063, -2807);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(150704, -55744, -2976, 250, 150) then begin // The very edge 2
+      Engine.MoveTo(149935, -56870, -3007);
+      Engine.MoveTo(149139, -56390, -2807);
+      Engine.MoveTo(147929, -56063, -2807);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    // North stairs
+    if User.InRange(147680, -58208, -2976, 250, 150) then begin // Bottom of the center stairs
+      Engine.MoveTo(147727, -57141, -2807);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(148288, -58304, -2976, 250, 150) then begin // Bottom center stairs slightly to the right
+      Engine.MoveTo(147738, -58050, -3007);
+      Engine.MoveTo(147727, -57141, -2807);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(147232, -58480, -2976, 250, 150) then begin  // Bottom center stairs to the left
+      Engine.MoveTo(147677, -58063, -3007);
+      Engine.MoveTo(147727, -57141, -2807);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(149088, -56256, -2776, 250, 150) then begin
+      Engine.MoveTo(147854, -56054, -2807);
+      Engine.MoveTo(147934, -55354, -2760);
+    end;
+    // Area
+    if User.InRange(146832, -55904, -2776, 250, 150) then begin // Area to the left of the stairs
+      Engine.MoveTo(147529, -56046, -2807);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(146368, -56256, -2776, 250, 150) then begin // Area to the left of the stairs 2
+      Engine.MoveTo(147529, -56046, -2807);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(147664, -56464, -2776, 250, 150) then begin // Center area
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(147680, -56928, -2776, 250, 150) then begin // Center area 2
+      Engine.MoveTo(147810, -56110, -2807);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(148560, -55904, -2776, 250, 150) then begin // Area to the right of the stairs
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(149872, -57424, -2976, 250, 150) then begin
+      Engine.MoveTo(149897, -56910, -2979);
+      Engine.MoveTo(149230, -56412, -2779);
+      Engine.MoveTo(147939, -55999, -2772);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(144960, -56224, -2976, 250, 150) then begin
+      Engine.MoveTo(145458, -56853, -2979);
+      Engine.MoveTo(146343, -56326, -2779);
+      Engine.MoveTo(147625, -55995, -2772);
+      Engine.MoveTo(147936, -55368, -2760); // Move near gk
+    end;
+    if User.InRange(144496, -55088, -2976, 250, 150) then begin
+      Engine.MoveTo(145327, -56873, -2979);
+      Engine.MoveTo(146337, -56445, -2779);
+      Engine.MoveTo(147533, -55963, -2766);
+      Engine.MoveTo(147936, -55368, -2760); // Move near gk
+    end;
+    if User.InRange(145392, -56960, -2976, 250, 150) then begin
+      Engine.MoveTo(146347, -56305, -2779);
+      Engine.MoveTo(147514, -56003, -2772);
+      Engine.MoveTo(147936, -55368, -2760); // Move near gk
+    end;
+    if User.InRange(147936, -55368, -2760, 250, 150) then Moved :=  true;
+  end;
+  //-----------------------gludio--------------------------------
+  if CITY = GLUDIO then begin
+    if User.InRange(-14704,122032,-3056, 250, 150) then begin
+      Engine.MoveTo(-14704,122032,-3056);
+      Engine.MoveTo(-14538,122671,-3116);
+      Engine.MoveTo(-14599,123458,-3113);
+      Engine.MoveTo(-14510,124033,-3125);
+    end;
+    if User.InRange(-13709,123563,-3112, 250, 150) then begin
+      Engine.MoveTo(-13709,123563,-3112);
+      Engine.MoveTo(-14115,123802,-3119);
+      Engine.MoveTo(-14510,124033,-3125);
+    end;
+    if User.InRange(-14465,124434,-3120, 250, 150) then begin
+      Engine.MoveTo(-14465,124434,-3120);
+      Engine.MoveTo(-14510,124033,-3125);
+    end;
+    if User.InRange(-13513,123752,-3112, 250, 150) then begin
+      Engine.MoveTo(-13513,123752,-3112);
+      Engine.MoveTo(-14245,123748,-3109);
+      Engine.MoveTo(-14510,124033,-3125);
+    end;
+    if User.InRange(-15564,123896,-3112, 250, 150) then begin
+      Engine.MoveTo(-15564,123896,-3112);
+      Engine.MoveTo(-14813,123869,-3124);
+      Engine.MoveTo(-14510,124033,-3125);
+    end;
+    if User.InRange(-14288,122752,-3112, 250, 150) then begin
+      Engine.MoveTo(-14288,122752,-3112);
+      Engine.MoveTo(-14525,123547,-3109);
+      Engine.MoveTo(-14510,124033,-3125);
+    end;
+    if User.InRange(-15314,124131,-3112, 250, 150) then begin
+      Engine.MoveTo(-15314,124131,-3112);
+      Engine.MoveTo(-14710,123973,-3122);
+      Engine.MoveTo(-14510,124033,-3125);
+    end;
+    if User.InRange(-14592,123232,-3112, 250, 150) then begin
+      Engine.MoveTo(-14592,123232,-3112);
+      Engine.MoveTo(-14510,124033,-3125);
+    end;
+    if User.InRange(-14510,124033,-3125, 250, 150) then Moved :=  true;
+  end;
+  //-----------------------gludin--------------------------------
+  if CITY = GLUDIN then begin
+    if User.InRange(-82909,150357,-3120, 250, 150) then begin
+      Engine.MoveTo(-82909,150357,-3120);
+      Engine.MoveTo(-82293,150405,-3127);
+      Engine.MoveTo(-81099,150292,-3048);
+      Engine.MoveTo(-81073,150110,-3042);
+    end;
+    if User.InRange(-83520,150560,-3120, 250, 150) then begin
+      Engine.MoveTo(-83520,150560,-3120);
+      Engine.MoveTo(-82640,150552,-3127);
+      Engine.MoveTo(-81440,150392,-3127);
+      Engine.MoveTo(-81054,150149,-3042);
+      Engine.MoveTo(-81073,150110,-3042);
+    end;
+    if User.InRange(-82195,150489,-3120, 250, 150) then begin
+      Engine.MoveTo(-82195,150489,-3120);
+      Engine.MoveTo(-81832,150490,-3101);
+      Engine.MoveTo(-81023,150193,-3042);
+      Engine.MoveTo(-81073,150110,-3042);
+    end;
+    if User.InRange(-80053,154348,-3168, 250, 150) then begin
+      Engine.MoveTo(-80053,154348,-3168);
+      Engine.MoveTo(-80686,153974,-3176);
+      Engine.MoveTo(-81784,153952,-3176);
+      Engine.MoveTo(-83049,153943,-3176);
+      Engine.MoveTo(-83023,152370,-3127);
+      Engine.MoveTo(-82637,151293,-3127);
+      Engine.MoveTo(-81296,150467,-3127);
+      Engine.MoveTo(-81042,150263,-3042);
+      Engine.MoveTo(-81073,150110,-3042);
+    end;
+    if User.InRange(-82035,152647,-3168, 250, 150) then begin
+      Engine.MoveTo(-82035,152647,-3168);
+      Engine.MoveTo(-82975,152676,-3176);
+      Engine.MoveTo(-82932,151752,-3127);
+      Engine.MoveTo(-81276,150510,-3127);
+      Engine.MoveTo(-81036,150260,-3042);
+      Engine.MoveTo(-81073,150110,-3042);
+    end;
+    if User.InRange(-83529,151205,-3120, 250, 150) then begin
+      Engine.MoveTo(-83529,151205,-3120);
+      Engine.MoveTo(-82130,150895,-3127);
+      Engine.MoveTo(-81088,150361,-3044);
+      Engine.MoveTo(-81073,150110,-3042);
+    end;
+    if User.InRange(-81721,151202,-3120, 250, 150) then begin
+      Engine.MoveTo(-81721,151202,-3120);
+      Engine.MoveTo(-81403,150675,-3127);
+      Engine.MoveTo(-81057,150318,-3042);
+      Engine.MoveTo(-81073,150110,-3042);
+    end;
+    if User.InRange(-82575,151025,-3120, 250, 150) then begin
+      Engine.MoveTo(-82575,151025,-3120);
+      Engine.MoveTo(-81540,150540,-3127);
+      Engine.MoveTo(-80989,150147,-3042);
+      Engine.MoveTo(-81073,150110,-3042);
+    end;
+    if User.InRange(-84064,150864,-3120, 250, 150) then begin
+      Engine.MoveTo(-84064,150864,-3120);
+      Engine.MoveTo(-83114,150635,-3127);
+      Engine.MoveTo(-81390,150478,-3127);
+      Engine.MoveTo(-81017,150133,-3042);
+      Engine.MoveTo(-81073,150110,-3042);
+    end;
+    if User.InRange(-82241,151163,-3120, 250, 150) then begin
+      Engine.MoveTo(-82241,151163,-3120);
+      Engine.MoveTo(-81391,150602,-3127);
+      Engine.MoveTo(-80999,150174,-3042);
+      Engine.MoveTo(-81073,150110,-3042);
+    end;
+    if User.InRange(-81787,150780,-3120, 250, 150) then begin
+      Engine.MoveTo(-81787,150780,-3120);
+      Engine.MoveTo(-81049,150378,-3042);
+      Engine.MoveTo(-81073,150110,-3042);
+    end;
+    if User.InRange(-81073,150110,-3042, 250, 150) then Moved := true;
+  end;
+  //-----------------------schuttgart--------------------------------
+  if CITY = SHTUTTGART then begin
+    if User.InRange(87184,-140256,-1536, 250, 150) then begin
+      Engine.MoveTo(87184,-140256,-1536);
+      Engine.MoveTo(87368,-140838,-1512);
+      Engine.MoveTo(87319,-141796,-1338);
+      Engine.MoveTo(87145,-142916,-1313);
+      Engine.MoveTo(87070,-143418,-1290);
+    end;
+    if User.InRange(87408,-142304,-1336, 250, 150) then begin
+      Engine.MoveTo(87408,-142304,-1336);
+      Engine.MoveTo(87145,-142916,-1313);
+      Engine.MoveTo(87070,-143418,-1290);
+    end;
+    if User.InRange(88240,-142736,-1336, 250, 150) then begin
+      Engine.MoveTo(88240,-142736,-1336);
+      Engine.MoveTo(87585,-142662,-1338);
+      Engine.MoveTo(87070,-143418,-1290);
+    end;
+    if User.InRange(85056,-141328,-1528, 250, 150) then begin
+      Engine.MoveTo(85056,-141328,-1528);
+      Engine.MoveTo(85181,-141845,-1539);
+      Engine.MoveTo(85804,-142279,-1339);
+      Engine.MoveTo(87157,-142636,-1338);
+      Engine.MoveTo(87070,-143418,-1290);
+    end;
+    if User.InRange(88624,-142480,-1336, 250, 150) then begin
+      Engine.MoveTo(88624,-142480,-1336);
+      Engine.MoveTo(87548,-142686,-1331);
+      Engine.MoveTo(87070,-143418,-1290);
+    end;
+    if User.InRange(86400,-142672,-1336, 250, 150) then begin
+      Engine.MoveTo(86400,-142672,-1336);
+      Engine.MoveTo(87143,-142570,-1338);
+      Engine.MoveTo(87070,-143418,-1290);
+    end;
+    if User.InRange(86560,-140320,-1536, 250, 150) then begin
+      Engine.MoveTo(86560,-140320,-1536);
+      Engine.MoveTo(87300,-140655,-1539);
+      Engine.MoveTo(87385,-141436,-1339);
+      Engine.MoveTo(87246,-142537,-1338);
+      Engine.MoveTo(87070,-143418,-1290);
+    end;
+    if User.InRange(88448,-140512,-1536, 250, 150) then begin
+      Engine.MoveTo(88448,-140512,-1536);
+      Engine.MoveTo(87410,-140642,-1539);
+      Engine.MoveTo(87299,-141493,-1338);
+      Engine.MoveTo(87291,-142607,-1338);
+      Engine.MoveTo(87070,-143418,-1290);
+    end;
+    if User.InRange(89712,-141472,-1528, 250, 150) then begin
+      Engine.MoveTo(89712,-141472,-1528);
+      Engine.MoveTo(89497,-141893,-1539);
+      Engine.MoveTo(88963,-142272,-1339);
+      Engine.MoveTo(87737,-142631,-1338);
+      Engine.MoveTo(87070,-143418,-1290);
+    end;
+    if User.InRange(87344,-141696,-1336, 250, 150) then begin
+      Engine.MoveTo(87344,-141696,-1336);
+      Engine.MoveTo(87354,-142594,-1338);
+      Engine.MoveTo(87070,-143418,-1290);
+    end;
+    if User.InRange(85472,-140752,-1536, 250, 150) then begin
+      Engine.MoveTo(85472,-140752,-1536);
+      Engine.MoveTo(85191,-141803,-1539);
+      Engine.MoveTo(85909,-142322,-1338);
+      Engine.MoveTo(87096,-142671,-1338);
+      Engine.MoveTo(87070,-143418,-1290);
+    end;
+    if User.InRange(89360,-140944,-1536, 250, 150) then begin
+      Engine.MoveTo(89360,-140944,-1536);
+      Engine.MoveTo(89539,-141762,-1539);
+      Engine.MoveTo(88910,-142276,-1339);
+      Engine.MoveTo(87637,-142734,-1332);
+      Engine.MoveTo(87070,-143418,-1290);
+    end;
+    if User.InRange(87776,-140384,-1536, 250, 150) then begin
+      Engine.MoveTo(87776,-140384,-1536);
+      Engine.MoveTo(87403,-140707,-1539);
+      Engine.MoveTo(87351,-141645,-1338);
+      Engine.MoveTo(87310,-142568,-1338);
+      Engine.MoveTo(87070,-143418,-1290);
+    end;
+    if User.InRange(84720,-141936,-1536, 250, 150) then begin
+      Engine.MoveTo(84720,-141936,-1536);
+      Engine.MoveTo(85201,-141842,-1539);
+      Engine.MoveTo(85807,-142262,-1339);
+      Engine.MoveTo(87116,-142704,-1338);
+      Engine.MoveTo(87070,-143418,-1290);
+    end;
+    if User.InRange(85968,-142384,-1336, 250, 150) then begin
+      Engine.MoveTo(85968,-142384,-1336);
+      Engine.MoveTo(87116,-142704,-1338);
+      Engine.MoveTo(87070,-143418,-1290);
+    end;
+    if User.InRange(87070,-143418,-1290, 250, 150) then Moved :=  true;
+  end;
+  //-----------------------rune--------------------------------
+  if CITY = RUNE then begin
+    if User.InRange(38608,-47168,896, 250, 150)
+    or User.InRange(38272,-49008,896, 250, 150)
+    or User.InRange(38752,-47792,896, 250, 150)
+    or User.InRange(38112,-49792,896, 250, 150)
+    or User.InRange(38848,-48640,896, 250, 150) then begin
+      Engine.MoveTo(39113,-48225,898);
+      Engine.MoveTo(38294,-48089,898);
+
+      NpcList.ByID(31698,NPC);
+      Engine.SetTarget(NPC);
+      Engine.DlgOpen;
+      Engine.DlgSel(1);
+      Engine.DlgSel(1);
+      Engine.CancelTarget;
+      Delay(3000);
+
+      Engine.MoveTo(39522,-48234,-784);
+      Engine.MoveTo(41591,-48221,-801);
+      Engine.MoveTo(43323,-48185,-795);
+      Engine.MoveTo(43827,-47698,-794);
+    end;
+    if User.InRange(44368,-50592,-792, 250, 150) then begin
+      Engine.MoveTo(44368,-50592,-792);
+      Engine.MoveTo(43997,-49427,-795);
+      Engine.MoveTo(43831,-48480,-795);
+      Engine.MoveTo(43827,-47698,-794);
+    end;
+    if User.InRange(44864,-47824,-792, 250, 150) then begin
+      Engine.MoveTo(44864,-47824,-792);
+      Engine.MoveTo(44025,-47893,-795);
+      Engine.MoveTo(43827,-47698,-794);
+    end;
+    if User.InRange(43536,-50416,-792, 250, 150) then begin
+      Engine.MoveTo(43536,-50416,-792);
+      Engine.MoveTo(43833,-49293,-795);
+      Engine.MoveTo(43847,-48397,-795);
+      Engine.MoveTo(43827,-47698,-794);
+    end;
+    if User.InRange(45632,-47968,-792, 250, 150) then begin
+      Engine.MoveTo(45632,-47968,-792);
+      Engine.MoveTo(44070,-47930,-795);
+      Engine.MoveTo(43827,-47698,-794);
+    end;
+    if User.InRange(45824,-49056,-792, 250, 150) then begin
+      Engine.MoveTo(45824,-49056,-792);
+      Engine.MoveTo(46022,-48351,-795);
+      Engine.MoveTo(45441,-48000,-795);
+      Engine.MoveTo(44189,-47900,-795);
+      Engine.MoveTo(43827,-47698,-794);
+    end;
+    if User.InRange(44000,-49952,-792, 250, 150) then begin
+      Engine.MoveTo(44000,-49952,-792);
+      Engine.MoveTo(43862,-48669,-795);
+      Engine.MoveTo(43827,-47698,-794);
+    end;
+    if User.InRange(43792,-48928,-792, 250, 150) then begin
+      Engine.MoveTo(43792,-48928,-792);
+      Engine.MoveTo(43827,-47698,-794);
+    end;
+    if User.InRange(45072,-49936,-792, 250, 150) then begin
+      Engine.MoveTo(45072,-49936,-792);
+      Engine.MoveTo(44258,-49647,-795);
+      Engine.MoveTo(43864,-48552,-795);
+      Engine.MoveTo(43827,-47698,-794);
+    end;
+    if User.InRange(43408,-51120,-792, 250, 150) then begin
+      Engine.MoveTo(43408,-51120,-792);
+      Engine.MoveTo(43805,-49830,-795);
+      Engine.MoveTo(43870,-48626,-795);
+      Engine.MoveTo(43827,-47698,-794);
+    end;
+    if User.InRange(43744,-47920,-792, 250, 150) then begin
+      Engine.MoveTo(43744,-47920,-792);
+      Engine.MoveTo(43827,-47698,-794);
+    end;
+    if User.InRange(43827,-47698,-794, 250, 150) then Moved :=  true;
+  end;
+  //-----------------------oren--------------------------------
+  if CITY = OREN then begin
+    if User.InRange(80334,54400,-1552, 250, 150) then begin
+      Engine.MoveTo(80334,54400,-1552);
+      Engine.MoveTo(80969,53698,-1558);
+      Engine.MoveTo(81540,53454,-1494);
+      Engine.MoveTo(82480,53340,-1494);
+      Engine.MoveTo(82950,53186,-1494);
+    end;
+    if User.InRange(82323,55466,-1520, 250, 150) then begin
+      Engine.MoveTo(82323,55466,-1520);
+      Engine.MoveTo(82403,54498,-1523);
+      Engine.MoveTo(82589,53861,-1486);
+      Engine.MoveTo(82950,53186,-1494);
+    end;
+    if User.InRange(82123,53535,-1488, 250, 150) then begin
+      Engine.MoveTo(82123,53535,-1488);
+      Engine.MoveTo(82950,53186,-1494);
+    end;
+    if User.InRange(80304,56241,-1552, 250, 150) then begin
+      Engine.MoveTo(80304,56241,-1552);
+      Engine.MoveTo(81470,55682,-1523);
+      Engine.MoveTo(82256,55294,-1523);
+      Engine.MoveTo(82510,54035,-1494);
+      Engine.MoveTo(82950,53186,-1494);
+    end;
+    if User.InRange(82445,56012,-1520, 250, 150) then begin
+      Engine.MoveTo(82445,56012,-1520);
+      Engine.MoveTo(82341,54950,-1523);
+      Engine.MoveTo(82574,53833,-1486);
+      Engine.MoveTo(82950,53186,-1494);
+    end;
+    if User.InRange(80054,53209,-1552, 250, 150) then begin
+      Engine.MoveTo(80054,53209,-1552);
+      Engine.MoveTo(80624,53611,-1558);
+      Engine.MoveTo(81772,53468,-1494);
+      Engine.MoveTo(82289,53472,-1494);
+      Engine.MoveTo(82950,53186,-1494);
+    end;
+    if User.InRange(80513,52980,-1552, 250, 150) then begin
+      Engine.MoveTo(80513,52980,-1552);
+      Engine.MoveTo(80165,53065,-1558);
+      Engine.MoveTo(80630,53610,-1558);
+      Engine.MoveTo(81688,53447,-1494);
+      Engine.MoveTo(82303,53338,-1494);
+      Engine.MoveTo(82950,53186,-1494);
+    end;
+    if User.InRange(80267,55497,-1552, 250, 150) then begin
+      Engine.MoveTo(80267,55497,-1552);
+      Engine.MoveTo(80359,54536,-1558);
+      Engine.MoveTo(80792,53785,-1558);
+      Engine.MoveTo(81495,53421,-1494);
+      Engine.MoveTo(82323,53362,-1494);
+      Engine.MoveTo(82950,53186,-1494);
+    end;
+    if User.InRange(79933,55752,-1552, 250, 150) then begin
+      Engine.MoveTo(79933,55752,-1552);
+      Engine.MoveTo(80349,55208,-1558);
+      Engine.MoveTo(80470,54217,-1558);
+      Engine.MoveTo(81053,53602,-1558);
+      Engine.MoveTo(81974,53465,-1494);
+      Engine.MoveTo(82950,53186,-1494);
+    end;
+    if User.InRange(80594,55837,-1552, 250, 150) then begin
+      Engine.MoveTo(80594,55837,-1552);
+      Engine.MoveTo(81899,55492,-1523);
+      Engine.MoveTo(82240,55142,-1523);
+      Engine.MoveTo(82531,53946,-1494);
+      Engine.MoveTo(82950,53186,-1494);
+    end;
+    if User.InRange(82213,53964,-1488, 250, 150) then begin
+      Engine.MoveTo(82213,53964,-1488);
+      Engine.MoveTo(82668,53709,-1486);
+      Engine.MoveTo(82950,53186,-1494);
+    end;
+    if User.InRange(83327,55410,-1520, 250, 150) then begin
+      Engine.MoveTo(83327,55410,-1520);
+      Engine.MoveTo(82607,55592,-1523);
+      Engine.MoveTo(82184,54809,-1523);
+      Engine.MoveTo(82563,53882,-1488);
+      Engine.MoveTo(82950,53186,-1494);
+    end;
+    if User.InRange(79706,52986,-1552, 250, 150) then begin
+      Engine.MoveTo(79706,52986,-1552);
+      Engine.MoveTo(80427,53549,-1558);
+      Engine.MoveTo(80812,53655,-1558);
+      Engine.MoveTo(81979,53439,-1494);
+      Engine.MoveTo(82950,53186,-1494);
+    end;
+    if User.InRange(82880,55390,-1520, 250, 150) then begin
+      Engine.MoveTo(82880,55390,-1520);
+      Engine.MoveTo(82375,55524,-1523);
+      Engine.MoveTo(82367,54313,-1493);
+      Engine.MoveTo(82651,53734,-1486);
+      Engine.MoveTo(82950,53186,-1494);
+    end;
+    if User.InRange(82552,53447,-1488, 250, 150) then begin
+      Engine.MoveTo(82552,53447,-1488);
+      Engine.MoveTo(82950,53186,-1494);
+    end;
+    if User.InRange(82638,53885,-1488, 250, 150) then begin
+      Engine.MoveTo(82638,53885,-1488);
+      Engine.MoveTo(82950,53186,-1494);
+    end;
+    if User.InRange(82950,53186,-1494, 250, 150) then Moved :=  true;
+  end;
+  // If no movement has taken place in the city.
+  if not Moved then begin
+    //NewResp := TStringList.Create;
+    //if FileExists('File/Script/NewResp.txt') then NewResp.LoadFromFile('File/Script/NewResp.txt');
+    //NewResp.Add(City+':'+IntToStr(User.X)+','+IntToStr(User.Y)+','+IntToStr(User.Z));
+    //NewResp.SaveToFile('File/Script/NewResp.txt');
+    //NewResp.Free;
+    GoHome;
+  end;
+end;
+
+function getCityToLocationGK(teleportName: String): integer;
+var
+	i: integer;
+begin
+	for i:=0 to 16 do
+	begin
+		if Pos(teleportName, GateKeepersStrings[i]) <> 0 then
+		begin
+			Result := i;
+			exit;
+		end;
+	end;
+	Result := -1;
+end;
+
+function DoTeleportToLocation(TeleportValue: String): boolean;
+begin
+	Result := false;
+	if toRightCity(TCities[getCityToLocationGK(TeleportValue)]) then
+		Result := DoTeleport(TeleportValue);
+end;
+
+function DoTeleport(TeleportValue: String): boolean;
+var
+	City: TCity;
+	gkId: integer;
+	cityIndex: integer;
+	buffer: TL2Live;
+	dialogIndex: integer;
+	teleportIndex: TStringList;
+begin
+	teleportIndex := TStringList.Create;
+
+	City := GetCity;
+	cityIndex := Ord(City);
+
+	if (City = NON_CITY) or (Length(TeleportValue) = 0) then
+	begin
+		Result := false;
+		exit;
+	end;
+
+	gkId := GateKeepers[cityIndex];
+	teleportIndex.Delimiter := ',';
+	teleportIndex.DelimitedText := GateKeepersStrings[cityIndex];
+
+	buffer := nil;
+
+	NpcList.ById(gkId, buffer);
+
+	if buffer = nil then
+	begin
+		Result := false;
+		exit;
+	end;
+	
+	dialogIndex := teleportIndex.indexOf(TeleportValue) + 1;
+
+	if dialogIndex = 0 then
+	begin
+		DoTeleportToLocation(TeleportValue);
+		exit;
+	end;
+	
+	if dialogIndex > 0 then
+	begin
+		Engine.SetTarget(buffer);
+		Engine.MoveTo(buffer);
+		Engine.DlgOpen;
+		delay(500);
+		{if buffer.id = 30146 then
+			Engine.DlgSel(1)	
+		else
+			Engine.DlgSel(ifThen((Pos(buffer.name, 'Ragara') <> 0), 'Teleport', GkDlg));}
+		case buffer.id of
+		    30256: Engine.DlgSel(2);
+		    30006: Engine.DlgSel(3);
+		else
+		      Engine.DlgSel(1);
+		end;
+		
+		delay(500);
+		Engine.DlgSel(dialogIndex);
+		Delay(3 * 1000);
+		Result := true;
+	end else
+		Result := false;
+
+	teleportIndex.Free;
+end;
+
+
+{
+	On an array of teleport lines we look for our TP, it will be equal to id of the city
+}
+function isRightCity(val: TCity; shouldGoHome: boolean = true): boolean;
+begin
+  Result := (GetCity(shouldGoHome) = val);
+end;
+
+function toRightCity(val: TCity): boolean;
+var
+  currentCity: TCity;
+begin
+  if isRightCity(val) then
+  begin
+    Result := true;
+    exit;
+  end;
+
+  if not isRightCity(val) then
+  begin
+	
+    currentCity := GetCity;
+
+    if currentCity = NON_CITY then
+      GoHome;
+	
+    DoTeleport(CityNames[ord(val)]);  //replace
+
+  end;
+
+  delay(100);
+  Result := toRightCity(val);
+
+end;
+
+function inStartLoc: boolean;
+begin
+  Result :=
+  (inRange(User, -124776, 38104, 1208, 2000) //kamael
+   or inRange(User, -71338, 258271, -3088, 2000) //human fight
+   or inRange(User, -90890, 248027, -3570, 2000) //human mage
+   or inRange(User, 45978, 41196, -3440, 2000) //elves
+   or inRange(User, 28377, 10916, -4224, 2000) //dark elves
+   or inRange(User, -56693, -113610, -690, 2000) //orc
+   or inRange(User, 108516, -174026, -400, 2000) //dwarves
+  );
+end;
+
+function getSupplyManager: TL2Live;
+var
+	i: integer;
+begin
+	for i:=0 to 16 do
+	begin
+		if NpcList.ByID(spArr[i], Result) then
+			exit;
+	end;
+	Result := nil;
+end;
+
+procedure initBuffPathArrays;
+begin
+	SetLength(talkingIslandToBuffer, 4, 3);
+	SetLength(heineToBuffer, 6, 3);
+	SetLength(dionToBuffer, 2, 3);
+	SetLength(giranToBuffer, 2, 3);
+	SetLength(adenToBuffer, 2, 3);
+	SetLength(goddardToBuffer, 2, 3);
+	SetLength(gludioToBuffer, 2, 3);
+	SetLength(gludinToBuffer, 2, 3);
+	SetLength(shtuttgartToBuffer, 2, 3);
+	SetLength(runeToBuffer, 3, 3);
+	SetLength(orenToBuffer, 2, 3);
+	SetLength(kamaelToBuffer, 2, 3);
+
+	writeToArray(talkingIslandToBuffer[0], -84168, 244568, -3712);
+	writeToArray(talkingIslandToBuffer[1], -84584, 244008, -3712);
+	writeToArray(talkingIslandToBuffer[2], -84104, 243528, -3712);
+	writeToArray(talkingIslandToBuffer[3], -84072, 243288, -3712);
+
+	writeToArray(heineToBuffer[0], 111387,219387,-3544);
+	writeToArray(heineToBuffer[1], 111250,219358,-3516);
+	writeToArray(heineToBuffer[2], 111267,219361,-3516);
+	writeToArray(heineToBuffer[3], 111218,219438,-3532);
+	writeToArray(heineToBuffer[4], 111158,219756,-3673);
+	writeToArray(heineToBuffer[5], 111188,220978,-3544);
+
+	writeToArray(dionToBuffer[0], 15628,142920,-2704);
+	writeToArray(dionToBuffer[1], 16754,142947,-2717);
+
+	writeToArray(giranToBuffer[0], 83405,147953,-3403);
+	writeToArray(giranToBuffer[1], 83261,148847,-3403);
+
+	writeToArray(adenToBuffer[0], 146771,25813,-2011);
+	writeToArray(adenToBuffer[1], 147128,25924,-2011);
+
+	writeToArray(goddardToBuffer[0], 147969,-55264,-2732);
+	writeToArray(goddardToBuffer[1], 148064,-55368,-2732);
+
+	writeToArray(gludioToBuffer[0], -14504,124036,-3124);
+	writeToArray(gludioToBuffer[1], -14728,124023,-3122);
+
+	writeToArray(gludinToBuffer[0], -81073,150110,-3042);
+	writeToArray(gludinToBuffer[1], -81603,150204,-3127);
+
+	writeToArray(shtuttgartToBuffer[0], 87061,-143441,-1290);
+	writeToArray(shtuttgartToBuffer[1], 87015,-143349,-1290);
+
+	writeToArray(runeToBuffer[0], 43827,-47698,-794);
+	writeToArray(runeToBuffer[1], 43606,-47837,-795);
+	writeToArray(runeToBuffer[2], 43530,-47561,-795);
+
+	writeToArray(orenToBuffer[0], 82965,53174,-1494);
+	writeToArray(orenToBuffer[1], 82397,53295,-1494);
+
+	writeToArray(kamaelToBuffer[0], -119384,46840,368);
+	writeToArray(kamaelToBuffer[1], -119608,44888,368);
+
+	SetLength(giranToWeaponShop, 7, 3);
+	SetLength(giranToArmorShop, 7, 3);
+	SetLength(giranToAccessoryShop, 6, 3);
+	
+	writeToArray(giranToWeaponShop[0], 82618, 148244, -3416);
+	writeToArray(giranToWeaponShop[1], 81416, 148264, -3456);
+	writeToArray(giranToWeaponShop[2], 80728, 148600, -3448);
+	writeToArray(giranToWeaponShop[3], 79816, 148568, -3520);
+	writeToArray(giranToWeaponShop[4], 79848, 147592, -3520);
+	writeToArray(giranToWeaponShop[5], 80088, 146712, -3504);
+	writeToArray(giranToWeaponShop[6], 79800, 146568, -3504);
+	
+	writeToArray(giranToArmorShop[0], 81528, 148328, -3456);
+	writeToArray(giranToArmorShop[1], 80696, 148600, -3448);
+	writeToArray(giranToArmorShop[2], 79800, 148648, -3520);
+	writeToArray(giranToArmorShop[3], 79816, 149464, -3520);
+	writeToArray(giranToArmorShop[4], 79576, 150088, -3520);
+	writeToArray(giranToArmorShop[5], 79592, 150632, -3504);
+	writeToArray(giranToArmorShop[6], 79672, 150712, -3496);
+	
+	writeToArray(giranToAccessoryShop[0], 81528, 148328, -3456);
+	writeToArray(giranToAccessoryShop[1], 80696, 148600, -3448);
+	writeToArray(giranToAccessoryShop[2], 79800, 148648, -3520);
+	writeToArray(giranToAccessoryShop[3], 79816, 149464, -3520);
+	writeToArray(giranToAccessoryShop[4], 80136, 149448, -3488);
+	writeToArray(giranToAccessoryShop[5], 80408, 149240, -3488);
+	
+	
+	SetLength(talkingIslandToSupply, 9, 3);
+	SetLength(heineToSupply, 9, 3);
+	SetLength(dionToSupply, 9, 3);
+	SetLength(giranToSupply, 9, 3);
+	SetLength(adenToSupply, 9, 3);
+	SetLength(goddardToSupply, 9, 3);
+	SetLength(gludioToSupply, 9, 3);
+	SetLength(gludinToSupply, 9, 3);
+	SetLength(shtuttgartToSupply, 9, 3);
+	SetLength(runeToSupply, 9, 3);
+	SetLength(orenToSupply, 9, 3);
+	SetLength(kamaelToSupply, 5, 3);
+	
+	
+	writeToArray(talkingIslandToSupply[0], -84376, 244360, -3712);
+	writeToArray(talkingIslandToSupply[1], -84536, 243992, -3712);
+	writeToArray(talkingIslandToSupply[2], -83944, 243416, -3712);
+	writeToArray(talkingIslandToSupply[3], -83992, 242664, -3712);
+	writeToArray(talkingIslandToSupply[4], -84792, 241896, -3712);
+	writeToArray(talkingIslandToSupply[5], -84408, 241192, -3712);
+	writeToArray(talkingIslandToSupply[6], -84616, 240904, -3712);
+	writeToArray(talkingIslandToSupply[7], -84264, 240664, -3704);
+	writeToArray(talkingIslandToSupply[8], -84232, 240504, -3704);
+	
+	writeToArray(heineToSupply[0], -84376, 244360, -3712);
+	writeToArray(heineToSupply[1], -84536, 243992, -3712);
+	writeToArray(heineToSupply[2], -83944, 243416, -3712);
+	writeToArray(heineToSupply[3], -83992, 242664, -3712);
+	writeToArray(heineToSupply[4], -84792, 241896, -3712);
+	writeToArray(heineToSupply[5], -84408, 241192, -3712);
+	writeToArray(heineToSupply[6], -84616, 240904, -3712);
+	writeToArray(heineToSupply[7], -84264, 240664, -3704);
+	writeToArray(heineToSupply[8], -84232, 240504, -3704);
+	
+	writeToArray(dionToSupply[0], -84376, 244360, -3712);
+	writeToArray(dionToSupply[1], -84536, 243992, -3712);
+	writeToArray(dionToSupply[2], -83944, 243416, -3712);
+	writeToArray(dionToSupply[3], -83992, 242664, -3712);
+	writeToArray(dionToSupply[4], -84792, 241896, -3712);
+	writeToArray(dionToSupply[5], -84408, 241192, -3712);
+	writeToArray(dionToSupply[6], -84616, 240904, -3712);
+	writeToArray(dionToSupply[7], -84264, 240664, -3704);
+	writeToArray(dionToSupply[8], -84232, 240504, -3704);
+	
+	writeToArray(giranToSupply[0], -84376, 244360, -3712);
+	writeToArray(giranToSupply[1], -84536, 243992, -3712);
+	writeToArray(giranToSupply[2], -83944, 243416, -3712);
+	writeToArray(giranToSupply[3], -83992, 242664, -3712);
+	writeToArray(giranToSupply[4], -84792, 241896, -3712);
+	writeToArray(giranToSupply[5], -84408, 241192, -3712);
+	writeToArray(giranToSupply[6], -84616, 240904, -3712);
+	writeToArray(giranToSupply[7], -84264, 240664, -3704);
+	writeToArray(giranToSupply[8], -84232, 240504, -3704);
+	
+	writeToArray(adenToSupply[0], -84376, 244360, -3712);
+	writeToArray(adenToSupply[1], -84536, 243992, -3712);
+	writeToArray(adenToSupply[2], -83944, 243416, -3712);
+	writeToArray(adenToSupply[3], -83992, 242664, -3712);
+	writeToArray(adenToSupply[4], -84792, 241896, -3712);
+	writeToArray(adenToSupply[5], -84408, 241192, -3712);
+	writeToArray(adenToSupply[6], -84616, 240904, -3712);
+	writeToArray(adenToSupply[7], -84264, 240664, -3704);
+	writeToArray(adenToSupply[8], -84232, 240504, -3704);
+	
+	writeToArray(goddardToSupply[0], -84376, 244360, -3712);
+	writeToArray(goddardToSupply[1], -84536, 243992, -3712);
+	writeToArray(goddardToSupply[2], -83944, 243416, -3712);
+	writeToArray(goddardToSupply[3], -83992, 242664, -3712);
+	writeToArray(goddardToSupply[4], -84792, 241896, -3712);
+	writeToArray(goddardToSupply[5], -84408, 241192, -3712);
+	writeToArray(goddardToSupply[6], -84616, 240904, -3712);
+	writeToArray(goddardToSupply[7], -84264, 240664, -3704);
+	writeToArray(goddardToSupply[8], -84232, 240504, -3704);
+	
+	writeToArray(gludioToSupply[0], -84376, 244360, -3712);
+	writeToArray(gludioToSupply[1], -84536, 243992, -3712);
+	writeToArray(gludioToSupply[2], -83944, 243416, -3712);
+	writeToArray(gludioToSupply[3], -83992, 242664, -3712);
+	writeToArray(gludioToSupply[4], -84792, 241896, -3712);
+	writeToArray(gludioToSupply[5], -84408, 241192, -3712);
+	writeToArray(gludioToSupply[6], -84616, 240904, -3712);
+	writeToArray(gludioToSupply[7], -84264, 240664, -3704);
+	writeToArray(gludioToSupply[8], -84232, 240504, -3704);
+	
+	writeToArray(kamaelToSupply[0], -118968, 45896, 352);
+	writeToArray(kamaelToSupply[1], -117608, 46696, 368);
+	writeToArray(kamaelToSupply[2], -117320, 47480, 464);
+	writeToArray(kamaelToSupply[3], -117160, 47560, 456);
+	writeToArray(kamaelToSupply[4], -117128, 47976, 472);
+	
+end;
+
+procedure GetBuff;
+var
+  City: TCity;
+  Item : TL2Item;
+  stringIndex: integer;
+  i: integer;
+begin
+	City := GetCity;
+	case City of
+		TALKING_ISLAND: moveToLoc(talkingIslandToBuffer);
+		HEINE : moveToLoc(heineToBuffer);
+		DION : moveToLoc(dionToBuffer);
+		GIRAN : moveToLoc(giranToBuffer);
+		ADEN : moveToLoc(adenToBuffer);
+		GODDARD : moveToLoc(goddardToBuffer);
+		GLUDIO : moveToLoc(gludioToBuffer);
+		GLUDIN : moveToLoc(gludinToBuffer);
+		SHTUTTGART : moveToLoc(shtuttgartToBuffer);
+		RUNE : moveToLoc(runeToBuffer);
+		OREN : moveToLoc(orenToBuffer);
+		KAMAEL : moveToLoc(kamaelToBuffer);
+	end;
+
+	if getNewbieBuffer = nil then
+	begin
+		print('Newbie buffer not found..');
+		exit;
+	end;
+
+	if ((getNewbieBuffer.ID >= 30598) and (getNewbieBuffer.ID <= 30602)) or (getNewbieBuffer.ID = 32135) then
+		stringIndex := 5
+	else if (getNewbieBuffer.ID = 31076) then
+	  stringIndex := 2
+	else
+		stringIndex := 1;
+
+	Engine.MoveTo(getNewbieBuffer);
+	Engine.SetTarget(getNewbieBuffer);
+	Engine.DlgOpen;
+	delay(500);
+	Engine.DlgSel(stringIndex);
+	delay(500);
+	Engine.DlgSel(1);
+
+	delay(200);
+
+	if User.Level <= 39 then begin
+		Engine.DlgOpen;
+		Engine.DlgSel(3);
+		Engine.DlgSel(1);
+	end;
+end;
+
+procedure GetSupplies;
+var
+  City: TCity;
+  Item : TL2Item;
+  stringIndex: integer;
+  i: integer;
+begin
+	City := GetCity;
+	{DWARVEN, ORC, DARK_ELVEN, ELVEN, KAMAEL,
+	TALKING_ISLAND, HEINE, DION, GIRAN, ADEN, GODDARD,
+	GLUDIO, GLUDIN, SHTUTTGART, RUNE, OREN, HUNTER, NON_CITY}
+	// The path from respawn to store
+	case City of
+		TALKING_ISLAND: moveToLoc(talkingIslandToSupply);
+		HEINE : moveToLoc(heineToSupply);
+		DION : moveToLoc(dionToSupply);
+		GIRAN : moveToLoc(giranToSupply);
+		ADEN : moveToLoc(adenToSupply);
+		GODDARD : moveToLoc(goddardToSupply);
+		GLUDIO : moveToLoc(gludioToSupply);
+		GLUDIN : moveToLoc(gludinToSupply);
+		SHTUTTGART : moveToLoc(shtuttgartToSupply);
+		RUNE : moveToLoc(runeToSupply);
+		OREN : moveToLoc(orenToSupply);
+		KAMAEL : moveToLoc(kamaelToSupply);
+	end;
+
+	if getSupplyManager = nil then
+	begin
+		print('Supply manager not found..');
+		exit;
+	end;
+	
+	Engine.MoveTo(getSupplyManager);
+	Engine.SetTarget(getSupplyManager);
+	Engine.DlgOpen;
+	delay(500);
+	Engine.DlgSel(1);
+
+	delay(200);
+end;
+
+
+function getNewbieQuest: boolean;
+var
+  City: TCity;
+  stringIndex: integer;
+  i: integer;
+begin
+	City := GetCity;
+	//talking island
+	case City of
+		TALKING_ISLAND: moveToLoc(talkingIslandToBuffer);
+		HEINE : moveToLoc(heineToBuffer);
+		DION : moveToLoc(dionToBuffer);
+		giran : moveToLoc(giranToBuffer);
+		ADEN : moveToLoc(adenToBuffer);
+		GODDARD : moveToLoc(goddardToBuffer);
+		GLUDIO : moveToLoc(gludioToBuffer);
+		GLUDIN : moveToLoc(gludinToBuffer);
+		SHTUTTGART : moveToLoc(shtuttgartToBuffer);
+		RUNE : moveToLoc(runeToBuffer);
+		OREN : moveToLoc(orenToBuffer);
+		KAMAEL : moveToLoc(kamaelToBuffer);
+	end;
+
+	if getNewbieBuffer = nil then
+	begin
+		print('Newbie buffer not found..');
+		Result := false;
+		exit;
+	end;
+
+	Engine.SetTarget(getNewbieBuffer);
+	Engine.DlgOpen;
+
+	delay(200);
+	Result := true;
+
+end; // end function getNewbieQuest
+	
+procedure RebuffController;
+var
+	i: integer;
+	obj: TL2Live;
+	buff: TL2Buff;
+begin
+	while Engine.Status = lsOnline do
+	begin
+		if (User.Level < 6) then
+		begin
+			delay(1000);
+			continue;
+		end;
+	
+		if not User.Buffs.ById(buffCheckId, buff) or (User.Buffs.ById(buffCheckId, buff) and (buff.EndTime < 60 * 1000)) then
+		begin
+			if (true{userincity}) then
+			begin
+				Engine.MoveTo(User);
+				Engine.SetTarget(User);
+				Engine.DlgOpen;
+				Engine.DlgSel(1);
+				//BackToExpLoc;
+			end
+		end;
+		delay(1000);
+	end;
+end;	
+
+procedure ExecQuest;
+begin
+  print('Quest not found');
+end;
+       
+
+procedure evt0_1;
+var
+  npc: TL2Live;
+begin
+  if inStartLoc then
+  begin
+    {while User.Level = 1 do
+    begin
+      NpcList.ByID(18342, npc);
+      Engine.SetTarget(npc);
+      while npc.HP > 0 do
+      begin
+      if isMage then
+        Engine.UseSkill(1177)
+      else
+        Engine.Attack;
+      end; 
+    end; }
+    Engine.UseItem(12753); //12753 GF
+    delay(21 * 1000);
+  end;
+
+  if toRightCity(KAMAEL) then
+      begin
+      if not startDialog(KAMAEL_NEWBIE_GUIDE) then //lvl 2
+        print('Cant find newbie master');
+  end;
+end;
+
+procedure evt2_5;
+begin
+  if toRightCity(KAMAEL) then
+  begin
+    
+    if not SuplyCheckDone then
+      ExecuteSuplyCheck;
+   
+    if SuplyCheckDone and getState('Current state', 'Should take newbie quest', true) then
+    begin
+      Engine.MoveTo(-119461, 46968, 386);
+      Engine.MoveTo(-119597, 45485, 372);
+      if getNewbieQuest then
+        updateState('Current state', 'Should take newbie quest', 'false');
+    end;
+ 
+  end;   
+end;
+ 
+procedure evt6_9;
+begin
+  if toRightCity(KAMAEL) then
+  begin
+
+    if SuplyCheckDone and getState('Current state', 'Should take newbie quest', true) then
+    begin
+    
+      Engine.MoveTo(-119461, 46968, 386);
+      Engine.MoveTo(-119597, 45485, 372);
+      
+      if getNewbieQuest then
+        updateState('Current state', 'Should take newbie quest', 'false');
+    end;
+    
+    if not getState('Etc', 'Is coupon taken', true) then
+    begin
+      getCoupon;
+      exit;
+    end;
+    
+
+    if getState('Etc', 'Is coupon taken', true) and not couponItemTaken(getState('Etc', 'Item through coupon', 10475)) then
+    begin
+      getShadowWeaponFromCoupon(getState('Etc', 'Item through coupon', 10475));
+      equipItem(getState('Etc', 'Item through coupon', 10475));
+    end;
+
+    delay(2000);
+
+    if shouldRebuff then
+      GetBuff;
+
+    {if shouldRebuySOE(5) > 0 then
+    begin
+      buyEtc([736, shouldRebuySOE(10)]);
+      moveToLoc(revertArray(kamaelToSupply));
+    end;  }
+
+    if not HeadForTheHillsDone then
+      ExecuteHeadForTheHills;
+
+    if HeadForTheHillsDone and getState('Current state', 'Should take newbie quest', false) then
+    begin
+      if getNewbieQuest then
+        updateState('Current state', 'Should take newbie quest', 'false');
+    end;
+    
+  end;      
+end;
+
+procedure evt10_15;
+begin
+  if shouldRebuff then
+      GetBuff;
+
+  {if shouldRebuySOE(5) > 0 then
+      buyEtc([736, shouldRebuySOE(10)]);  }
+      
+  case User.Race of         
+    1: //elve
+    begin
+        if not SkirmishWithOrcsDone then
+          ExecuteSkirmishWithOrcs;
+
+        if SkirmishWithOrcsDone and getState('Current state', 'Should take newbie quest', false) then
+        begin
+          Engine.MoveTo(47293, 51148, -3017);
+          Engine.MoveTo(46133, 49596, -3057);
+          Engine.MoveTo(45606, 48518, -3086);
+          if getNewbieQuest then
+            updateState('Current state', 'Should take newbie quest', 'false');
+          Engine.MoveTo(46133, 49596, -3057);
+          Engine.MoveTo(47293, 51148, -3017);
+        end;
+        
+    end;
+  end;
+end;
+
+procedure evt15_17;
+var
+  skillToLearn: array of integer;
+  i: integer;
+  skill: TL2Skill;
+begin
+    if shouldRebuff then
+      GetBuff;
+
+    {if shouldRebuySOE(5) > 0 then
+      buyEtc([736, shouldRebuySOE(10)]);}
+      
+    
+    if (SkillList.ByID(1177, skill) and (skill.level < 3)) then
+    begin
+      if not isRightCity(GLUDIO, false) and isRightCity(TALKING_ISLAND, false) then
+      begin
+      Engine.MoveTo(-83589, 243834, -3740);
+      Engine.MoveTo(-83369, 244417, -3750);
+      Engine.MoveTo(-83682, 244698, -3748);
+      Engine.MoveTo(-83995, 244614, -3743);
+
+      startDialog(30006);
+
+      Engine.DlgSel(2);
+      delay(500);
+      Engine.DlgSel(1);
+      end;
+
+      if toRightCity(GLUDIO) then
+      begin
+      Engine.MoveTo(-12808, 122712, -3104);
+      Engine.MoveTo(-13272, 122664, -3032);
+      Engine.MoveTo(-13272, 122296, -2976);
+      Engine.MoveTo(-13080, 122184, -2968);
+      Engine.MoveTo(-13096, 121752, -2952);
+      Engine.MoveTo(-13464, 121576, -2952);
+
+      startDialog(30293);
+
+      Engine.DlgSel(1);
+     
+      skillToLearn := getArray('Etc', 'Skill learn list', '1;1');
+      for i:=0 to Length(skillToLearn)-1 do
+        learnSkills(skillToLearn[i]);
+
+        delay(500);
+      Engine.MoveTo(-13464, 121576, -2952);
+      Engine.MoveTo(-13096, 121752, -2952);
+      Engine.MoveTo(-13080, 122184, -2968);
+      Engine.MoveTo(-13272, 122296, -2976);
+      Engine.MoveTo(-13272, 122664, -3032);
+      Engine.MoveTo(-12808, 122712, -3104);
+      end;
+    end; 
+    
+    if not cureForFeverDiseaseDone then
+       ExecuteCureForFeverDisease;
+
+    if cureForFeverDiseaseDone and getState('Current state', 'Should take newbie quest', false) then
+    begin
+      if getNewbieQuest then
+        updateState('Current state', 'Should take newbie quest', 'false');
+    end;    
+end;
+
+function buyEtc(items: array of cardinal): boolean;
+begin
+  GetSupplies;
+
+  Result := Engine.NpcTrade(false, items);
+end;
+
+
+procedure learnSkills(skillId: integer);
+var
+  canLearn: boolean;
+begin
+  canLearn := true;
+  while canLearn do
+  begin
+    canLearn := Engine.LearnSkill(skillId);
+    delay(200);
+  end;
+end;
+
+     
+procedure doTransfer;
+var
+  currCharIndex: integer;
+begin
+ 
+  if not PathOfTheElvenOracleDone then
+       ExecuteQuestPathOfTheElvenOracle;
+
+  if User.Level > 22 then
+  begin
+  if not OminousNewsDone then
+       ExecuteOminousNews;
+  
+  
+  currCharIndex := strtoint(user.name[length(user.name)]);
+  Engine.UseItem(12753);
+  delay(12000);
+  Engine.SendMail(Reciver, 'this', '1', [57, 760000], 0);
+  delay(1000);
+  Engine.Restart;
+  delay(1000);
+  Engine.GameStart(currCharIndex);
+  end;
+end;
+
+procedure exp1_18;
+var
+  i: integer;
+  currentLevel: integer;
+  enemyTarget: TL2Live;
+begin
+  while true do
+  begin
+    case User.Level of
+      0..1 : evt0_1;
+      2..6 : evt2_5;
+      7..9 : evt6_9;
+      11..14 : evt10_15;
+      15..18 : evt15_17;
+      19..88 : doTransfer;
+      //case end;
+    end;
+
+  delay(100);
+  end;
+end;
+
+function shouldRebuySOE(soeCount: integer): integer;
+var
+  item: TL2Item;
+begin
+  Result := 0;
+  if not Inventory.User.ByID(736, item) then
+  begin
+    Result := soeCount;
+    exit;
+  end;
+  if (Inventory.User.ByID(736, item) and (item.Count < soeCount)) then
+    Result := soeCount - item.Count;
+end;
+ 
+procedure deathEvt;
+begin
+  while true do
+  begin
+    if User.Dead then
+    begin
+      Engine.GoHome;
+      afterDeathEvt := GetTickCount + afterDeathEvtDelay * 1000;
+      delay(2 * 3000);
+      GetBuff;
+    end;
+    delay(300);
+  end;
+end;
+
+procedure ExecuteSuplyCheck;
+var
+	i: integer;
+	questItem: TL2Item;
+begin
+	SuplyInitArrays;
+	suplyQuestStatus := getState('Quests', 'Suply Check state', -1);
+	while (Engine.Status = lsOnline) and (suplyQuestStatus <> -1) do
+	begin
+	case suplyQuestStatus of
+		0 :
+		begin
+		if toRightCity(KAMAEL) then
+		begin
+			if not inRange(User, -119576, 48952, 96, 500) then
+				moveToLoc(suplyCheckStartPath);
+				
+			if not startDialog(MARCELA) then
+				continue;
+				
+			Engine.DlgSel(3);
+			delay(500);
+			Engine.DlgSel(1);
+			delay(500);
+			Engine.DlgSel(1); 
+	
+			if (Engine.QuestStatus(174, 1)) then
+			begin
+				suplyQuestStatus := 1;
+				updateState('Quests', 'Suply Check state', 1);
+			end;	
+		end;
+		end;
+		1 :
+		begin
+		if toRightCity(KAMAEL) then
+		begin
+			
+			moveToLoc(suplyCheck1);
+	
+			if not startDialog(BENIS) then
+				continue;
+				
+			Engine.DlgSel(5); //5 in hf
+			
+			if (Engine.QuestStatus(174, 2)) then
+			begin
+				suplyQuestStatus := 2;
+				updateState('Quests', 'Suply Check state', 2);
+			end;	
+		end;	
+		end;
+		2 :
+		begin
+		if toRightCity(KAMAEL) then
+		begin
+			moveToLoc(revertArray(suplyCheck1));
+			
+			if not startDialog(MARCELA) then
+				continue;	
+
+			Engine.DlgSel(3);
+			delay(500);
+			Engine.DlgSel(1);
+
+			if (Engine.QuestStatus(174, 3)) then
+			begin
+				suplyQuestStatus := 3;
+				updateState('Quests', 'Suply Check state', 3);
+			end;	
+	
+		end;
+		end;
+		3 :
+		begin
+		if toRightCity(KAMAEL) then
+		begin
+			moveToLoc(suplyCheck2);
+			
+			
+			if not startDialog(NIKA) then
+				continue;
+	
+			Engine.DlgSel(3); //3 in hf
+			
+			if (Engine.QuestStatus(174, 4)) then
+			begin
+				suplyQuestStatus := 4;
+				updateState('Quests', 'Suply Check state', 4);
+			end;			
+			
+		end;
+		end;
+		4 : //in HF last suplyCheck
+		begin
+		if toRightCity(KAMAEL) then
+		begin
+			moveToLoc(revertArray(suplyCheck2));
+			
+			if not startDialog(MARCELA) then
+				continue;
+				
+			Engine.DlgSel(3);
+			delay(500);
+			Engine.DlgSel(1);
+
+			if not (Engine.QuestStatus(174, 1))  then //questStatue 5 для хф не рабоатет | (Engine.QuestStatus(QUEST_ID, 5))/ 
+			begin
+				suplyQuestStatus := -1;
+				updateState('Quests', 'Suply Check state', -1); //in HF -1; in GF 5
+			end;
+		end;
+		end;
+		5: 
+		begin
+		if toRightCity(KAMAEL) then
+		begin
+			
+			moveToLoc(suplyCheck3);
+	
+			if not startDialog(ERINU) then
+				continue;
+				
+			Engine.DlgSel(5);
+			delay(500);
+			Engine.DlgSel(1);
+			
+			if (Engine.QuestStatus(174, 6)) then
+			begin
+				suplyQuestStatus := 6;
+				updateState('Quests', 'Suply Check state', 6);
+			end;	
+		end;	
+		end;
+		6:
+		begin
+		if toRightCity(KAMAEL) then
+		begin
+			moveToLoc(revertArray(suplyCheck3));
+			
+			if not startDialog(MARCELA) then
+				continue;
+				
+			Engine.DlgSel(3);
+			delay(500);
+			Engine.DlgSel(1);
+
+			if (Engine.QuestStatus(174, 7))  then 
+			begin
+				suplyQuestStatus := 7;
+				updateState('Quests', 'Suply Check state', 7);
+			end;
+		end;
+		end;
+		7: 
+		begin
+		if toRightCity(KAMAEL) then
+		begin
+			
+			moveToLoc(suplyCheck4);
+	
+			if not startDialog(CASCA) then
+				continue;
+				
+			Engine.DlgSel(4);
+			
+			if (Engine.QuestStatus(174, 8)) then
+			begin
+				suplyQuestStatus := 8;
+				updateState('Quests', 'Suply Check state', 8);
+			end;	
+		end;	
+		end;
+		8:
+		begin
+		if toRightCity(KAMAEL) then
+		begin
+			moveToLoc(revertArray(suplyCheck4));
+			
+			if not startDialog(MARCELA) then
+				continue;
+				
+			Engine.DlgSel(3);
+			delay(500);
+			Engine.DlgSel(1);
+
+			if not (Engine.QuestStatus(174, 1))  then 
+			begin
+				suplyQuestStatus := -1;
+				updateState('Quests', 'Suply Check state', -1); 
+				updateState('Current state', 'Should take newbie quest', 'true');
+				if not isMage1 then
+					equipNewbieItems;
+				moveToLoc(revertArray(suplyCheckStartPath));
+			end;
+		end;
+		end;		
+	//end of case
+	end;
+	delay(300);
+	end;
+end;
+
+procedure suplyInitArrays;
+begin
+	SetLength(suplyCheck1, 9, 3);
+	
+	writeToArray(suplyCheck1[0], -119464, 48040, 360);
+	writeToArray(suplyCheck1[1], -119388, 46928, 376);
+	writeToArray(suplyCheck1[2], -118600, 46369, 368);
+	writeToArray(suplyCheck1[3], -117764, 46102, 368);
+	writeToArray(suplyCheck1[4], -116872, 45816, 368);
+	writeToArray(suplyCheck1[5], -116113, 45244, 516);
+	writeToArray(suplyCheck1[6], -114824, 45192, 528);
+	writeToArray(suplyCheck1[7], -114968, 44984, 528);
+	writeToArray(suplyCheck1[8], -114968, 44728, 528);
+	
+	SetLength(suplyCheck2, 6, 3);
+	
+	writeToArray(suplyCheck2[0], -119416, 49096, 56);
+	writeToArray(suplyCheck2[1], -119432, 48008, 376);
+	writeToArray(suplyCheck2[2], -119401, 46843, 369);
+	writeToArray(suplyCheck2[3], -118630, 46820, 368);
+	writeToArray(suplyCheck2[4], -117256, 47496, 464);
+	writeToArray(suplyCheck2[5], -117096, 47960, 472);
+
+	SetLength(suplyCheckStartPath, 4, 3);
+	writeToArray(suplyCheckStartPath[0], -119832, 44744, 368);
+	writeToArray(suplyCheckStartPath[1], -119491, 45796, 384);
+	writeToArray(suplyCheckStartPath[2], -119434, 47565, 397);
+	writeToArray(suplyCheckStartPath[3], -119432, 48584, 248);
+  
+	SetLength(suplyCheck3, 12, 3);
+	
+	writeToArray(suplyCheck3[0], -119464, 48040, 360);
+	writeToArray(suplyCheck3[1], -119388, 46928, 376);
+	writeToArray(suplyCheck3[2], -118600, 46369, 368);
+	writeToArray(suplyCheck3[3], -117764, 46102, 368);
+	writeToArray(suplyCheck3[4], -116872, 45816, 368);
+	writeToArray(suplyCheck3[5], -116113, 45244, 516);
+	writeToArray(suplyCheck3[6], -114824, 45192, 528);
+	writeToArray(suplyCheck3[7], -114968, 44984, 528);
+	writeToArray(suplyCheck3[8], -114968, 44728, 528);
+	writeToArray(suplyCheck3[9], -115896, 45752, 512);
+	writeToArray(suplyCheck3[10], -115896, 44136, 512);
+	writeToArray(suplyCheck3[11], -115880, 43656, 528);
+	
+	
+	SetLength(suplyCheck4, 16, 3);
+	
+	writeToArray(suplyCheck4[0], -119464, 48040, 360);
+	writeToArray(suplyCheck4[1], -119388, 46928, 376);
+	writeToArray(suplyCheck4[2], -118600, 46369, 368);
+	writeToArray(suplyCheck4[3], -117764, 46102, 368);
+	writeToArray(suplyCheck4[4], -116872, 45816, 368);
+	writeToArray(suplyCheck4[5], -116113, 45244, 516);
+	writeToArray(suplyCheck4[6], -114824, 45192, 528);
+	writeToArray(suplyCheck4[7], -114968, 44984, 528);
+	writeToArray(suplyCheck4[8], -114968, 44728, 528);
+	writeToArray(suplyCheck4[9],  -115896, 45752, 512);
+	writeToArray(suplyCheck4[10], -115864, 44504, 512);
+	writeToArray(suplyCheck4[11], -117128, 44280, 544);
+	writeToArray(suplyCheck4[12], -117160, 43544, 560);
+	writeToArray(suplyCheck4[13], -117736, 43480, 560);
+	writeToArray(suplyCheck4[14], -117736, 42888, 696);
+	writeToArray(suplyCheck4[15], -118072, 42888, 728);
+
+	
+end; 	
+
+function SuplyCheckDone: boolean;
+begin
+	Result := getState('Quests', 'Suply Check state', -1) = -1;
+end;
+
+procedure ExecuteHeadForTheHills;
+var
+	i: integer;
+	questItem: TL2Item;
+	npc: TL2Live;
+begin
+	HeadInitArrays;
+	QuestStatus := getState('Quests', 'Head for the hills state', -1);
+	while (Engine.Status = lsOnline) and (QuestStatus <> -1) do
+	begin
+	delay(200);
+	mutex;
+	case QuestStatus of
+		0 :
+		begin
+		if toRightCity(KAMAEL) then
+		begin
+			if not inRange(User, -119576, 48952, 96, 500) then
+				moveToLoc(HeadStartPath);
+				
+			if not startDialog(MARCELA) then
+				continue;
+				
+			Engine.DlgSel(3);
+			delay(500);
+			Engine.DlgSel(2);
+			delay(500);
+			Engine.DlgSel(1); 
+	
+			if (Engine.QuestStatus(281, 1)) then
+			begin
+				QuestStatus := 1;
+				updateState('Quests', 'Head for the hills state', 1);
+			end;	
+		end;
+		end;
+		1 :
+		begin
+		
+		if Inventory.Quest.ByID(HILLSOFGOLDMONSTERCLAW, questItem) then
+		begin
+			QuestStatus := 2;
+			updateState('Quests', 'Head for the hills state', 2);
+			Engine.UseItem(12753);
+			delay(10 * 1000);
+			continue;
+		end;
+		
+		if isRightCity(KAMAEL, false) and (not inRange(User, -124152, 80024, -3496, 2000) or not inRange(User, -122450, 73137, -2864, 3000)) then
+		begin
+			
+			moveToLoc(headPath1);
+	
+			if not startDialog(RAGARA) then
+				continue;
+				
+			Engine.DlgSel(2);
+			delay(500);
+			Engine.DlgSel(1);
+			
+			delay(3 * 1000);
+			
+		end;
+		
+		if not inRange(User, -124152, 80024, -3496, 2000) then
+		begin
+			
+			if inRange(User, -122450, 73137, -2864, 3000) then
+			begin
+				moveToLoc(headPath2);
+				continue;
+			end;
+				
+		end;
+		
+		if inRange(User, -124152, 80024, -3496, 2000) then
+		begin
+			while not User.Dead and not Inventory.Quest.ByID(HILLSOFGOLDMONSTERCLAW, questItem) do
+			begin
+				{if findFreeClosestEnemy = nil then
+				begin
+					delay(300);
+					continue;
+				end;}
+				
+				NpcList.ByID(22235, npc);
+				
+				if isMage1 and (User.MP > 5) and (User.HP > 10) then
+				begin
+					Engine.SetTarget(npc);
+					Engine.UseSkill(1177);
+				end;	
+				
+				if not isMage1 and (User.HP > 10) then
+				begin
+					Engine.SetTarget(npc);
+					Engine.Attack;
+				end;
+				
+			end;
+		end;
+			
+			
+		end;
+		2 : 
+		begin
+			
+			if toRightCity(KAMAEL) then
+			begin
+				Engine.MoveTo(-119440, 45421, 341);
+				 
+				moveToLoc(HeadStartPath);
+				
+				if not startDialog(MARCELA) then
+					continue;
+				
+				Engine.DlgSel(3);
+				delay(500);
+				Engine.DlgSel(2); //in hf 1
+				delay(500);
+				Engine.DlgSel(1); 
+				
+				if (Engine.QuestStatus(281, 1)) then
+				begin
+					QuestStatus := -1;
+					updateState('Quests', 'Head for the hills state', -1);
+					updateState('Current state', 'Should take newbie quest', 'true');
+				end;
+
+				moveToLoc(revertArray(HeadStartPath));
+			end;
+		end;
+		
+		
+	//end of case
+	end;
+	delay(300);
+	end;
+end;
+
+procedure HeadInitArrays;
+begin
+
+	SetLength(HeadStartPath, 4, 3);
+	
+	writeToArray(HeadStartPath[0], -119832, 44744, 368);
+	writeToArray(HeadStartPath[1], -119491, 45796, 384);
+	writeToArray(HeadStartPath[2], -119434, 47565, 397);
+	writeToArray(HeadStartPath[3], -119432, 48584, 248);
+	
+	SetLength(headPath1, 4, 3);
+ 
+	writeToArray(headPath1[0], -119448, 47992, 376);
+	writeToArray(headPath1[1], -119392, 46815, 372);
+	writeToArray(headPath1[2], -118541, 46782, 371);
+	writeToArray(headPath1[3], -116936, 46568, 368);
+	
+	SetLength(headPath2, 6, 3);
+	
+	writeToArray(headPath2[0], -122328, 73544, -2864);
+	writeToArray(headPath2[1], -122425, 74452, -2953);
+	writeToArray(headPath2[2], -123099, 76133, -3205);
+	writeToArray(headPath2[3], -123610, 77145, -3332);
+	writeToArray(headPath2[4], -124568, 78344, -3488);
+	writeToArray(headPath2[5], -124648, 79064, -3536);
+ 
+	
+end; 	
+
+function HeadForTheHillsDone: boolean;
+begin
+	Result := getState('Quests', 'Head for the hills state', -1) = -1;
+end;
+
+procedure ExecuteCureForFeverDisease;
+var
+	i: integer;
+	questItem: TL2Item;
+	npc: TL2Npc;
+begin
+	cureInitArrays;
+	QuestStatus := getState('Quests', 'Cure fo Fever Disease state', -1);
+	while (Engine.Status = lsOnline) and (QuestStatus <> -1) do
+	begin
+	mutex;
+	delay(200);
+	case QuestStatus of
+		0 :
+		begin
+		if not isRightCity(TALKING_ISLAND) then
+		begin
+			DoTeleportToLocation('talking island');
+			delay(1000);
+		end;
+		
+		if toRightCity(TALKING_ISLAND) then
+		begin
+
+			if not startDialog(ELIAS) then
+				continue;
+				
+			Engine.DlgSel(1);
+			delay(500);
+			Engine.DlgSel(1);
+	
+			if (Engine.QuestStatus(151, 1)) then
+			begin
+				QuestStatus := 1;
+				updateState('Quests', 'Cure fo Fever Disease state', 1);
+			end;	
+		end;
+		end;
+		1 :
+		begin
+			if not inRange(User, -111448, 217144, -3088, 1500) and toRightCity(TALKING_ISLAND) then
+			begin
+				
+				Engine.MoveTo(-83960, 243174, -3755);
+				Engine.MoveTo(-84247, 243722, -3755);
+				Engine.MoveTo(-84544, 244014, -3751);
+				Engine.MoveTo(-84174, 244553, -3754);
+			
+				if not startDialog(ROXXY) then
+					continue;
+					
+				Engine.DlgSel(3); //3 in hf
+				delay(500);				
+				Engine.DlgSel(9);
+				
+				delay(2 * 1000);
+					
+				moveToLoc(curePath1);
+			end;
+			
+			while not User.Dead and not Inventory.Quest.ByID(POISON_SAC, questItem) and not Engine.QuestStatus(151, 2) do
+			begin
+				if NpcList.ByID(GIANT_SPIDER, npc) then
+				begin
+					equipItem(10474);
+					Engine.SetTarget(npc);
+					Engine.UseSkill(1177);
+				end;
+				delay(200);
+			end;
+			
+			if Engine.QuestStatus(151, 2) then
+			begin
+				QuestStatus := 2;
+				updateState('Quests', 'Cure fo Fever Disease state', 2);	
+			end;
+		end;
+		2 :
+		begin
+			if toRightCity(TALKING_ISLAND) then
+			begin
+				delay(5000);
+				moveToLoc(curePath2);
+					
+				if not startDialog(YOHANES) then
+					continue;
+				
+				Engine.DlgSel(5);//in hf 5	
+				
+			end;
+			
+			if Engine.QuestStatus(151, 3) then
+			begin
+				QuestStatus := 3;
+				updateState('Quests', 'Cure fo Fever Disease state', 3);	
+			end;
+			
+		end;
+		3 :
+		begin
+			if toRightCity(TALKING_ISLAND) then
+			begin
+				
+				moveToLoc(curePath3);
+				
+				if not startDialog(ELIAS) then
+					continue;
+					
+				Engine.DlgSel(1);	
+				
+			end;
+			
+			if not Engine.QuestStatus(151, 1) then
+			begin
+				QuestStatus := -1;
+				updateState('Quests', 'Cure fo Fever Disease state', -1);
+				updateState('Current state', 'Should take newbie quest', 'true');
+			end;
+
+		end;
+		
+	//end of case
+	end;
+	delay(300);
+	end;
+end;
+
+procedure cureInitArrays;
+begin
+
+	SetLength(CureStartPath, 0, 3);        
+	
+	SetLength(curePath1, 4, 3);
+
+	writeToArray(curePath1[0], -108408, 215005, -3344);
+	writeToArray(curePath1[1], -108928, 215273, -3287);
+	writeToArray(curePath1[2], -110495, 216404, -3187);
+	writeToArray(curePath1[3], -111240, 216808, -3136);
+	
+	SetLength(curePath2, 5, 3);
+
+	writeToArray(curePath2[0], -83320, 244024, -3712);
+	writeToArray(curePath2[1], -83545, 244690, -3712);
+	writeToArray(curePath2[2], -84111, 245004, -3708);
+	writeToArray(curePath2[3], -84594, 245342, -3702);
+	writeToArray(curePath2[4], -84908, 244935, -3704);
+  
+  	SetLength(curePath3, 6, 3);
+
+	writeToArray(curePath3[0], -84952, 244872, -3704);
+	writeToArray(curePath3[1], -85582, 244448, -3709);
+	writeToArray(curePath3[2], -85398, 244088, -3712);
+	writeToArray(curePath3[3], -84802, 243594, -3712);
+	writeToArray(curePath3[4], -83947, 243107, -3712);
+	writeToArray(curePath3[5], -83986, 242882, -3712);
+
+	
+end; 	
+
+function cureForFeverDiseaseDone: boolean;
+begin
+	Result := getState('Quests', 'Cure fo Fever Disease state', -1) = -1;
+end;
+
+procedure uophAsyncMove;
+var
+	questItem: TL2Item;
+begin
+  while not Inventory.Quest.ByID(KABOO_CHIEFS_1_STTORQUE, questItem) and not User.Dead do
+  begin
+    delay(50);
+    Engine.MoveTo(24557, 41691, -3711);
+		Engine.MoveTo(25176, 40593, -3670);
+		Engine.MoveTo(25952, 40982, -3681);
+		Engine.MoveTo(26756, 41228, -3666);
+		Engine.MoveTo(27518, 41761, -3665);
+		Engine.MoveTo(26652, 42742, -3690);
+		Engine.MoveTo(25677, 43072, -3666);
+		Engine.MoveTo(24961, 43076, -3619);
+		Engine.MoveTo(24592, 42448, -3668);
+  end;
+end;
+
+procedure turelAsyncMove;
+var
+  questItem: TL2Item;
+begin
+  while not Inventory.Quest.ByID(KENDELLS_5ST_ORDER, questItem) and not User.Dead do
+  begin
+    delay(50);
+    Engine.MoveTo(42686, 69622, -3282);
+    Engine.MoveTo(43433, 69185, -3298);
+    Engine.MoveTo(43781, 69423, -3270);
+    Engine.MoveTo(44647, 70120, -3288);
+    Engine.MoveTo(44228, 70414, -3302);
+    Engine.MoveTo(43806, 70712, -3366);
+    Engine.MoveTo(43192, 70725, -3375);
+    Engine.MoveTo(42828, 70561, -3352);
+    
+  end;  
+end;
+
+procedure ExecuteSkirmishWithOrcs;
+var
+	i: integer;
+	questItem: TL2Item;
+	npc: TL2Live;
+begin
+	SkirmishInitArrays;
+	QuestStatus := getState('Quests', 'Skrimish with orcs state', -1);
+	while (Engine.Status = lsOnline) and (QuestStatus <> -1) do
+	begin
+	delay(200);
+	mutex;
+	case QuestStatus of
+		0 :
+		begin
+		
+		if toRightCity(ELVEN) then
+		begin
+		delay(3000);
+		
+			moveToLoc(SkirmishStartPath);
+			
+			if not startDialog(KENDELL) then
+				continue;
+	
+			Engine.DlgSel(3); //in hf 2
+			Delay(500);
+			Engine.DlgSel(1);
+			Delay(500);
+			Engine.DlgSel(1); 
+	
+			if (Engine.QuestStatus(105, 1)) then
+			begin
+				QuestStatus := 1;
+				updateState('Quests', 'Skrimish with orcs state', 1);
+			end;
+			continue;
+		end;
+		end;
+		1 :
+		begin
+		  if Inventory.Quest.ByID(KABOO_CHIEFS_1_STTORQUE, questItem) then
+		  begin
+			  QuestStatus := 2;
+				updateState('Quests', 'Skrimish with orcs state', 2);
+			end;
+					
+			if Inventory.Quest.ByID(KENDELLS_1ST_ORDER, questItem) then //uoph
+			begin
+				if toRightCity(ELVEN) and not inRange(User, 24408, 40984, -3696, 3000) then
+				begin
+						
+					moveToLoc(SkirmishPath1);
+					
+					if not inRange(User, 24408, 40984, -3696, 3000) then
+						continue;
+						
+					while not Inventory.Quest.ByID(KABOO_CHIEFS_1_STTORQUE, questItem) and not User.Dead do
+					begin
+					  //script.newThread(@uophAsyncMove);
+					  
+						NpcList.ByID(KABOO_CHIEF_UOPH, npc);
+				
+						if isMage1 and (User.MP > 5) and (User.HP > 10) then
+						begin
+							Engine.SetTarget(npc);
+							Engine.UseSkill(1177);
+						end;	
+						
+						if not isMage1 and (User.HP > 10) then
+						begin
+							Engine.SetTarget(npc);
+							Engine.Attack;
+						end;
+					end;
+					
+					if Inventory.Quest.ByID(KABOO_CHIEFS_1_STTORQUE, questItem) then
+					begin
+						QuestStatus := 2;
+						updateState('Quests', 'Skrimish with orcs state', 2);
+					end;
+					//
+				end;
+			end else if Inventory.Quest.ByID(KENDELLS_2ST_ORDER, questItem) then //kracha
+			begin
+				if toRightCity(ELVEN) and not inRange(User, 35496, 63032, -3632, 3000) then
+				begin
+						
+					moveToLoc(SkirmishPath2);
+					
+					if not inRange(User, 35496, 63032, -3632, 3000) then
+						continue;
+						
+					while not Inventory.Quest.ByID(KABOO_CHIEFS_1_STTORQUE, questItem) and not User.Dead do
+					begin
+						NpcList.ByID(KABOO_CHIEF_KRACHA, npc);
+				
+						if isMage1 and (User.MP > 5) and (User.HP > 10) then
+						begin
+							Engine.SetTarget(npc);
+							Engine.UseSkill(1177);
+						end;	
+						
+						if not isMage1 and (User.HP > 10) then
+						begin
+							Engine.SetTarget(npc);
+							Engine.Attack;
+						end;
+					end;
+					
+					if Inventory.Quest.ByID(KABOO_CHIEFS_1_STTORQUE, questItem) then
+					begin
+						QuestStatus := 2;
+						updateState('Quests', 'Skrimish with orcs state', 2);
+					end;
+					//
+				end;
+			end else if Inventory.Quest.ByID(KENDELLS_3ST_ORDER, questItem) then //batoh
+			begin
+				if toRightCity(ELVEN) and not inRange(User, 31000, 80216, -3536, 3000) then
+				begin
+					
+					DoTeleportToLocation('elven fortress');
+					
+					moveToLoc(SkirmishPath3);
+					
+					if not inRange(User, 31000, 80216, -3536, 3000) then
+						continue;
+						
+					while not Inventory.Quest.ByID(KABOO_CHIEFS_1_STTORQUE, questItem) and not User.Dead do
+					begin
+						NpcList.ByID(KABOO_CHIEF_BATOH, npc);
+				
+						if isMage1 and (User.MP > 5) and (User.HP > 10) then
+						begin
+							Engine.SetTarget(npc);
+							Engine.UseSkill(1177);
+						end;	
+						
+						if not isMage1 and (User.HP > 10) then
+						begin
+							Engine.SetTarget(npc);
+							Engine.Attack;
+						end;
+					end;
+					
+					if Inventory.Quest.ByID(KABOO_CHIEFS_1_STTORQUE, questItem) then
+					begin
+						QuestStatus := 2;
+						updateState('Quests', 'Skrimish with orcs state', 2);
+					end;
+					//
+				end;
+			end else if Inventory.Quest.ByID(KENDELLS_4ST_ORDER, questItem) then //tanukia
+			begin
+				if toRightCity(ELVEN) and not inRange(User, 23224, 57000, -3360, 3000) then
+				begin
+						
+					moveToLoc(SkirmishPath4);
+					
+					if not inRange(User, 23224, 57000, -3360, 3000) then
+						continue;
+						
+					while not Inventory.Quest.ByID(KABOO_CHIEFS_1_STTORQUE, questItem) and not User.Dead do
+					begin
+						NpcList.ByID(KABOO_CHIEF_TANUKIA, npc);
+				
+						if isMage1 and (User.MP > 5) and (User.HP > 10) then
+						begin
+							Engine.SetTarget(npc);
+							Engine.UseSkill(1177);
+						end;	
+						
+						if not isMage1 and (User.HP > 10) then
+						begin
+							Engine.SetTarget(npc);
+							Engine.Attack;
+						end;
+					end;
+					
+					if Inventory.Quest.ByID(KABOO_CHIEFS_1_STTORQUE, questItem) then
+					begin
+						QuestStatus := 2;
+						updateState('Quests', 'Skrimish with orcs state', 2);
+					end;
+					//
+				end;
+			end; 
+      continue;
+		end;
+		2 : 
+		begin
+			if toRightCity(ELVEN) then
+			begin
+			
+				delay(3000);
+			
+				Engine.MoveTo(46033, 49770, -3086);
+				
+				moveToLoc(SkirmishStartPath);
+				
+				if not startDialog(KENDELL) then
+					continue;
+				
+				Engine.DlgSel(3); //in hf 2
+				delay(500);
+				Engine.DlgSel(1); 
+				
+				if (Engine.QuestStatus(105, 3)) then
+				begin
+					QuestStatus := 3;
+					updateState('Quests', 'Skrimish with orcs state', 3);
+					updateState('Current state', 'Should take newbie quest', 'true');
+				end;
+			end;
+			continue;
+		end;
+		3 :
+		begin
+		  
+		  if Inventory.Quest.ByID(KABOO_CHIEFS_2_STTORQUE, questItem) then
+			begin
+				 QuestStatus := 4;
+				 updateState('Quests', 'Skrimish with orcs state', 4);
+			end;
+					
+			if Inventory.Quest.ByID(KENDELLS_5ST_ORDER, questItem) then //turel
+			begin
+			  print('here');
+				if toRightCity(ELVEN) and not inRange(User, 41402, 70484, -3376, 3000) then
+				begin
+						
+					moveToLoc(SkirmishPath5);
+					
+					if not inRange(User, 41402, 70484, -3376, 3000) then
+						continue;
+						
+					while not Inventory.Quest.ByID(KABOO_CHIEFS_2_STTORQUE, questItem) and not User.Dead do
+					begin
+
+					  //script.newThread(@turelAsyncMove);
+					  
+						NpcList.ByID(KABOO_CHIEF_TUREL, npc);
+				
+						if isMage1 and (User.MP > 5) and (User.HP > 10) then
+						begin
+							Engine.SetTarget(npc);
+							Engine.UseSkill(1177);
+						end;	
+						
+						if not isMage1 and (User.HP > 10) then
+						begin
+							Engine.SetTarget(npc);
+							Engine.Attack;
+						end;
+					end;
+					
+					if Inventory.Quest.ByID(KABOO_CHIEFS_2_STTORQUE, questItem) then
+					begin
+						QuestStatus := 4;
+						updateState('Quests', 'Skrimish with orcs state', 4);
+					end;
+					//
+				end;
+			end else if Inventory.Quest.ByID(KENDELLS_6ST_ORDER, questItem) then //roko
+			begin
+				if toRightCity(ELVEN) and not inRange(User, 37223, 82496, -3600, 3000) then
+				begin
+						
+					moveToLoc(SkirmishPath6);
+					
+					if not inRange(User, 37223, 82496, -3600, 3000) then
+						continue;
+						
+					while not Inventory.Quest.ByID(KABOO_CHIEFS_2_STTORQUE, questItem) and not User.Dead do
+					begin
+						NpcList.ByID(KABOO_CHIEF_ROKO, npc);
+				
+						if isMage1 and (User.MP > 5) and (User.HP > 10) then
+						begin
+							Engine.SetTarget(npc);
+							Engine.UseSkill(1177);
+						end;	
+						
+						if not isMage1 and (User.HP > 10) then
+						begin
+							Engine.SetTarget(npc);
+							Engine.Attack;
+						end;
+					end;
+					
+					if Inventory.Quest.ByID(KABOO_CHIEFS_2_STTORQUE, questItem) then
+					begin
+						QuestStatus := 4;
+						updateState('Quests', 'Skrimish with orcs state', 4);
+					end;
+					//
+				end;
+			end else if Inventory.Quest.ByID(KENDELLS_7ST_ORDER, questItem) then //kamut
+			begin
+				if toRightCity(ELVEN) and not inRange(User, 47201, 90218, -3520, 3000) then
+				begin
+						
+					moveToLoc(SkirmishPath7);
+					
+					if not inRange(User, 47201, 90218, -3520, 3000) then
+						continue;
+						
+					while not Inventory.Quest.ByID(KABOO_CHIEFS_2_STTORQUE, questItem) and not User.Dead do
+					begin
+						NpcList.ByID(KABOO_CHIEF_KAMUT, npc);
+				
+						if isMage1 and (User.MP > 5) and (User.HP > 10) then
+						begin
+							Engine.SetTarget(npc);
+							Engine.UseSkill(1177);
+						end;	
+						
+						if not isMage1 and (User.HP > 10) then
+						begin
+							Engine.SetTarget(npc);
+							Engine.Attack;
+						end;
+					end;
+					
+					if Inventory.Quest.ByID(KABOO_CHIEFS_2_STTORQUE, questItem) then
+					begin
+						QuestStatus := 4;
+						updateState('Quests', 'Skrimish with orcs state', 4);
+					end;
+					//
+				end;
+			end else if Inventory.Quest.ByID(KENDELLS_8ST_ORDER, questItem) then //murtika
+			begin
+				if toRightCity(ELVEN) and not inRange(User, 57594, 78673, -3552, 3000) then
+				begin
+						
+					moveToLoc(SkirmishPath8);
+					
+					if not inRange(User, 57594, 78673, -3552, 3000) then
+						continue;
+						
+					while not Inventory.Quest.ByID(KABOO_CHIEFS_2_STTORQUE, questItem) and not User.Dead do
+					begin
+						NpcList.ByID(KABOO_CHIEF_MURTIKA, npc);
+				
+						if isMage1 and (User.MP > 5) and (User.HP > 10) then
+						begin
+							Engine.SetTarget(npc);
+							Engine.UseSkill(1177);
+						end;	
+						
+						if not isMage1 and (User.HP > 10) then
+						begin
+							Engine.SetTarget(npc);
+							Engine.Attack;
+						end;
+					end;
+					
+					if Inventory.Quest.ByID(KABOO_CHIEFS_2_STTORQUE, questItem) then
+					begin
+						QuestStatus := 4;
+						updateState('Quests', 'Skrimish with orcs state', 4);
+					end;
+					//
+				end;
+			end;
+			continue;
+		end;
+		4 :
+		begin
+		if toRightCity(ELVEN) then
+		begin
+			delay(3000);
+			
+			Engine.MoveTo(46033, 49770, -3086);
+			
+			moveToLoc(SkirmishStartPath);
+			
+			if not startDialog(KENDELL) then
+				continue;
+				
+			Engine.DlgSel(3); //in hf 2
+			delay(500);
+			Engine.DlgSel(1); 
+			delay(500);
+			Engine.DlgSel(1); 
+	
+			if not (Engine.QuestStatus(105, 1)) then
+			begin
+				QuestStatus := -1;
+				updateState('Quests', 'Skrimish with orcs state', -1);
+				updateState('Current state', 'Should take newbie quest', 'true');
+			end;	
+		end;	
+		end;
+		
+	//end of case
+	end;
+	delay(300);
+	end;
+end;
+
+procedure SkirmishInitArrays;
+begin
+
+	SetLength(SkirmishStartPath, 3, 3);
+	writeToArray(SkirmishStartPath[0], 45674, 50048, -3045);
+	writeToArray(SkirmishStartPath[1], 47075, 50772, -2988);
+	writeToArray(SkirmishStartPath[2], 47400, 51496, -2976);
+
+	
+	SetLength(SkirmishPath1, 16, 3);
+
+	writeToArray(SkirmishPath1[0], 45224, 49832, -3048);
+	writeToArray(SkirmishPath1[1], 43512, 50424, -2976);
+	writeToArray(SkirmishPath1[2], 43384, 50936, -2976);
+	writeToArray(SkirmishPath1[3], 42283, 51676, -2986);
+	writeToArray(SkirmishPath1[4], 40632, 52712, -3216);
+	writeToArray(SkirmishPath1[5], 39544, 52472, -3376);
+	writeToArray(SkirmishPath1[6], 38020, 51377, -3408);
+	writeToArray(SkirmishPath1[7], 36551, 50321, -3440);
+	writeToArray(SkirmishPath1[8], 34549, 49173, -3489);
+	writeToArray(SkirmishPath1[9], 32434, 48497, -3601);
+	writeToArray(SkirmishPath1[10], 30085, 47656, -3301);
+	writeToArray(SkirmishPath1[11], 28231, 46557, -2837);
+	writeToArray(SkirmishPath1[12], 26673, 45337, -3039);
+	writeToArray(SkirmishPath1[13], 25707, 44111, -3470);
+	writeToArray(SkirmishPath1[14], 24692, 42173, -3656);
+	writeToArray(SkirmishPath1[15], 24428, 41141, -3695);
+	
+	SetLength(SkirmishPath2, 14, 3);
+	
+	writeToArray(SkirmishPath2[0], 47096, 50856, -2976);
+	writeToArray(SkirmishPath2[1], 46534, 50367, -3040);
+	writeToArray(SkirmishPath2[2], 45720, 50008, -3040);
+	writeToArray(SkirmishPath2[3], 44472, 50040, -3040);
+	writeToArray(SkirmishPath2[4], 43310, 50755, -2976);
+	writeToArray(SkirmishPath2[5], 42152, 51768, -2992);
+	writeToArray(SkirmishPath2[6], 41091, 52539, -3148);
+	writeToArray(SkirmishPath2[7], 40504, 52952, -3264);
+	writeToArray(SkirmishPath2[8], 39934, 54359, -3336);
+	writeToArray(SkirmishPath2[9], 39214, 56933, -3554);
+	writeToArray(SkirmishPath2[10], 38740, 59104, -3597);
+	writeToArray(SkirmishPath2[11], 37387, 60929, -3600);
+	writeToArray(SkirmishPath2[12], 35432, 62072, -3664);
+	writeToArray(SkirmishPath2[13], 35400, 62600, -3632);
+	
+	SetLength(SkirmishPath3, 5, 3);
+
+	writeToArray(SkirmishPath3[0], 28904, 74952, -3760);
+	writeToArray(SkirmishPath3[1], 28970, 75532, -3765);
+	writeToArray(SkirmishPath3[2], 29126, 76884, -3781);
+	writeToArray(SkirmishPath3[3], 30088, 77848, -3584);
+	writeToArray(SkirmishPath3[4], 30776, 79960, -3536);
+	
+	SetLength(SkirmishPath4, 20, 3);
+	
+	writeToArray(SkirmishPath4[0],  46344, 49976, -3040);
+	writeToArray(SkirmishPath4[1],  45257, 48988, -3043);
+	writeToArray(SkirmishPath4[2],  44038, 50158, -3013);
+	writeToArray(SkirmishPath4[3],  43364, 50589, -2976);
+	writeToArray(SkirmishPath4[4],  42600, 51459, -2986);
+	writeToArray(SkirmishPath4[5],  40858, 52695, -3180);
+	writeToArray(SkirmishPath4[6],  39894, 53354, -3368);
+	writeToArray(SkirmishPath4[7],  38511, 53832, -3518);
+	writeToArray(SkirmishPath4[8],  36994, 53840, -3587);
+	writeToArray(SkirmishPath4[9],  35899, 53764, -3552);
+	writeToArray(SkirmishPath4[10], 34431, 53086, -3615);
+	writeToArray(SkirmishPath4[11], 31976, 51960, -3712);
+	writeToArray(SkirmishPath4[12], 30408, 51744, -3700);
+	writeToArray(SkirmishPath4[13], 29201, 51887, -3668);
+	writeToArray(SkirmishPath4[14], 27944, 53064, -3520);
+	writeToArray(SkirmishPath4[15], 27080, 53528, -3456);
+	writeToArray(SkirmishPath4[16], 25319, 53977, -3483);
+	writeToArray(SkirmishPath4[17], 23048, 54472, -3600);
+	writeToArray(SkirmishPath4[18], 22854, 55429, -3509);
+	writeToArray(SkirmishPath4[19], 22968, 56712, -3360);
+	
+	SetLength(SkirmishPath5, 19, 3);
+	
+	writeToArray(SkirmishPath5[0], 46584, 50328, -3040);
+	writeToArray(SkirmishPath5[1], 45352, 49037, -3034);
+	writeToArray(SkirmishPath5[2], 43448, 50408, -2976);
+	writeToArray(SkirmishPath5[3], 43199, 51064, -2977);
+	writeToArray(SkirmishPath5[4], 42102, 51820, -3024);
+	writeToArray(SkirmishPath5[5], 40924, 52649, -3168);
+	writeToArray(SkirmishPath5[6], 40198, 53225, -3313);
+	writeToArray(SkirmishPath5[7], 40337, 54667, -3382);
+	writeToArray(SkirmishPath5[8], 40876, 56472, -3629);
+	writeToArray(SkirmishPath5[9], 41001, 59055, -3575);
+	writeToArray(SkirmishPath5[10], 41097, 61050, -3533);
+	writeToArray(SkirmishPath5[11], 40598, 62660, -3541);
+	writeToArray(SkirmishPath5[12], 40008, 63608, -3600);
+	writeToArray(SkirmishPath5[13], 40495, 65314, -3625);
+	writeToArray(SkirmishPath5[14], 40680, 66424, -3680);
+	writeToArray(SkirmishPath5[15], 40838, 67347, -3587);
+	writeToArray(SkirmishPath5[16], 40988, 68225, -3499);
+	writeToArray(SkirmishPath5[17], 41090, 68818, -3440);
+	writeToArray(SkirmishPath5[18], 41304, 70040, -3344);
+	
+	SetLength(SkirmishPath6, 21, 3);
+	
+	writeToArray(SkirmishPath6[0], 46280, 49968, -3040);
+	writeToArray(SkirmishPath6[1], 45492, 48997, -3040);
+	writeToArray(SkirmishPath6[2], 44759, 49446, -3040);
+	writeToArray(SkirmishPath6[3], 43496, 50424, -2976);
+	writeToArray(SkirmishPath6[4], 43140, 51092, -2982);
+	writeToArray(SkirmishPath6[5], 41687, 52082, -3035);
+	writeToArray(SkirmishPath6[6], 40382, 53018, -3268);
+	writeToArray(SkirmishPath6[7], 39569, 54574, -3406);
+	writeToArray(SkirmishPath6[8], 38840, 56280, -3600);
+	writeToArray(SkirmishPath6[9], 38247, 58559, -3564);
+	writeToArray(SkirmishPath6[10], 37640, 61055, -3551);
+	writeToArray(SkirmishPath6[11], 37018, 64633, -3523);
+	writeToArray(SkirmishPath6[12], 36790, 65935, -3520);
+	writeToArray(SkirmishPath6[13], 36525, 67677, -3694);
+	writeToArray(SkirmishPath6[14], 37259, 69805, -3629);
+	writeToArray(SkirmishPath6[15], 37488, 71781, -3584);
+	writeToArray(SkirmishPath6[16], 37681, 73698, -3554);
+	writeToArray(SkirmishPath6[17], 37633, 74843, -3570);
+	writeToArray(SkirmishPath6[18], 37499, 77565, -3616);
+	writeToArray(SkirmishPath6[19], 37354, 80107, -3638);
+	writeToArray(SkirmishPath6[20], 37432, 82376, -3600);
+	
+	SetLength(SkirmishPath7, 28, 3);
+	
+	writeToArray(SkirmishPath7[0], 46609, 49985, -3037);
+	writeToArray(SkirmishPath7[1], 47208, 51320, -2976);
+	writeToArray(SkirmishPath7[2], 48625, 52766, -3075);
+	writeToArray(SkirmishPath7[3], 49576, 53752, -3248);
+	writeToArray(SkirmishPath7[4], 49946, 55256, -3418);
+	writeToArray(SkirmishPath7[5], 50309, 56565, -3543);
+	writeToArray(SkirmishPath7[6], 51836, 57885, -3582);
+	writeToArray(SkirmishPath7[7], 52903, 58835, -3541);
+	writeToArray(SkirmishPath7[8], 54017, 60360, -3398);
+	writeToArray(SkirmishPath7[9], 54455, 61436, -3480);
+	writeToArray(SkirmishPath7[10], 54776, 62616, -3568);
+	writeToArray(SkirmishPath7[11], 54794, 63058, -3554);
+	writeToArray(SkirmishPath7[12], 54647, 64738, -3506);
+	writeToArray(SkirmishPath7[13], 53688, 66441, -3505);
+	writeToArray(SkirmishPath7[14], 52825, 68915, -3345);
+	writeToArray(SkirmishPath7[15], 52462, 70651, -3441);
+	writeToArray(SkirmishPath7[16], 52421, 71052, -3447);
+	writeToArray(SkirmishPath7[17], 52928, 72604, -3446);
+	writeToArray(SkirmishPath7[18], 53713, 73883, -3452);
+	writeToArray(SkirmishPath7[19], 54704, 75312, -3565);
+	writeToArray(SkirmishPath7[20], 55405, 76903, -3511);
+	writeToArray(SkirmishPath7[21], 56444, 80637, -3625);
+	writeToArray(SkirmishPath7[22], 55824, 83806, -3591);
+	writeToArray(SkirmishPath7[23], 55194, 85316, -3586);
+	writeToArray(SkirmishPath7[24], 54384, 87352, -3573);
+	writeToArray(SkirmishPath7[25], 53066, 89262, -3546);
+	writeToArray(SkirmishPath7[26], 49871, 89734, -3513);
+	writeToArray(SkirmishPath7[27], 47368, 90104, -3488);
+	
+	SetLength(SkirmishPath8, 22, 3);
+	
+	writeToArray(SkirmishPath8[0], 46609, 49985, -3037);
+	writeToArray(SkirmishPath8[1], 47208, 51320, -2976);
+	writeToArray(SkirmishPath8[2], 48625, 52766, -3075);
+	writeToArray(SkirmishPath8[3], 49576, 53752, -3248);
+	writeToArray(SkirmishPath8[4], 49946, 55256, -3418);
+	writeToArray(SkirmishPath8[5], 50309, 56565, -3543);
+	writeToArray(SkirmishPath8[6], 51836, 57885, -3582);
+	writeToArray(SkirmishPath8[7], 52903, 58835, -3541);
+	writeToArray(SkirmishPath8[8], 54017, 60360, -3398);
+	writeToArray(SkirmishPath8[9], 54455, 61436, -3480);
+	writeToArray(SkirmishPath8[10], 54776, 62616, -3568);
+	writeToArray(SkirmishPath8[11], 54794, 63058, -3554);
+	writeToArray(SkirmishPath8[12], 54647, 64738, -3506);
+	writeToArray(SkirmishPath8[13], 53688, 66441, -3505);
+	writeToArray(SkirmishPath8[14], 52825, 68915, -3345);
+	writeToArray(SkirmishPath8[15], 52462, 70651, -3441);
+	writeToArray(SkirmishPath8[16], 52421, 71052, -3447);
+	writeToArray(SkirmishPath8[17], 52928, 72604, -3446);
+	writeToArray(SkirmishPath8[18], 53713, 73883, -3452);
+	writeToArray(SkirmishPath8[19], 54704, 75312, -3565);
+	writeToArray(SkirmishPath8[20], 55818, 77320, -3565);
+	writeToArray(SkirmishPath8[21], 56728, 78824, -3536);
+
+
+ 
+	
+end; 	
+
+function SkirmishWithOrcsDone: boolean;
+begin
+	Result := getState('Quests', 'Skrimish with orcs state', -1) = -1;
+end;
+
+procedure ExecuteQuestPathOfTheElvenOracle;
+var
+	i: integer;
+	obj: TL2Live;
+	currentCity: TCity;
+	npc: TL2Live;
+	questMob: TL2Live;
+	questItem: TL2Item;
+begin
+	Settings.SetFile(Script.Path + User.Name + '_Settings.ini');
+	pathOfTheElvenOracleQuestState := Settings.Load('Quests', 'Path of the Elven Oracle state', -1);
+	eeInitArrays;
+	while (Engine.Status = lsOnline) and (pathOfTheElvenOracleQuestState <> -1) do
+	begin
+	  //if AfterDeadEvt then continue
+		case pathOfTheElvenOracleQuestState of
+			0 :
+			begin
+			if isRightCity(TALKING_ISLAND) then
+			begin
+				Engine.MoveTo(-83308, 244104, -3755);
+				Engine.MoveTo(-83705, 244794, -3754);
+				Engine.MoveTo(-84137, 244573, -3755);
+				
+				NpcList.ByID(30006, npc);
+				Engine.SetTarget(npc);
+				Engine.DlgOpen;
+				delay(500);
+				Engine.DlgSel(2);
+				delay(500);
+				Engine.DlgSel(1);
+				delay(1000);
+			end;
+		
+			  if toRightCity(GLUDIO) then
+				begin
+
+				  npc := nil;
+				  NpcList.ById(MANUEL, npc);
+				  
+				  if npc = nil then
+				    continue;
+				    
+					Engine.MoveTo(npc);
+					Engine.SetTarget(npc);
+					Engine.DlgOpen;
+					delay(500);
+					Engine.DlgSel(4);
+					delay(500);
+					Engine.DlgSel(1);
+
+					if Inventory.Quest.ById(CRYSTAL_MEDALLION, questItem) then
+					begin
+					  Settings.Save('Quests', 'Path of the Elven Oracle state', 1);
+					  pathOfTheElvenOracleQuestState := 1;
+					end;  
+				end;
+			end;
+			1 :
+			begin
+					if Engine.QuestStatus(409, 4) then
+					begin
+					  Settings.Save('Quests', 'Path of the Elven Oracle state', 2);
+					  pathOfTheElvenOracleQuestState := 2;
+					  continue;
+					end;
+					
+			  if Inventory.Quest.ById(LIZARD_CAPTIAN_ORDER, questItem) then
+					begin
+					  delay(20000);
+					  npc := nil;
+					  NpcList.ById(ALLANA, npc);
+				  
+					  if npc = nil then
+						continue;
+				    
+				    Engine.MoveTo(npc);
+				    Engine.SetTarget(npc);
+				    Engine.DlgOpen;
+				    delay(500);
+				    Engine.DlgSel(1);
+
+				    continue;
+				  end;
+				  
+					
+				if isRightCity(GLUDIO) then
+				begin
+					Engine.MoveTo(-13075, 121828, -2994);
+					Engine.MoveTo(-13089, 122263, -3008);
+					Engine.MoveTo(-13289, 122481, -3016);
+					Engine.MoveTo(-13235, 122675, -3080);
+					Engine.MoveTo(-12838, 122730, -3143);
+				end;
+				
+				if toRightCity(GLUDIN) then
+				begin
+				  moveToLoc(pathOfTheElvenOracleArray1);
+				  
+				  npc := nil;
+				  NpcList.ById(ALLANA, npc);
+				  
+				  if npc = nil then
+				    continue;
+				    
+					Engine.MoveTo(npc);
+					Engine.SetTarget(npc);
+					Engine.DlgOpen;
+					Engine.DlgSel(1);
+					delay(500);
+					Engine.DlgSel(2);
+					delay(500);
+					Engine.DlgSel(2);
+					delay(500);
+					Engine.DlgSel(2);
+
+				  while not Inventory.Quest.ById(LIZARD_CAPTIAN_ORDER, questItem) or User.Dead do
+				  begin
+				    questMob := nil;
+				    NpcList.ById(LIZARD_WARRIOR, questMob);
+				    
+				    if (questMob = nil) or (User.DistTo(questMob) > 1000) then
+				      continue;
+				      
+					  while not questMob.Dead or User.Dead do
+					  begin
+				      Engine.SetTarget(questMob);
+				      Engine.UseSkill(1177);
+					  end;
+					end;  
+
+					if Inventory.Quest.ById(LIZARD_CAPTIAN_ORDER, questItem) then
+					begin
+					  delay(20000);
+					  npc := nil;
+					  NpcList.ById(ALLANA, npc);
+				  
+					  if npc = nil then
+						continue;
+				    
+				    Engine.MoveTo(npc);
+				    Engine.SetTarget(npc);
+				    Engine.DlgOpen;
+				    delay(500);
+				    Engine.DlgSel(1);
+				  end;
+				  
+					if Engine.QuestStatus(409, 4) then
+					begin
+					  Settings.Save('Quests', 'Path of the Elven Oracle state', 2);
+					  pathOfTheElvenOracleQuestState := 2;
+					end;
+				end;
+			end;
+			2 :
+			begin
+			    if Engine.QuestStatus(409, 6) then
+          begin
+            Settings.Save('Quests', 'Path of the Elven Oracle state', 3);
+            pathOfTheElvenOracleQuestState := 3;
+            continue;
+          end;
+			  if inRange(User, -90120, 151400, -3600, 7000) then
+			  begin
+
+			    Engine.MoveTo(-91148, 153578, -3534);
+					Engine.MoveTo(-90238, 152220, -3659);
+          print('1');
+			    moveToLoc(pathOfTheElvenOracleArray2);
+
+			    	npc := nil;
+				    NpcList.ById(PERRIN, npc);
+				  
+				    if npc = nil then
+				      break;
+				    
+				    Engine.MoveTo(npc);
+				    Engine.SetTarget(npc);
+				    Engine.DlgOpen;
+				    Engine.DlgSel(1);
+				    delay(500);
+				    Engine.DlgSel(1);
+				    delay(500);
+				    Engine.DlgSel(1);
+
+				  while not Inventory.Quest.ById(TAMILS_NECKLACE, questItem) and not User.Dead do
+				  begin
+				  
+				    questMob := nil;
+				    NpcList.ById(TAMIL, questMob);  //возможно сделать через цикл, ч
+				                              //то бы брать с макс. хп(типо своего)
+
+				    if (questMob = nil) or (User.DistTo(questMob) > 3000) then
+				      continue;
+
+				    while not questMob.Dead and not User.Dead do
+				    begin
+				      Engine.SetTarget(questMob);
+				      Engine.UseSkill(1177);
+				    end;  
+				    
+				    delay(100);
+				  end;
+
+          if Inventory.Quest.ById(TAMILS_NECKLACE, questItem) then
+          begin
+            npc := nil;
+            NpcList.ById(PERRIN, npc);
+				    if npc = nil then
+				      continue;
+				    
+				    Engine.MoveTo(npc);
+				    Engine.SetTarget(npc);
+				    Engine.DlgOpen;
+				    delay(500);
+				    Engine.DlgSel(1);     
+          end;
+
+          if Engine.QuestStatus(409, 6) then
+          begin
+            Settings.Save('Quests', 'Path of the Elven Oracle state', 3);
+            pathOfTheElvenOracleQuestState := 3;  
+          end;
+			    
+			  end
+			  else if toRightCity(GLUDIN) then
+			  begin
+			      moveToLoc(pathOfTheElvenOracleArray3);
+			  end; 
+			end;
+			3 :
+			begin
+			  if Engine.QuestStatus(409, 7) then
+        begin
+          Settings.Save('Quests', 'Path of the Elven Oracle state', 4);
+          pathOfTheElvenOracleQuestState := 4;       
+        end;
+          
+			  if inRange(User, -90120, 151400, -3600, 7000) then
+			  begin
+			    moveToLoc(pathOfTheElvenOracleArray4);
+
+			    npc := nil;
+			    NpcList.ById(ALLANA, npc);
+				  if npc = nil then
+				    break;
+
+				  Engine.MoveTo(npc);
+				  Engine.SetTarget(npc);
+				  Engine.DlgOpen;
+				  delay(500);
+				  Engine.DlgSel(1);
+				  continue;
+			    
+			  end
+			  else if toRightCity(GLUDIN) then
+			  begin
+			    moveToLoc(pathOfTheElvenOracleArray5);
+			  end;  
+			end;
+			4 :
+			begin
+			  if toRightCity(GLUDIO) then
+			  begin
+			    npc := nil;
+				  NpcList.ById(MANUEL, npc);
+				  
+				  if npc = nil then
+				    break;
+				    
+					Engine.MoveTo(npc);
+					Engine.SetTarget(npc);
+					Engine.DlgOpen;
+					delay(500);
+					Engine.DlgSel(4);
+
+					if Inventory.Quest.ById(LEAF_OF_ORACLE, questItem) then
+					begin
+					  Settings.Save('Quests', 'Path of the Elven Oracle state', -1);
+					  pathOfTheElvenOracleQuestState := -1;
+					end;  
+			  end;
+			end;
+			-1 :
+			  print('Quest done or not taken');
+		end;	
+	delay(500);	
+	end;	
+end;
+
+procedure eeInitArrays;
+begin
+	SetLength(pathOfTheElvenOracleArray1, 9, 3);
+	SetLength(pathOfTheElvenOracleArray2, 5, 3);
+	SetLength(pathOfTheElvenOracleArray3, 7, 3);
+	SetLength(pathOfTheElvenOracleArray4, 7, 3);
+	SetLength(pathOfTheElvenOracleArray5, 7, 3);
+	
+	writeToArray(pathOfTheElvenOracleArray1[0], -80856, 150040, -3024);
+	writeToArray(pathOfTheElvenOracleArray1[1], -81909, 150926, -3067);
+	writeToArray(pathOfTheElvenOracleArray1[2], -83064, 151912, -3104);
+	writeToArray(pathOfTheElvenOracleArray1[3], -83080, 152824, -3152);
+	writeToArray(pathOfTheElvenOracleArray1[4], -85448, 152760, -3152);
+	writeToArray(pathOfTheElvenOracleArray1[5], -87736, 153112, -3248);
+	writeToArray(pathOfTheElvenOracleArray1[6], -88933, 153349, -3591);
+	writeToArray(pathOfTheElvenOracleArray1[7], -90863, 153536, -3586);
+	writeToArray(pathOfTheElvenOracleArray1[8], -91912, 154088, -3336);
+	
+	writeToArray(pathOfTheElvenOracleArray2[0], -90200, 152792, -3632);
+	writeToArray(pathOfTheElvenOracleArray2[1], -89528, 148760, -3432);
+	writeToArray(pathOfTheElvenOracleArray2[2], -89103, 147753, -3070);
+	writeToArray(pathOfTheElvenOracleArray2[3], -89656, 147096, -3056);
+	writeToArray(pathOfTheElvenOracleArray2[4], -92920, 147480, -2720);
+	
+	writeToArray(pathOfTheElvenOracleArray3[0], -80856, 150040, -3024);
+	writeToArray(pathOfTheElvenOracleArray3[1], -81909, 150926, -3067);
+	writeToArray(pathOfTheElvenOracleArray3[2], -83064, 151912, -3104);
+	writeToArray(pathOfTheElvenOracleArray3[3], -83080, 152824, -3152);
+	writeToArray(pathOfTheElvenOracleArray3[4], -85448, 152760, -3152);
+	writeToArray(pathOfTheElvenOracleArray3[5], -87736, 153112, -3248);
+	writeToArray(pathOfTheElvenOracleArray3[6], -88933, 153349, -3591);
+	
+	writeToArray(pathOfTheElvenOracleArray4[0], -89736, 147256, -3056);
+	writeToArray(pathOfTheElvenOracleArray4[1], -89256, 147768, -3088);
+	writeToArray(pathOfTheElvenOracleArray4[2], -89338, 149168, -3499);
+	writeToArray(pathOfTheElvenOracleArray4[3], -89728, 150579, -3581);
+	writeToArray(pathOfTheElvenOracleArray4[4], -90650, 153074, -3628);
+	writeToArray(pathOfTheElvenOracleArray4[5], -91401, 153766, -3482);
+	writeToArray(pathOfTheElvenOracleArray4[6], -92152, 154184, -3312);
+
+	writeToArray(pathOfTheElvenOracleArray5[0], -80856, 150040, -3024);
+	writeToArray(pathOfTheElvenOracleArray5[1], -81909, 150926, -3067);
+	writeToArray(pathOfTheElvenOracleArray5[2], -83064, 151912, -3104);
+	writeToArray(pathOfTheElvenOracleArray5[3], -83080, 152824, -3152);
+	writeToArray(pathOfTheElvenOracleArray5[4], -85448, 152760, -3152);
+	writeToArray(pathOfTheElvenOracleArray5[5], -87736, 153112, -3248);
+	writeToArray(pathOfTheElvenOracleArray5[6], -88933, 153349, -3591);
+				
+end; 	
+
+function PathOfTheElvenOracleDone: boolean;
+begin
+	Result := getState('Quests', 'Path of the Elven Oracle state', -1) = -1;
+end;
+
+procedure ExecuteWalkOfFate;
+var
+	i: integer;
+	questItem: TL2Item;
+	npc: TL2Npc;
+begin
+	walkInitArrays;
+	QuestStatus := getState('Quests', 'Walk of fate state', -1);
+	while (Engine.Status = lsOnline) and (QuestStatus <> -1) do
+	begin		
+	delay(200);
+	
+	case QuestStatus of
+		0 :
+		begin
+		if toRightCity(ORC) then
+		begin
+
+			moveToLoc(walkStartPath); 
+			
+			if not startDialog(LIVINA) then
+				continue;
+				
+			Engine.DlgSel(4);
+			delay(500);
+			Engine.DlgSel(2);
+			delay(500);
+			Engine.DlgSel(1);
+	
+			if (Engine.QuestStatus(112, 1)) then
+			begin
+				QuestStatus := 1;
+				updateState('Quests', 'Walk of fate state', 1);
+			end;	
+		end;
+		end;
+		1 :
+		begin
+			if not inRange(User, 47736, -115768, -3728, 1500) and isRightCity(ORC, false) then
+			begin
+
+				if inRange(User, -45928, -112600, -184, 700) then
+					moveToLoc(revertArray(walkStartPath));
+					
+				if not startDialog(TAMILA) then
+					continue;
+					
+				Engine.DlgSel(1);
+				delay(500);
+				Engine.DlgSel(2);
+				
+				delay(4 * 1000);
+				continue;
+					
+			end;
+			
+			if not inRange(User, 47736, -115768, -3728, 1500) and toRightCity(SHTUTTGART) then
+			begin
+				
+				if not startDialog(BILIA) then
+					continue;
+					
+				Engine.DlgSel(1);
+				delay(500);
+				Engine.DlgSel(14);
+				
+				delay(4 * 1000);
+				
+			end;
+			
+			if not startDialog(KARUDA) then
+				continue;
+				
+				Engine.DlgSel(1);
+				delay(500);
+				Engine.DlgSel(3);
+				delay(500);
+				Engine.DlgSel(1);
+			
+			if not Engine.QuestStatus(112, 1) then
+			begin
+				QuestStatus := -1;
+				updateState('Quests', 'Walk of fate state', -1);	
+			end;
+		end;
+		
+		
+	//end of case
+	end;
+	delay(300);
+	end;
+end;
+
+procedure WalkInitArrays;
+begin
+
+	SetLength(walkStartPath, 5, 3);        
+  
+	writeToArray(walkStartPath[0], -44872, -112840, -224);
+	writeToArray(walkStartPath[1], -45432, -113512, -224);
+	writeToArray(walkStartPath[2], -46248, -113608, -184);
+	writeToArray(walkStartPath[3], -46376, -112776, -184);
+	writeToArray(walkStartPath[4], -45976, -112584, -184);
+	
+end; 	
+
+function walkOfFateDone: boolean;
+begin
+	Result := getState('Quests', 'Walk of fate state', -1) = -1;
+end;
+
+procedure ExecuteOminousNews;
+var
+	i: integer;
+	questItem: TL2Item;
+	npc: TL2Npc;
+begin
+	ominusInitArrays;
+	OQuestStatus := getState('Quests', 'Ominous news state', -1);
+	while (Engine.Status = lsOnline) and (OQuestStatus <> -1) do
+	begin		
+	delay(200);
+	mutex;
+	case OQuestStatus of
+		0 :
+		begin
+		if toRightCity(SHTUTTGART) then
+		begin
+			
+			moveToLoc(OminusStartPath); 
+			
+			if not startDialog(MOIRA) then
+				continue;
+				
+			Engine.DlgSel(3);
+			delay(500);
+			Engine.DlgSel(1);
+			delay(500);
+			Engine.DlgSel(1);
+	
+			if (Engine.QuestStatus(122, 1)) then
+			begin
+				OQuestStatus := 1;
+				updateState('Quests', 'Ominous news state', 1);
+			end;	
+		end;
+		
+		end;
+		1 :
+		begin
+			if inRange(User, 90168, -143244, -1504, 500) then
+				moveToLoc(revertArray(OminusStartPath));
+					
+			if not walkOfFateDone then
+				ExecuteWalkOfFate;
+			
+			if not inRange(User, 47736, -115768, -3728, 1500) and toRightCity(SHTUTTGART) then
+			begin
+				
+					
+				if not startDialog(BILIA) then
+					continue;
+					
+				Engine.DlgSel(1);
+				delay(500);
+				Engine.DlgSel(14);
+				
+				delay(4 * 1000);
+					
+			end;
+			
+			if not startDialog(KARUDA) then
+				continue;
+				
+				Engine.DlgSel(1);
+				delay(500);
+				Engine.DlgSel(2);
+				delay(500);
+				Engine.DlgSel(1);
+			
+			if not Engine.QuestStatus(122, 1) then
+			begin
+				OQuestStatus := -1;
+				updateState('Quests', 'Ominous news state', -1);
+			end;
+		end;
+		
+		
+	//end of case
+	end;
+	delay(300);
+	end;
+end;
+
+procedure ominusInitArrays;
+begin
+
+	SetLength(OminusStartPath, 7, 3);        
+  
+	writeToArray(OminusStartPath[0], 86984, -143128, -1280);
+	writeToArray(OminusStartPath[1], 87815, -142695, -1321);
+	writeToArray(OminusStartPath[2], 88312, -142552, -1328);
+	writeToArray(OminusStartPath[3], 88904, -142248, -1328);
+	writeToArray(OminusStartPath[4], 89752, -141768, -1520);
+	writeToArray(OminusStartPath[5], 90616, -143160, -1520);
+	writeToArray(OminusStartPath[6], 90168, -143224, -1504);
+	
+
+	
+end; 	
+
+function ominousNewsDone: boolean;
+begin
+	Result := getState('Quests', 'Ominous news state', -1) = -1;
+end;
+
+function shouldSuspend: boolean;
+begin
+  Result := (afterDeathEvt - getTickCount) > 0;
+end;
+
+procedure checkProc;
+var
+  isPaused: boolean;
+begin
+  isPaused := false;
+  while true do
+  begin
+    mutex;
+    print('wrking');    
+    Engine.MoveTo(44687, 40540, -3504); 
+    Engine.MoveTo(45361, 40744, -3535);   
+    Engine.MoveTo(45085, 41067, -3534);   
+    Engine.MoveTo(44592, 40723, -3535); 
+    delay(500);   
+  end;
+end;
+
+procedure mutex;
+begin
+  while shouldSuspend do
+  begin
+    delay(50);
+  end; 
+end;
+
+procedure killAgroMobsThread;
+var
+  mobsArr: array of TL2Live;
+begin
+  while Engine.Status = lsOnline do
+  begin
+    mobsArr := countAgroMobsOnUser;
+    if Length(mobsArr) > 0 then
+    begin
+      killAgroMobs(mobsArr);
+    end;
+
+  delay(500);
+  end;
+end;
+
+procedure killAgroMobs(arr: array of TL2Live);
+var
+  i: integer;
+begin
+  
+  for i:=0 to Length(arr)-1 do
+  begin
+    if arr[i].dead or (arr[i].target <> User) then
+      continue;
+     
+    while not arr[i].dead and not User.Dead do
+    begin
+      	if isMage1 then
+				begin
+					Engine.SetTarget(arr[i]);
+					Engine.UseSkill(1177);
+				end;	
+				
+				if not isMage1 then
+				begin
+					Engine.SetTarget(arr[i]);
+					Engine.Attack;
+				end;
+				delay(500);
+    end;
+  end;
+end;
+
+function countAgroMobsOnUser: array of TL2Live;
+var
+  i: integer;
+begin
+  SetLength(Result, 0);
+  for i:=0 to NpcList.Count-1 do
+  begin
+    if (NpcList.Items(i).Target = User) and not NpcList.Items(i).Dead and (NpcList.Items(i) <> nil) then
+    begin
+      SetLength(Result, Length(Result) + 1);
+      Result[Length(Result)-1] := NpcList.items(i);
+    end;
+  end;
+end;
+
+procedure soulShotController;
+var
+  i: integer;
+begin
+  while true do
+  begin
+    for i:=0 to Inventory.User.Count-1 do
+    begin
+      if (Pos('Spiritshot', Inventory.User.Items(i).Name) <> 0)
+      or (Pos('Soulshot', Inventory.User.Items(i).Name) <> 0) then
+        Engine.AutoSoulshot(Inventory.User.Items(i).Name, true);
+    end;
+    delay(10 * 1000);
+  end;
+end;
+
+
+procedure foo;
+var
+  questItem : tl2item;
+begin
+  print(Engine.QuestStatus(409, 7));
+end;
+
+procedure selfHeal;
+begin
+  while true do
+  begin
+  delay(50);
+  if (Length(countAgroMobsOnUser) = 0) and (User.HP < 90) then
+    Engine.UseSkill(1216);  
+
+  end;
+end;
+
+
+begin
+  initBuffPathArrays; // initializes the movements from respawn to buffer
+  script.newthread(@deathEvt);
+  script.newThread(@killAgroMobsThread);
+  script.newThread(@soulShotController);
+  script.newThread(@selfHeal);
+  exp1_18;                
+end.
+	

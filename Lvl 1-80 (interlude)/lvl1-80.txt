@@ -1,0 +1,33 @@
+{
+--------------------------------------------------------------------------------
+Script to get to level 80 in interlude
+--------------------------------------------------------------------------------
+}
+
+type
+	TSecondClass = (NONE, FIGHTER, MAGE, WARRIOR, KNIGHT, ROGUE, HEALER, ENCHANTER, SUMMONER, WIZARD);
+	TClassType = record
+		isMage: boolean;
+		secondClass: TSecondClass;
+	end;
+
+function  isMage: Boolean;
+begin
+  if  User.Class = Mage  then 
+end;
+  
+BEGIN
+var
+  Newbie_Helper: TL2Live = 30530;
+  Gremlin: TL2Live = 18342;
+  
+  Engine.SetTarget (Newbie_Helper);
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+  Print ('Kill Gremlins to obtain Soulshots');
+  while  User.Level < 3 do
+  begin
+    Engine.SetTarget (Gremlin);
+    Delay (
+  end;
+END.

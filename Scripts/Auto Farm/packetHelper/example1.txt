@@ -1,0 +1,39 @@
+uses SysUtils, PacketHelper;
+
+procedure OnPacket(ID, ID2: Cardinal; Data: Pointer; Size: Word);
+var
+  charName : String;
+  character: TL2Live;
+  i, j: cardinal;
+  packet: TL2Packet;
+begin
+  case intToHex(id, 2) of
+    '62' :
+    begin
+      packet.fetchFromMemory(script.path + 'packetsInterlude.ini', id, id2, data, size);
+      print('======');
+      print('@' + packet.name);
+      for i:= 0 to high(packet.contents) do
+      begin
+        
+        if packet.contents[i].valueType = lpvList then
+        begin
+          for j:= 0 to high(packet.contents[i].listValue) do
+          begin
+            print(format('%s[%d] : %s', [packet.contents[i].listValue[j].name, j, packet.contents[i].listValue[j].stringValue]));
+          end;
+        end
+        else
+        begin
+          print(format('%s : %s', [packet.contents[i].name, packet.contents[i].stringValue]));
+        end;
+        
+      end;
+    end;
+  end;
+  
+end;
+
+begin
+  delay(-1);
+end.

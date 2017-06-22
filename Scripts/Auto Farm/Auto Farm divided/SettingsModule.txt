@@ -1,0 +1,22 @@
+unit SettingsModule;
+
+interface
+
+uses Classes;
+
+type
+    TCity = (DWARVEN = 0, ORC = 1, DARK_ELVEN = 2, ELVEN = 3, KAMAEL = 4,
+        TALKING_ISLAND = 5, HEINE = 6, DION = 7, GIRAN = 8, ADEN = 9, GODDARD = 10,
+        GLUDIO = 11, GLUDIN = 12, SHTUTTGART = 13, RUNE = 14, OREN = 15, HUNTER = 16, NON_CITY = 17);
+
+var
+item: TL2Item;
+inFight: boolean;
+Buff: TL2Buff;
+
+
+implementation
+
+
+BEGIN
+END.

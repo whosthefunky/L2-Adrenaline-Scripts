@@ -1,0 +1,24 @@
+uses sysutils,classes;
+var
+alarm:boolean= false;
+
+procedure OnPacket(ID, ID2: Cardinal; Data: Pointer; Size: Word);
+begin
+  if (IntToHex(ID, 2) = 'A0') and (not alarm) then alarm:= true;
+end;
+
+procedure doAlarm;
+begin
+  while Delay(1111) do
+  begin
+    if alarm then begin
+      playsound(exepath+'sounds\playeralarm.wav');
+      delay(2222);
+    end;
+  end;
+end;
+
+begin
+  script.newthread(@doAlarm);
+  delay(-1);
+end.

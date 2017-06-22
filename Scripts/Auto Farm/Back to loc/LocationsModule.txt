@@ -1,0 +1,974 @@
+unit CityModule;
+
+interface
+
+uses SettingsModule;
+
+procedure InCity;
+
+implementation
+
+{ 
+    For every city checks it's respawns and move you from the one in which you are
+    to a position near to the city Gatekeeper
+}
+procedure InCity;
+var
+	City: TCity;
+	Moved : Boolean;
+	NPC: TL2Npc;
+	NewResp : TStringList;
+begin
+  City := GetCity;
+  //-----------------------talking island--------------------------------
+  if City = TALKING_ISLAND then begin
+    if User.InRange(-84376,242824,-3712, 3000, 150) then begin
+      Engine.MoveTo(-84184, 243448, -3712);
+      Engine.MoveTo(-84280, 243800, -3712);
+      Engine.MoveTo(-84552, 244040, -3712);
+      Engine.MoveTo(-84184, 244504, -3712);
+    end;
+    if User.InRange(-84200, 244488, -3728, 500, 150) then Moved := true;
+  end;
+  //-----------------------heine--------------------------------
+  if City = HEINE then begin
+    if User.InRange(110912,219584,-3664, 250, 150) then begin
+      Engine.MoveTo(110912,219584,-3664);
+      Engine.MoveTo(111154,219735,-3675);
+      Engine.MoveTo(111176,219395,-3546);
+      Engine.MoveTo(111387,219387,-3544);
+    end;
+    if User.InRange(111888,219584,-3664, 250, 150) then begin
+      Engine.MoveTo(111888,219584,-3664);
+      Engine.MoveTo(111617,219703,-3674);
+      Engine.MoveTo(111591,219371,-3544);
+      Engine.MoveTo(111387,219387,-3544);
+    end;
+    if User.InRange(112064,219792,-3664, 250, 150) then begin
+      Engine.MoveTo(112064,219792,-3664);
+      Engine.MoveTo(111665,219800,-3675);
+      Engine.MoveTo(111580,219329,-3544);
+      Engine.MoveTo(111387,219387,-3544);
+    end;
+    if User.InRange(107808,217856,-3672, 250, 150) then begin
+      Engine.MoveTo(107808,217856,-3672);
+      Engine.MoveTo(107769,217524,-3673);
+      Engine.MoveTo(109387,217509,-3747);
+      Engine.MoveTo(110037,217257,-3747);
+      Engine.MoveTo(110072,219029,-3477);
+      Engine.MoveTo(111202,219130,-3541);
+      Engine.MoveTo(111387,219387,-3544);
+    end;
+    if User.InRange(110896,220768,-3664, 250, 150) then begin
+      Engine.MoveTo(110896,220768,-3664);
+      Engine.MoveTo(111191,219621,-3663);
+      Engine.MoveTo(111190,219303,-3544);
+      Engine.MoveTo(111387,219387,-3544);
+    end;
+    if User.InRange(110768,219824,-3664, 250, 150) then begin
+      Engine.MoveTo(110768,219824,-3664);
+      Engine.MoveTo(111163,219763,-3671);
+      Engine.MoveTo(111199,219319,-3544);
+      Engine.MoveTo(111387,219387,-3544);
+    end;
+    if User.InRange(112112,220576,-3664, 250, 150) then begin
+      Engine.MoveTo(112112,220576,-3664);
+      Engine.MoveTo(111600,219666,-3669);
+      Engine.MoveTo(111586,219305,-3544);
+      Engine.MoveTo(111387,219387,-3544);
+    end;
+    if User.InRange(110688,220576,-3664, 250, 150) then begin
+      Engine.MoveTo(110688,220576,-3664);
+      Engine.MoveTo(111183,219655,-3669);
+      Engine.MoveTo(111201,219292,-3544);
+      Engine.MoveTo(111387,219387,-3544);
+    end;
+    if User.InRange(108032,218048,-3672, 250, 150) then begin
+      Engine.MoveTo(108032,218048,-3672);
+      Engine.MoveTo(107862,218003,-3673);
+      Engine.MoveTo(107840,217532,-3673);
+      Engine.MoveTo(109383,217465,-3747);
+      Engine.MoveTo(110036,217280,-3747);
+      Engine.MoveTo(110096,219040,-3478);
+      Engine.MoveTo(111086,219100,-3541);
+      Engine.MoveTo(111387,219387,-3544);
+    end;
+    if User.InRange(107568,218256,-3672, 250, 150) then begin
+      Engine.MoveTo(107568,218256,-3672);
+      Engine.MoveTo(107542,217872,-3673);
+      Engine.MoveTo(107840,217532,-3673);
+      Engine.MoveTo(109383,217465,-3747);
+      Engine.MoveTo(110036,217280,-3747);
+      Engine.MoveTo(110096,219040,-3478);
+      Engine.MoveTo(111086,219100,-3541);
+      Engine.MoveTo(111387,219387,-3544);
+    end;
+    if User.InRange(107552,218000,-3672, 250, 150) then begin
+      Engine.MoveTo(107552,218000,-3672);
+      Engine.MoveTo(107862,218003,-3673);
+      Engine.MoveTo(107840,217532,-3673);
+      Engine.MoveTo(109383,217465,-3747);
+      Engine.MoveTo(110036,217280,-3747);
+      Engine.MoveTo(110096,219040,-3478);
+      Engine.MoveTo(111086,219100,-3541);
+      Engine.MoveTo(111387,219387,-3544);
+    end;
+    if User.InRange(111856,220752,-3664, 250, 150) then begin
+      Engine.MoveTo(111856,220752,-3664);
+      Engine.MoveTo(111573,219730,-3675);
+      Engine.MoveTo(111589,219342,-3544);
+      Engine.MoveTo(111387,219387,-3544);
+    end;
+    if User.InRange(111387,219387,-3544, 250, 150) then Moved := true;
+  end;
+  //-----------------------dion--------------------------------
+  if City = DION then begin
+    if User.InRange(19134,144847,-3096, 250, 150) then begin
+      Engine.MoveTo(19134,144847,-3096);
+      Engine.MoveTo(18041,144052,-3057);
+      Engine.MoveTo(16727,144111,-2980);
+      Engine.MoveTo(15933,143331,-2771);
+      Engine.MoveTo(15628,142920,-2704);
+    end;
+    if User.InRange(18954,144428,-3096, 250, 150) then begin
+      Engine.MoveTo(18954,144428,-3096);
+      Engine.MoveTo(18600,144387,-3070);
+      Engine.MoveTo(17733,143924,-3037);
+      Engine.MoveTo(16711,144167,-2980);
+      Engine.MoveTo(16622,144034,-2932);
+      Engine.MoveTo(15963,143381,-2784);
+      Engine.MoveTo(15628,142920,-2704);
+    end;
+    if User.InRange(19012,145140,-3120, 250, 150) then begin
+      Engine.MoveTo(19012,145140,-3120);
+      Engine.MoveTo(19021,145126,-3123);
+      Engine.MoveTo(17600,145497,-3079);
+      Engine.MoveTo(16468,144129,-2964);
+      Engine.MoveTo(15628,142920,-2704);
+    end;
+    if User.InRange(19613,145607,-3104, 250, 150) then begin
+      Engine.MoveTo(19613,145607,-3104);
+      Engine.MoveTo(17638,145591,-3084);
+      Engine.MoveTo(16214,143659,-2863);
+      Engine.MoveTo(15628,142920,-2704);
+    end;
+    if User.InRange(18576,145136,-3104, 250, 150) then begin
+      Engine.MoveTo(18576,145136,-3104);
+      Engine.MoveTo(17727,145541,-3082);
+      Engine.MoveTo(16414,144174,-2969);
+      Engine.MoveTo(15628,142920,-2704);
+    end;
+    if User.InRange(17398,145456,-3048, 250, 150) then begin
+      Engine.MoveTo(17398,145456,-3048);
+      Engine.MoveTo(17727,145541,-3082);
+      Engine.MoveTo(16414,144174,-2969);
+      Engine.MoveTo(15628,142920,-2704);
+    end;
+    if User.InRange(17144,145055,-3024, 250, 150) then begin
+      Engine.MoveTo(17144,145055,-3024);
+      Engine.MoveTo(16350,143905,-2923);
+      Engine.MoveTo(15628,142920,-2704);
+    end;
+    if User.InRange(18078,145925,-3112, 250, 150) then begin
+      Engine.MoveTo(18078,145925,-3112);
+      Engine.MoveTo(16559,144353,-2987);
+      Engine.MoveTo(15628,142920,-2704);
+    end;
+    if User.InRange(19150,143941,-3056, 250, 150) then begin
+      Engine.MoveTo(19150,143941,-3056);
+      Engine.MoveTo(18112,145633,-3104);
+      Engine.MoveTo(17108,145059,-3031);
+      Engine.MoveTo(16469,144176,-2969);
+      Engine.MoveTo(15628,142920,-2704);
+    end;
+    if User.InRange(18512,145536,-3120, 250, 150) then begin
+      Engine.MoveTo(18512,145536,-3120);
+      Engine.MoveTo(17226,145360,-3048);
+      Engine.MoveTo(16419,143955,-2935);
+      Engine.MoveTo(15628,142920,-2704);
+    end;
+    if User.InRange(18717,145711,-3080, 250, 150) then begin
+      Engine.MoveTo(18717,145711,-3080);
+      Engine.MoveTo(17226,145360,-3048);
+      Engine.MoveTo(16419,143955,-2935);
+      Engine.MoveTo(15628,142920,-2704);
+    end;
+    if User.InRange(15628,142920,-2704, 250, 150) then Moved := true;
+  end;
+  //-----------------------giran--------------------------------
+  if CITY = giran then begin
+    if User.InRange(81376,148095,-3464, 250, 150) then begin
+      Engine.MoveTo(81376,148095,-3464);
+      Engine.MoveTo(81881,148025,-3467);
+      Engine.MoveTo(83027,148020,-3467);
+      Engine.MoveTo(83402,147946,-3403);
+    end;
+    if User.InRange(82292,149450,-3464, 250, 150) then begin
+      Engine.MoveTo(82292,149450,-3464);
+      Engine.MoveTo(82865,148876,-3467);
+      Engine.MoveTo(83054,148281,-3467);
+      Engine.MoveTo(83402,147946,-3403);
+    end;
+    if User.InRange(81562,147782,-3464, 250, 150) then begin
+      Engine.MoveTo(81562,147782,-3464);
+      Engine.MoveTo(82284,148077,-3467);
+      Engine.MoveTo(83077,148159,-3467);
+      Engine.MoveTo(83402,147946,-3403);
+    end;
+    if User.InRange(83409,148578,-3400, 250, 150) then begin
+      Engine.MoveTo(83409,148578,-3400);
+      Engine.MoveTo(83427,148206,-3403);
+      Engine.MoveTo(83402,147946,-3403);
+    end;
+    if User.InRange(81440,149119,-3464, 250, 150) then begin
+      Engine.MoveTo(81440,149119,-3464);
+      Engine.MoveTo(82200,149222,-3467);
+      Engine.MoveTo(82722,148485,-3467);
+      Engine.MoveTo(83087,148101,-3467);
+      Engine.MoveTo(83402,147946,-3403);
+    end;
+    if User.InRange(82496,148095,-3464, 250, 150) then begin
+      Engine.MoveTo(82496,148095,-3464);
+      Engine.MoveTo(83092,148094,-3467);
+      Engine.MoveTo(83402,147946,-3403);
+    end;
+    if User.InRange(83473,149223,-3400, 250, 150) then begin
+      Engine.MoveTo(83473,149223,-3400);
+      Engine.MoveTo(83355,148728,-3403);
+      Engine.MoveTo(83358,148292,-3403);
+      Engine.MoveTo(83402,147946,-3403);
+    end;
+    if User.InRange(82272,147801,-3464, 250, 150) then begin
+      Engine.MoveTo(82272,147801,-3464);
+      Engine.MoveTo(82565,148080,-3467);
+      Engine.MoveTo(83101,148099,-3467);
+      Engine.MoveTo(83402,147946,-3403);
+    end;
+    if User.InRange(82480,149087,-3464, 250, 150) then begin
+      Engine.MoveTo(82480,149087,-3464);
+      Engine.MoveTo(82623,148694,-3467);
+      Engine.MoveTo(83087,148157,-3467);
+      Engine.MoveTo(83402,147946,-3403);
+    end;
+    if User.InRange(81637,149427,-3464, 250, 150) then begin
+      Engine.MoveTo(81637,149427,-3464);
+      Engine.MoveTo(82229,149197,-3467);
+      Engine.MoveTo(82610,148669,-3467);
+      Engine.MoveTo(83088,148170,-3467);
+      Engine.MoveTo(83402,147946,-3403);
+    end;
+    if User.InRange(81062,148144,-3464, 250, 150) then begin
+      Engine.MoveTo(81062,148144,-3464);
+      Engine.MoveTo(81574,147997,-3467);
+      Engine.MoveTo(82302,147975,-3467);
+      Engine.MoveTo(83070,148109,-3467);
+      Engine.MoveTo(83402,147946,-3403);
+    end;
+    if User.InRange(83426,148835,-3400, 250, 150) then begin
+      Engine.MoveTo(83426,148835,-3400);
+      Engine.MoveTo(83422,148276,-3403);
+      Engine.MoveTo(83402,147946,-3403);
+    end;
+    if User.InRange(81033,148883,-3464, 250, 150) then begin
+      Engine.MoveTo(81033,148883,-3464);
+      Engine.MoveTo(81769,149191,-3467);
+      Engine.MoveTo(82322,149192,-3467);
+      Engine.MoveTo(82622,148656,-3467);
+      Engine.MoveTo(83079,148163,-3467);
+      Engine.MoveTo(83402,147946,-3403);
+    end;
+    if User.InRange(83415,148235,-3400, 250, 150) then begin
+      Engine.MoveTo(83415,148235,-3400);
+      Engine.MoveTo(83402,147946,-3403);
+    end;
+    if User.InRange(83402,147946,-3403,250,150) then Moved := true;
+  end;
+  //-----------------------aden--------------------------------
+  if CITY = ADEN then begin
+    if User.inrange(146811,27109,-2231,500)  then begin
+      Engine.MoveTo(146811,27109,-2231);
+      Engine.MoveTo(147289,26926,-2229);
+      Engine.MoveTo(147267,26400,-2185);
+      Engine.MoveTo(147266,26195,-2103);
+      Engine.MoveTo(147250,25969,-2039);
+      Engine.MoveTo(147206,25899,-2039);
+      Engine.MoveTo(147138,25906,-2039);
+    end;
+    if User.inrange(146810,28059,-2294,500)  then begin
+      Engine.MoveTo(146810,28059,-2294);
+      Engine.MoveTo(146847,27874,-2294);
+      Engine.MoveTo(147004,27611,-2294);
+      Engine.MoveTo(147004,27611,-2294);
+      Engine.MoveTo(147004,27611,-2232);
+      Engine.MoveTo(147244,26822,-2230);
+      Engine.MoveTo(147267,26400,-2185);
+      Engine.MoveTo(147266,26195,-2103);
+      Engine.MoveTo(147250,25969,-2039);
+      Engine.MoveTo(147206,25899,-2039);
+      Engine.MoveTo(147138,25906,-2039);
+    end;
+    if User.inrange(145686,21112,-2167,500)  then begin
+      Engine.MoveTo(145686,21112,-2167);
+      Engine.MoveTo(145697,21616,-2167);
+      Engine.MoveTo(145050,22609,-2167);
+      Engine.MoveTo(145218,23947,-2167);
+      Engine.MoveTo(146377,24455,-2039);
+      Engine.MoveTo(146484,25685,-2039);
+      Engine.MoveTo(147130,25700,-2039);
+      Engine.MoveTo(147112,25921,-2039);
+    end;
+    if User.inrange(148076,27069,-2231,500)  then begin
+      Engine.MoveTo(148076,27069,-2231);
+      Engine.MoveTo(147666,27110,-2230);
+      Engine.MoveTo(147308,26954,-2230);
+      Engine.MoveTo(147267,26400,-2185);
+      Engine.MoveTo(147266,26195,-2103);
+      Engine.MoveTo(147250,25969,-2039);
+      Engine.MoveTo(147206,25899,-2039);
+      Engine.MoveTo(147138,25906,-2039);
+    end;
+    if User.inrange(148949,21125,-2167,500)  then begin
+      Engine.MoveTo(148949,21125,-2167);
+      Engine.MoveTo(146122,21227,-2167);
+      Engine.MoveTo(145697,21616,-2167);
+      Engine.MoveTo(145050,22609,-2167);
+      Engine.MoveTo(145218,23947,-2167);
+      Engine.MoveTo(146377,24455,-2039);
+      Engine.MoveTo(146484,25685,-2039);
+      Engine.MoveTo(147130,25700,-2039);
+      Engine.MoveTo(147112,25921,-2039);
+    end;
+    if User.inrange(144549,22828,-2167,500)  then begin
+      Engine.MoveTo(144549,22828,-2167);
+      Engine.MoveTo(145697,21616,-2167);
+      Engine.MoveTo(145050,22609,-2167);
+      Engine.MoveTo(145218,23947,-2167);
+      Engine.MoveTo(146377,24455,-2039);
+      Engine.MoveTo(146484,25685,-2039);
+      Engine.MoveTo(147130,25700,-2039);
+      Engine.MoveTo(147112,25921,-2039);
+    end;
+    if User.inrange(144543,24666,-2167,500)  then begin
+      Engine.MoveTo(144543,24666,-2167);
+      Engine.MoveTo(145279,24307,-2167);
+      Engine.MoveTo(146377,24455,-2039);
+      Engine.MoveTo(146484,25685,-2039);
+      Engine.MoveTo(147130,25700,-2039);
+      Engine.MoveTo(147112,25921,-2039);
+    end;
+    if User.inrange(146497,30582,-2487,500)  then begin
+      Engine.MoveTo(146497,30582,-2487);
+      Engine.MoveTo(147058,30323,-2487);
+      Engine.MoveTo(147427,29959,-2487);
+      Engine.MoveTo(147427,29339,-2295);
+      Engine.MoveTo(147373,28351,-2294);
+      Engine.MoveTo(147100,27643,-2294);
+      Engine.MoveTo(147246,26930,-2230);
+      Engine.MoveTo(147267,26400,-2185);
+      Engine.MoveTo(147266,26195,-2103);
+      Engine.MoveTo(147250,25969,-2039);
+      Engine.MoveTo(147206,25899,-2039);
+      Engine.MoveTo(147138,25906,-2039);
+    end;
+    if User.inrange(144648,29158,-2487,500)  then begin
+      Engine.MoveTo(144648,29158,-2487);
+      Engine.MoveTo(144966,28868,-2487);
+      Engine.MoveTo(145110,27659,-2295);
+      Engine.MoveTo(146220,27622,-2231);
+      Engine.MoveTo(147108,27272,-2231);
+      Engine.MoveTo(147224,26929,-2230);
+      Engine.MoveTo(147267,26400,-2185);
+      Engine.MoveTo(147266,26195,-2103);
+      Engine.MoveTo(147250,25969,-2039);
+      Engine.MoveTo(147206,25899,-2039);
+      Engine.MoveTo(147138,25906,-2039);
+    end;
+    if User.inrange(150247,29109,-2487,500)  then begin
+      Engine.MoveTo(150247,29109,-2487);
+      Engine.MoveTo(149921,28836,-2487);
+      Engine.MoveTo(149859,28063,-2339);
+      Engine.MoveTo(149776,27675,-2295);
+      Engine.MoveTo(148731,27683,-2231);
+      Engine.MoveTo(148224,27383,-2231);
+      Engine.MoveTo(147306,26932,-2230);
+    end;
+    if User.inrange(147848,30309,-2487,500)  then begin
+      Engine.MoveTo(147848,30309,-2487);
+      Engine.MoveTo(147677,30089,-2487);
+      Engine.MoveTo(147462,29870,-2447);
+      Engine.MoveTo(147462,29413,-2295);
+      Engine.MoveTo(147335,28272,-2294);
+      Engine.MoveTo(147108,27664,-2294);
+      Engine.MoveTo(147194,26961,-2229);
+      Engine.MoveTo(147267,26400,-2185);
+      Engine.MoveTo(147266,26195,-2103);
+      Engine.MoveTo(147250,25969,-2039);
+      Engine.MoveTo(147206,25899,-2039);
+      Engine.MoveTo(147138,25906,-2039);
+    end;
+    if User.inrange(144651,26680,-2295,500)  then begin
+      Engine.MoveTo(144651,26680,-2295);
+      Engine.MoveTo(144681,27050,-2294);
+      Engine.MoveTo(144936,27135,-2295);
+      Engine.MoveTo(145145,27605,-2295);
+      Engine.MoveTo(146182,27682,-2231);
+      Engine.MoveTo(146921,27360,-2231);
+      Engine.MoveTo(147218,26948,-2229);
+      Engine.MoveTo(147267,26400,-2185);
+      Engine.MoveTo(147266,26195,-2103);
+      Engine.MoveTo(147250,25969,-2039);
+      Engine.MoveTo(147206,25899,-2039);
+      Engine.MoveTo(147138,25906,-2039);
+    end;
+    if User.inrange(148557,30461,-2487,500)  then begin
+      Engine.MoveTo(148557,30461,-2487);
+      Engine.MoveTo(148114,30076,-2487);
+      Engine.MoveTo(147453,30049,-2487);
+      Engine.MoveTo(147474,29710,-2368);
+      Engine.MoveTo(147397,28461,-2294);
+      Engine.MoveTo(147044,27389,-2231);
+      Engine.MoveTo(147242,26823,-2230);
+      Engine.MoveTo(147267,26400,-2185);
+      Engine.MoveTo(147266,26195,-2103);
+      Engine.MoveTo(147250,25969,-2039);
+      Engine.MoveTo(147206,25899,-2039);
+      Engine.MoveTo(147138,25906,-2039);
+    end;
+    if User.inrange(147971,27982,-2294,500)  then begin
+      Engine.MoveTo(147971,27982,-2294);
+      Engine.MoveTo(147846,27354,-2231);
+      Engine.MoveTo(147265,26878,-2230);
+      Engine.MoveTo(147267,26400,-2185);
+      Engine.MoveTo(147266,26195,-2103);
+      Engine.MoveTo(147250,25969,-2039);
+      Engine.MoveTo(147206,25899,-2039);
+      Engine.MoveTo(147138,25906,-2039);
+    end;
+    if User.InRange(147138,25906,-2039,250,150) then Moved := true;
+  end;
+  //-----------------------goddard--------------------------------
+  if CITY = GODDARD then begin
+    if User.InRange(146272, -58176, -2976, 250, 150) then begin
+      Engine.MoveTo(147593, -58103, -3007);
+      Engine.MoveTo(147727, -57141, -2807);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(145264, -57680, -2976, 250, 150) then begin
+      Engine.MoveTo(145588, -56926, -3007);
+      Engine.MoveTo(146673, -56095, -2807);
+      Engine.MoveTo(147543, -56054, -2807);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(145696, -57696, -2976, 250, 150) then begin
+      Engine.MoveTo(145510, -56930, -3007);
+      Engine.MoveTo(146499, -56202, -2807);
+      Engine.MoveTo(147481, -56031, -2807);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(144944, -55392, -2976, 250, 150) then begin
+      Engine.MoveTo(145153, -56813, -3007);
+      Engine.MoveTo(145569, -56855, -3007);
+      Engine.MoveTo(146467, -56271, -2807);
+      Engine.MoveTo(147566, -56034, -2807);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(144752, -56752, -2976, 250, 150) then begin
+      Engine.MoveTo(145534, -56884, -3007);
+      Engine.MoveTo(146265, -56418, -2807);
+      Engine.MoveTo(147407, -56063, -2807);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(149120, -58064, -2976, 250, 150 )then begin
+      Engine.MoveTo(147706, -58107, -3007);
+      Engine.MoveTo(147751, -56737, -2807);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(150400, -56752, -2976, 250, 150) then begin
+      Engine.MoveTo(149935, -56870, -3007);
+      Engine.MoveTo(149139, -56390, -2807);
+      Engine.MoveTo(147929, -56063, -2807);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(150704, -55744, -2976, 250, 150) then begin
+      Engine.MoveTo(149935, -56870, -3007);
+      Engine.MoveTo(149139, -56390, -2807);
+      Engine.MoveTo(147929, -56063, -2807);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(147680, -58208, -2976, 250, 150) then begin
+      Engine.MoveTo(147727, -57141, -2807);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(148288, -58304, -2976, 250, 150) then begin
+      Engine.MoveTo(147738, -58050, -3007);
+      Engine.MoveTo(147727, -57141, -2807);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(147232, -58480, -2976, 250, 150) then begin
+      Engine.MoveTo(147677, -58063, -3007);
+      Engine.MoveTo(147727, -57141, -2807);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(149088, -56256, -2776, 250, 150) then begin
+      Engine.MoveTo(147854, -56054, -2807);
+      Engine.MoveTo(147934, -55354, -2760);
+    end;
+    if User.InRange(146832, -55904, -2776, 250, 150) then begin
+      Engine.MoveTo(147529, -56046, -2807);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(146368, -56256, -2776, 250, 150) then begin
+      Engine.MoveTo(147529, -56046, -2807);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(147664, -56464, -2776, 250, 150) then begin
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(147680, -56928, -2776, 250, 150) then begin
+      Engine.MoveTo(147810, -56110, -2807);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(148560, -55904, -2776, 250, 150) then begin
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(149872, -57424, -2976, 250, 150) then begin
+      Engine.MoveTo(149897, -56910, -2979);
+      Engine.MoveTo(149230, -56412, -2779);
+      Engine.MoveTo(147939, -55999, -2772);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(144960, -56224, -2976, 250, 150) then begin
+      Engine.MoveTo(145458, -56853, -2979);
+      Engine.MoveTo(146343, -56326, -2779);
+      Engine.MoveTo(147625, -55995, -2772);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(144496, -55088, -2976, 250, 150) then begin
+      Engine.MoveTo(145327, -56873, -2979);
+      Engine.MoveTo(146337, -56445, -2779);
+      Engine.MoveTo(147533, -55963, -2766);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(145392, -56960, -2976, 250, 150) then begin
+      Engine.MoveTo(146347, -56305, -2779);
+      Engine.MoveTo(147514, -56003, -2772);
+      Engine.MoveTo(147936, -55368, -2760);
+    end;
+    if User.InRange(147936, -55368, -2760, 250, 150) then Moved :=  true;
+  end;
+  //-----------------------gludio--------------------------------
+  if CITY = GLUDIO then begin
+    if User.InRange(-14704,122032,-3056, 250, 150) then begin
+      Engine.MoveTo(-14704,122032,-3056);
+      Engine.MoveTo(-14538,122671,-3116);
+      Engine.MoveTo(-14599,123458,-3113);
+      Engine.MoveTo(-14510,124033,-3125);
+    end;
+    if User.InRange(-13709,123563,-3112, 250, 150) then begin
+      Engine.MoveTo(-13709,123563,-3112);
+      Engine.MoveTo(-14115,123802,-3119);
+      Engine.MoveTo(-14510,124033,-3125);
+    end;
+    if User.InRange(-14465,124434,-3120, 250, 150) then begin
+      Engine.MoveTo(-14465,124434,-3120);
+      Engine.MoveTo(-14510,124033,-3125);
+    end;
+    if User.InRange(-13513,123752,-3112, 250, 150) then begin
+      Engine.MoveTo(-13513,123752,-3112);
+      Engine.MoveTo(-14245,123748,-3109);
+      Engine.MoveTo(-14510,124033,-3125);
+    end;
+    if User.InRange(-15564,123896,-3112, 250, 150) then begin
+      Engine.MoveTo(-15564,123896,-3112);
+      Engine.MoveTo(-14813,123869,-3124);
+      Engine.MoveTo(-14510,124033,-3125);
+    end;
+    if User.InRange(-14288,122752,-3112, 250, 150) then begin
+      Engine.MoveTo(-14288,122752,-3112);
+      Engine.MoveTo(-14525,123547,-3109);
+      Engine.MoveTo(-14510,124033,-3125);
+    end;
+    if User.InRange(-15314,124131,-3112, 250, 150) then begin
+      Engine.MoveTo(-15314,124131,-3112);
+      Engine.MoveTo(-14710,123973,-3122);
+      Engine.MoveTo(-14510,124033,-3125);
+    end;
+    if User.InRange(-14592,123232,-3112, 250, 150) then begin
+      Engine.MoveTo(-14592,123232,-3112);
+      Engine.MoveTo(-14510,124033,-3125);
+    end;
+    if User.InRange(-14510,124033,-3125, 250, 150) then Moved :=  true;
+  end;
+  //-----------------------gludin--------------------------------
+  if CITY = GLUDIN then begin
+    if User.InRange(-82909,150357,-3120, 250, 150) then begin
+      Engine.MoveTo(-82909,150357,-3120);
+      Engine.MoveTo(-82293,150405,-3127);
+      Engine.MoveTo(-81099,150292,-3048);
+      Engine.MoveTo(-81073,150110,-3042);
+    end;
+    if User.InRange(-83520,150560,-3120, 250, 150) then begin
+      Engine.MoveTo(-83520,150560,-3120);
+      Engine.MoveTo(-82640,150552,-3127);
+      Engine.MoveTo(-81440,150392,-3127);
+      Engine.MoveTo(-81054,150149,-3042);
+      Engine.MoveTo(-81073,150110,-3042);
+    end;
+    if User.InRange(-82195,150489,-3120, 250, 150) then begin
+      Engine.MoveTo(-82195,150489,-3120);
+      Engine.MoveTo(-81832,150490,-3101);
+      Engine.MoveTo(-81023,150193,-3042);
+      Engine.MoveTo(-81073,150110,-3042);
+    end;
+    if User.InRange(-80053,154348,-3168, 250, 150) then begin
+      Engine.MoveTo(-80053,154348,-3168);
+      Engine.MoveTo(-80686,153974,-3176);
+      Engine.MoveTo(-81784,153952,-3176);
+      Engine.MoveTo(-83049,153943,-3176);
+      Engine.MoveTo(-83023,152370,-3127);
+      Engine.MoveTo(-82637,151293,-3127);
+      Engine.MoveTo(-81296,150467,-3127);
+      Engine.MoveTo(-81042,150263,-3042);
+      Engine.MoveTo(-81073,150110,-3042);
+    end;
+    if User.InRange(-82035,152647,-3168, 250, 150) then begin
+      Engine.MoveTo(-82035,152647,-3168);
+      Engine.MoveTo(-82975,152676,-3176);
+      Engine.MoveTo(-82932,151752,-3127);
+      Engine.MoveTo(-81276,150510,-3127);
+      Engine.MoveTo(-81036,150260,-3042);
+      Engine.MoveTo(-81073,150110,-3042);
+    end;
+    if User.InRange(-83529,151205,-3120, 250, 150) then begin
+      Engine.MoveTo(-83529,151205,-3120);
+      Engine.MoveTo(-82130,150895,-3127);
+      Engine.MoveTo(-81088,150361,-3044);
+      Engine.MoveTo(-81073,150110,-3042);
+    end;
+    if User.InRange(-81721,151202,-3120, 250, 150) then begin
+      Engine.MoveTo(-81721,151202,-3120);
+      Engine.MoveTo(-81403,150675,-3127);
+      Engine.MoveTo(-81057,150318,-3042);
+      Engine.MoveTo(-81073,150110,-3042);
+    end;
+    if User.InRange(-82575,151025,-3120, 250, 150) then begin
+      Engine.MoveTo(-82575,151025,-3120);
+      Engine.MoveTo(-81540,150540,-3127);
+      Engine.MoveTo(-80989,150147,-3042);
+      Engine.MoveTo(-81073,150110,-3042);
+    end;
+    if User.InRange(-84064,150864,-3120, 250, 150) then begin
+      Engine.MoveTo(-84064,150864,-3120);
+      Engine.MoveTo(-83114,150635,-3127);
+      Engine.MoveTo(-81390,150478,-3127);
+      Engine.MoveTo(-81017,150133,-3042);
+      Engine.MoveTo(-81073,150110,-3042);
+    end;
+    if User.InRange(-82241,151163,-3120, 250, 150) then begin
+      Engine.MoveTo(-82241,151163,-3120);
+      Engine.MoveTo(-81391,150602,-3127);
+      Engine.MoveTo(-80999,150174,-3042);
+      Engine.MoveTo(-81073,150110,-3042);
+    end;
+    if User.InRange(-81787,150780,-3120, 250, 150) then begin
+      Engine.MoveTo(-81787,150780,-3120);
+      Engine.MoveTo(-81049,150378,-3042);
+      Engine.MoveTo(-81073,150110,-3042);
+    end;
+    if User.InRange(-81073,150110,-3042, 250, 150) then Moved := true;
+  end;
+  //-----------------------schuttgart--------------------------------
+  if CITY = SHTUTTGART then begin
+    if User.InRange(87184,-140256,-1536, 250, 150) then begin
+      Engine.MoveTo(87184,-140256,-1536);
+      Engine.MoveTo(87368,-140838,-1512);
+      Engine.MoveTo(87319,-141796,-1338);
+      Engine.MoveTo(87145,-142916,-1313);
+      Engine.MoveTo(87070,-143418,-1290);
+    end;
+    if User.InRange(87408,-142304,-1336, 250, 150) then begin
+      Engine.MoveTo(87408,-142304,-1336);
+      Engine.MoveTo(87145,-142916,-1313);
+      Engine.MoveTo(87070,-143418,-1290);
+    end;
+    if User.InRange(88240,-142736,-1336, 250, 150) then begin
+      Engine.MoveTo(88240,-142736,-1336);
+      Engine.MoveTo(87585,-142662,-1338);
+      Engine.MoveTo(87070,-143418,-1290);
+    end;
+    if User.InRange(85056,-141328,-1528, 250, 150) then begin
+      Engine.MoveTo(85056,-141328,-1528);
+      Engine.MoveTo(85181,-141845,-1539);
+      Engine.MoveTo(85804,-142279,-1339);
+      Engine.MoveTo(87157,-142636,-1338);
+      Engine.MoveTo(87070,-143418,-1290);
+    end;
+    if User.InRange(88624,-142480,-1336, 250, 150) then begin
+      Engine.MoveTo(88624,-142480,-1336);
+      Engine.MoveTo(87548,-142686,-1331);
+      Engine.MoveTo(87070,-143418,-1290);
+    end;
+    if User.InRange(86400,-142672,-1336, 250, 150) then begin
+      Engine.MoveTo(86400,-142672,-1336);
+      Engine.MoveTo(87143,-142570,-1338);
+      Engine.MoveTo(87070,-143418,-1290);
+    end;
+    if User.InRange(86560,-140320,-1536, 250, 150) then begin
+      Engine.MoveTo(86560,-140320,-1536);
+      Engine.MoveTo(87300,-140655,-1539);
+      Engine.MoveTo(87385,-141436,-1339);
+      Engine.MoveTo(87246,-142537,-1338);
+      Engine.MoveTo(87070,-143418,-1290);
+    end;
+    if User.InRange(88448,-140512,-1536, 250, 150) then begin
+      Engine.MoveTo(88448,-140512,-1536);
+      Engine.MoveTo(87410,-140642,-1539);
+      Engine.MoveTo(87299,-141493,-1338);
+      Engine.MoveTo(87291,-142607,-1338);
+      Engine.MoveTo(87070,-143418,-1290);
+    end;
+    if User.InRange(89712,-141472,-1528, 250, 150) then begin
+      Engine.MoveTo(89712,-141472,-1528);
+      Engine.MoveTo(89497,-141893,-1539);
+      Engine.MoveTo(88963,-142272,-1339);
+      Engine.MoveTo(87737,-142631,-1338);
+      Engine.MoveTo(87070,-143418,-1290);
+    end;
+    if User.InRange(87344,-141696,-1336, 250, 150) then begin
+      Engine.MoveTo(87344,-141696,-1336);
+      Engine.MoveTo(87354,-142594,-1338);
+      Engine.MoveTo(87070,-143418,-1290);
+    end;
+    if User.InRange(85472,-140752,-1536, 250, 150) then begin
+      Engine.MoveTo(85472,-140752,-1536);
+      Engine.MoveTo(85191,-141803,-1539);
+      Engine.MoveTo(85909,-142322,-1338);
+      Engine.MoveTo(87096,-142671,-1338);
+      Engine.MoveTo(87070,-143418,-1290);
+    end;
+    if User.InRange(89360,-140944,-1536, 250, 150) then begin
+      Engine.MoveTo(89360,-140944,-1536);
+      Engine.MoveTo(89539,-141762,-1539);
+      Engine.MoveTo(88910,-142276,-1339);
+      Engine.MoveTo(87637,-142734,-1332);
+      Engine.MoveTo(87070,-143418,-1290);
+    end;
+    if User.InRange(87776,-140384,-1536, 250, 150) then begin
+      Engine.MoveTo(87776,-140384,-1536);
+      Engine.MoveTo(87403,-140707,-1539);
+      Engine.MoveTo(87351,-141645,-1338);
+      Engine.MoveTo(87310,-142568,-1338);
+      Engine.MoveTo(87070,-143418,-1290);
+    end;
+    if User.InRange(84720,-141936,-1536, 250, 150) then begin
+      Engine.MoveTo(84720,-141936,-1536);
+      Engine.MoveTo(85201,-141842,-1539);
+      Engine.MoveTo(85807,-142262,-1339);
+      Engine.MoveTo(87116,-142704,-1338);
+      Engine.MoveTo(87070,-143418,-1290);
+    end;
+    if User.InRange(85968,-142384,-1336, 250, 150) then begin
+      Engine.MoveTo(85968,-142384,-1336);
+      Engine.MoveTo(87116,-142704,-1338);
+      Engine.MoveTo(87070,-143418,-1290);
+    end;
+    if User.InRange(87070,-143418,-1290, 250, 150) then Moved :=  true;
+  end;
+  //-----------------------rune--------------------------------
+  if CITY = RUNE then begin
+    if User.InRange(38608,-47168,896, 250, 150)
+    or User.InRange(38272,-49008,896, 250, 150)
+    or User.InRange(38752,-47792,896, 250, 150)
+    or User.InRange(38112,-49792,896, 250, 150)
+    or User.InRange(38848,-48640,896, 250, 150) then begin
+      Engine.MoveTo(39113,-48225,898);
+      Engine.MoveTo(38294,-48089,898);
+
+      NpcList.ByID(31698,NPC);
+      Engine.SetTarget(NPC);
+      Engine.DlgOpen;
+      Engine.DlgSel(1);
+      Engine.DlgSel(1);
+      Engine.CancelTarget;
+      Delay(3000);
+
+      Engine.MoveTo(39522,-48234,-784);
+      Engine.MoveTo(41591,-48221,-801);
+      Engine.MoveTo(43323,-48185,-795);
+      Engine.MoveTo(43827,-47698,-794);
+    end;
+    if User.InRange(44368,-50592,-792, 250, 150) then begin
+      Engine.MoveTo(44368,-50592,-792);
+      Engine.MoveTo(43997,-49427,-795);
+      Engine.MoveTo(43831,-48480,-795);
+      Engine.MoveTo(43827,-47698,-794);
+    end;
+    if User.InRange(44864,-47824,-792, 250, 150) then begin
+      Engine.MoveTo(44864,-47824,-792);
+      Engine.MoveTo(44025,-47893,-795);
+      Engine.MoveTo(43827,-47698,-794);
+    end;
+    if User.InRange(43536,-50416,-792, 250, 150) then begin
+      Engine.MoveTo(43536,-50416,-792);
+      Engine.MoveTo(43833,-49293,-795);
+      Engine.MoveTo(43847,-48397,-795);
+      Engine.MoveTo(43827,-47698,-794);
+    end;
+    if User.InRange(45632,-47968,-792, 250, 150) then begin
+      Engine.MoveTo(45632,-47968,-792);
+      Engine.MoveTo(44070,-47930,-795);
+      Engine.MoveTo(43827,-47698,-794);
+    end;
+    if User.InRange(45824,-49056,-792, 250, 150) then begin
+      Engine.MoveTo(45824,-49056,-792);
+      Engine.MoveTo(46022,-48351,-795);
+      Engine.MoveTo(45441,-48000,-795);
+      Engine.MoveTo(44189,-47900,-795);
+      Engine.MoveTo(43827,-47698,-794);
+    end;
+    if User.InRange(44000,-49952,-792, 250, 150) then begin
+      Engine.MoveTo(44000,-49952,-792);
+      Engine.MoveTo(43862,-48669,-795);
+      Engine.MoveTo(43827,-47698,-794);
+    end;
+    if User.InRange(43792,-48928,-792, 250, 150) then begin
+      Engine.MoveTo(43792,-48928,-792);
+      Engine.MoveTo(43827,-47698,-794);
+    end;
+    if User.InRange(45072,-49936,-792, 250, 150) then begin
+      Engine.MoveTo(45072,-49936,-792);
+      Engine.MoveTo(44258,-49647,-795);
+      Engine.MoveTo(43864,-48552,-795);
+      Engine.MoveTo(43827,-47698,-794);
+    end;
+    if User.InRange(43408,-51120,-792, 250, 150) then begin
+      Engine.MoveTo(43408,-51120,-792);
+      Engine.MoveTo(43805,-49830,-795);
+      Engine.MoveTo(43870,-48626,-795);
+      Engine.MoveTo(43827,-47698,-794);
+    end;
+    if User.InRange(43744,-47920,-792, 250, 150) then begin
+      Engine.MoveTo(43744,-47920,-792);
+      Engine.MoveTo(43827,-47698,-794);
+    end;
+    if User.InRange(43827,-47698,-794, 250, 150) then Moved :=  true;
+  end;
+  //-----------------------oren--------------------------------
+  if CITY = OREN then begin
+    if User.InRange(80334,54400,-1552, 250, 150) then begin
+      Engine.MoveTo(80334,54400,-1552);
+      Engine.MoveTo(80969,53698,-1558);
+      Engine.MoveTo(81540,53454,-1494);
+      Engine.MoveTo(82480,53340,-1494);
+      Engine.MoveTo(82950,53186,-1494);
+    end;
+    if User.InRange(82323,55466,-1520, 250, 150) then begin
+      Engine.MoveTo(82323,55466,-1520);
+      Engine.MoveTo(82403,54498,-1523);
+      Engine.MoveTo(82589,53861,-1486);
+      Engine.MoveTo(82950,53186,-1494);
+    end;
+    if User.InRange(82123,53535,-1488, 250, 150) then begin
+      Engine.MoveTo(82123,53535,-1488);
+      Engine.MoveTo(82950,53186,-1494);
+    end;
+    if User.InRange(80304,56241,-1552, 250, 150) then begin
+      Engine.MoveTo(80304,56241,-1552);
+      Engine.MoveTo(81470,55682,-1523);
+      Engine.MoveTo(82256,55294,-1523);
+      Engine.MoveTo(82510,54035,-1494);
+      Engine.MoveTo(82950,53186,-1494);
+    end;
+    if User.InRange(82445,56012,-1520, 250, 150) then begin
+      Engine.MoveTo(82445,56012,-1520);
+      Engine.MoveTo(82341,54950,-1523);
+      Engine.MoveTo(82574,53833,-1486);
+      Engine.MoveTo(82950,53186,-1494);
+    end;
+    if User.InRange(80054,53209,-1552, 250, 150) then begin
+      Engine.MoveTo(80054,53209,-1552);
+      Engine.MoveTo(80624,53611,-1558);
+      Engine.MoveTo(81772,53468,-1494);
+      Engine.MoveTo(82289,53472,-1494);
+      Engine.MoveTo(82950,53186,-1494);
+    end;
+    if User.InRange(80513,52980,-1552, 250, 150) then begin
+      Engine.MoveTo(80513,52980,-1552);
+      Engine.MoveTo(80165,53065,-1558);
+      Engine.MoveTo(80630,53610,-1558);
+      Engine.MoveTo(81688,53447,-1494);
+      Engine.MoveTo(82303,53338,-1494);
+      Engine.MoveTo(82950,53186,-1494);
+    end;
+    if User.InRange(80267,55497,-1552, 250, 150) then begin
+      Engine.MoveTo(80267,55497,-1552);
+      Engine.MoveTo(80359,54536,-1558);
+      Engine.MoveTo(80792,53785,-1558);
+      Engine.MoveTo(81495,53421,-1494);
+      Engine.MoveTo(82323,53362,-1494);
+      Engine.MoveTo(82950,53186,-1494);
+    end;
+    if User.InRange(79933,55752,-1552, 250, 150) then begin
+      Engine.MoveTo(79933,55752,-1552);
+      Engine.MoveTo(80349,55208,-1558);
+      Engine.MoveTo(80470,54217,-1558);
+      Engine.MoveTo(81053,53602,-1558);
+      Engine.MoveTo(81974,53465,-1494);
+      Engine.MoveTo(82950,53186,-1494);
+    end;
+    if User.InRange(80594,55837,-1552, 250, 150) then begin
+      Engine.MoveTo(80594,55837,-1552);
+      Engine.MoveTo(81899,55492,-1523);
+      Engine.MoveTo(82240,55142,-1523);
+      Engine.MoveTo(82531,53946,-1494);
+      Engine.MoveTo(82950,53186,-1494);
+    end;
+    if User.InRange(82213,53964,-1488, 250, 150) then begin
+      Engine.MoveTo(82213,53964,-1488);
+      Engine.MoveTo(82668,53709,-1486);
+      Engine.MoveTo(82950,53186,-1494);
+    end;
+    if User.InRange(83327,55410,-1520, 250, 150) then begin
+      Engine.MoveTo(83327,55410,-1520);
+      Engine.MoveTo(82607,55592,-1523);
+      Engine.MoveTo(82184,54809,-1523);
+      Engine.MoveTo(82563,53882,-1488);
+      Engine.MoveTo(82950,53186,-1494);
+    end;
+    if User.InRange(79706,52986,-1552, 250, 150) then begin
+      Engine.MoveTo(79706,52986,-1552);
+      Engine.MoveTo(80427,53549,-1558);
+      Engine.MoveTo(80812,53655,-1558);
+      Engine.MoveTo(81979,53439,-1494);
+      Engine.MoveTo(82950,53186,-1494);
+    end;
+    if User.InRange(82880,55390,-1520, 250, 150) then begin
+      Engine.MoveTo(82880,55390,-1520);
+      Engine.MoveTo(82375,55524,-1523);
+      Engine.MoveTo(82367,54313,-1493);
+      Engine.MoveTo(82651,53734,-1486);
+      Engine.MoveTo(82950,53186,-1494);
+    end;
+    if User.InRange(82552,53447,-1488, 250, 150) then begin
+      Engine.MoveTo(82552,53447,-1488);
+      Engine.MoveTo(82950,53186,-1494);
+    end;
+    if User.InRange(82638,53885,-1488, 250, 150) then begin
+      Engine.MoveTo(82638,53885,-1488);
+      Engine.MoveTo(82950,53186,-1494);
+    end;
+    if User.InRange(82950,53186,-1494, 250, 150) then Moved :=  true;
+  end;
+  if not Moved then begin
+    //NewResp := TStringList.Create;
+    //if FileExists('File/Script/NewResp.txt') then NewResp.LoadFromFile('File/Script/NewResp.txt');
+    //NewResp.Add(City+':'+IntToStr(User.X)+','+IntToStr(User.Y)+','+IntToStr(User.Z));
+    //NewResp.SaveToFile('File/Script/NewResp.txt');
+    //NewResp.Free;
+    //GoHome;
+  end;
+end;
+
+
+BEGIN
+END.

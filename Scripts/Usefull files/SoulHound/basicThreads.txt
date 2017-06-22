@@ -1,0 +1,779 @@
+﻿unit basicThreads;
+   interface
+		
+		uses
+			commonFunctions, sysUtils, Classes, constants, charFunctors;
+			
+		const
+			F4 = $73;
+			buffDelay = 2000;
+			
+		var
+			currentTarget: TL2Live;
+			previousTarget: TL2Live;
+			stealDelay: Cardinal;
+			castEndTimeHigh: Cardinal;
+			castEndTimeNormal: Cardinal;
+			castEndTimeLow: Cardinal;
+			isHighPrioritet: boolean;
+			isNormalPrioritet: boolean;
+			isLowPrioritet: boolean;
+			fearCastEndTime: Cardinal;
+			isFeared: boolean;
+			
+			
+		{win api}
+		function keybd_event(bVk,bScan:byte;dwFlags,dwExtraInfo: integer): integer;  stdcall; external 'user32.dll';
+		{----------------}
+		{should checkers}
+		function shouldProtect(enemy, protectChar: TL2Live): boolean;
+		function shouldInterruptHigh(obj: TL2Live): boolean;	
+		function shouldInterruptNormal(obj: TL2Live): boolean;
+		function shouldInterruptLow(obj: TL2Live): boolean;		
+		function shouldCast(obj: TL2Live; hp: Cardinal; range: Cardinal; isAttackable: boolean = true): boolean;
+		//function shouldCast(obj: TL2Live; hp: Cardinal): boolean; override; //range = 700
+		//function shouldCast(obj: TL2Live): boolean; override; //range = 700, hp = 30
+		function selfShouldCast: boolean;
+		function shouldSteal(target: TL2Live): boolean;
+		function isInterrupted(obj: TL2Live; _castEndTime: Cardinal): boolean;
+		function isTargetChanged(enemy, protectChar: TL2Live): boolean;
+		function isFearCasting(enemy: TL2Live): boolean;
+		function isCasting: boolean;
+		{function isResurrected(obj: TL2Live; castEndTime: TL2Live): boolean;}
+		{----------------}
+		{threads-procedures}
+		procedure stealThread;
+		procedure targetSaver;
+		procedure sopInterruptHigh;
+		procedure sopInterruptNormal;
+		procedure sopInterruptLow;
+		procedure partyProtectThread;
+		procedure antiFear;
+		procedure fearBuffsDispel;
+		procedure buffDispel(buffID: Cardinal);
+		procedure newDispel;
+		procedure antiBackstab;
+		procedure medusedTargetAvoid;
+		procedure holdTargetOly;
+		procedure antiHate;
+		procedure cfBuffUser(charFunctor: boolean; itemID: integer);
+		procedure buffController;
+		{----------------}
+		{base Functions}
+		procedure pressKey(hexCode: BYTE; isMacros: boolean = true);
+			
+	implementation
+			
+			{function isRessurected;
+			begin
+				while (GetTickCount < castEndTime) do
+				begin
+					
+				end;
+			end;}			
+			{----------------}
+			{should checkers}
+			function isCasting;
+			begin
+				if (User.Cast.EndTime > 0) and 
+				((User.Cast.ID = SoulOfPain) or 	{sop}
+				(User.Cast.ID = AnnihilationCircle) or	{annihilation circle}
+				(User.Cast.ID = CurseOfDivinity))		{curse of divinity}
+				then
+					isCasting := true
+				else
+					isCasting := false;
+			end;
+			
+			function isInterrupted;
+			begin
+				if (obj.Cast.EndTime = 0) and (GetTickCount < _castEndTime) then
+					isInterrupted := true
+				else
+					isInterrupted := false;
+			end;
+			
+			function isTargetChanged;
+			begin
+				if not (enemy.Target = protectChar) then
+					isTargetChanged := true
+				else
+					isTargetChanged := false;
+			end;
+			
+			function shouldInterruptHigh;
+			begin
+				if (obj.Cast.EndTime > 500) then
+				begin
+					if (
+					(obj.Cast.ID = (MassResurrection)) or 
+					(obj.Cast.ID = (AnakimScroll)) or 
+					(obj.Cast.ID = (AnakimScroll2)) or 
+					(obj.Cast.ID = (TransformAnakim)) or 
+					(obj.Cast.ID = (TransformDivineHealer)) or 
+					(obj.Cast.ID = (PrahNah)) or 
+					(obj.Cast.ID = (ShieldOfFaith)) or 
+					(obj.Cast.ID = (SublimeSelfSacrifice)) or 
+					(obj.Cast.ID = (BlessingOfEva)) or 
+					(obj.Cast.ID = (SongOfPurification)) or 
+					(obj.Cast.ID = (SymbolOfNoise)) or
+					(obj.Cast.ID = (SacrificeHealer)) or
+					(obj.Cast.ID = (VailMasterDarkCure)) or
+					(obj.Cast.ID = (LifeForce)))
+					then
+						begin
+							castEndTimeHigh := GetTickCount + obj.Cast.EndTime;
+							isHighPrioritet := true;
+							shouldInterruptHigh := true
+						end	
+					else
+						shouldInterruptHigh := false
+					end
+				else
+				shouldInterruptHigh := false;
+			end;
+			
+			function shouldInterruptNormal;
+			begin
+				if (obj.Cast.EndTime > 550) then
+				begin
+					if (
+					(obj.Cast.Id = 1006) or
+					(obj.Cast.ID = (Ressurection)) or 				
+					(obj.Cast.ID = (BlessedRessurectionScroll)) or 
+					(obj.Cast.ID = (BlessedRessurectionScroll2)) or 
+					(obj.Cast.ID = (BlessedRessurectionScroll3)) or
+					(obj.Cast.ID = (BlessedRessurectionScroll4)) or 
+					(obj.Cast.ID = (ChantOfVictory)) or 
+					(obj.Cast.ID = (VictoryOfPaagrio)) or 
+					(obj.Cast.ID = (MassRecharge)) or 
+					(obj.Cast.ID = (RagingWaves)) or 
+					(obj.Cast.ID = (Cyclone)) or 
+					(obj.Cast.ID = (Vulcano)) or 
+					(obj.Cast.ID = (Gehenna)) or 
+					(obj.Cast.ID = (DayOfDoom)) or
+					(obj.Cast.ID = (SymbolOfNoise)) or
+					(obj.Cast.ID = (MaximumClarity)) or
+					(obj.Cast.ID = (DivineProtection)) or
+					(obj.Cast.ID = (DivineLord)))
+					then
+						begin
+							castEndTimeNormal := GetTickCount + obj.Cast.EndTime;
+							isNormalPrioritet := true;
+							shouldInterruptNormal := true
+						end	
+					else
+						shouldInterruptNormal := false
+					end
+				else
+				shouldInterruptNormal := false;
+			end;
+			
+			function shouldInterruptLow;
+			begin
+				if (obj.Cast.EndTime > 550) then
+				begin
+					if (
+					(obj.Cast.ID = (Cancellation))) 
+					then
+						begin
+							castEndTimeLow := GetTickCount + obj.Cast.EndTime;
+							isLowPrioritet := true;
+							shouldInterruptLow := true
+						end	
+					else
+						shouldInterruptLow := false
+					end
+				else
+				shouldInterruptLow := false;
+			end;
+			
+			function ShouldCast;
+			var
+				buffsTemp: TL2Effect;
+			begin
+				if 
+				not User.Dead 
+				and (User.HP > hp) 
+				and not obj.Dead
+				and not isSilenced(User) 
+				and not isDisabled(User)
+				and not isInvincible(User)
+				and (User.Cast.EndTime = 0)
+				and (User.DistTo(obj) < range) then 
+				begin
+					if isAttackable and obj.Attackable then
+						ShouldCast := true
+					else if isAttackable and not obj.Attackable then
+						ShouldCast := false
+					else if not isAttackable then
+						ShouldCast := true;
+				end
+				else
+					ShouldCast := false	
+			end;			
+			
+			function selfShouldCast;
+			var
+				buffsTemp: TL2Effect;
+			begin
+				if 
+				not User.Dead 
+				and not isSilenced(User) 
+				and not isDisabled(User)
+				and not isInvincible(User)
+				and (User.Cast.EndTime = 0)
+				then
+					selfShouldCast := true
+				else
+					selfShouldCast := false	
+			end;
+			
+			function shouldSteal; {check steal status after enemy cast}
+			begin
+				if 
+				((target.Cast.ID = (5561)) and (target.cast.level = 3)) {list of buffs, that enemy will cast, and we will stil them, after cast} 
+				then
+					begin
+						//stealDelay := target.Cast.EndTime;
+						shouldSteal := true
+					end
+				else
+					shouldSteal:= false
+			end;
+			
+			function shouldProtect; {anti fear protect}
+			begin
+				if (enemy.Target = protectChar) then
+				begin
+					if (
+					(enemy.Cast.EndTime > 0) and (enemy.Cast.ID = (1169))) {fear}			
+					then				
+						shouldProtect := true
+					else
+						shouldProtect := false
+					end
+				else
+				shouldProtect := false;
+			end;
+			
+			function isFearCasting;
+			begin
+				if (enemy.Cast.EndTime > 0) and (enemy.Target = User) then
+				begin
+					if (enemy.Cast.ID = 1169) then
+						begin
+							fearCastEndTime := enemy.Cast.EndTime;
+							isFearCasting := true
+						end	
+					else
+						isFearCasting := false
+					end
+				else
+				isFearCasting := false;
+			end;
+			
+			{----------------}
+			{threads-procedures}
+			procedure stealThread;
+			var
+			i: integer;
+			obj: TL2Live;
+			begin
+			while Engine.Status = lsOnline do
+				begin
+				for i:=0 to Charlist.Count - 1 do
+				begin
+				if shouldSteal(Charlist.Items(i))
+					and shouldCast(Charlist.Items(i), 30, 700) and (skillCoolTime(StealDivinity) < 1050)
+				then
+					begin
+					//delay(stealDelay);
+					Engine.SetTarget(Charlist.Items(i));
+					pressKey(F5, true);
+					//Engine.UseSkill(StealDivinity);
+					Engine.SetTarget(previousTarget);
+					end;
+				end;
+				delay(500);
+				end;
+			end;
+			
+			procedure targetSaver;
+			var
+			Action : TL2Action;
+			Prm1, Prm2: pointer;
+			begin
+			while Engine.Status = lsOnline do
+			begin
+				Action := engine.WaitAction([latarget], Prm1, Prm2);
+				if Action = latarget then
+					begin
+					if (User.Target <> currentTarget) then
+					begin
+					previousTarget := currentTarget;
+					currentTarget := User.Target;
+					end;
+					end;
+			delay(50);
+			end;
+			end; 
+
+			procedure sopInterruptHigh;
+			var
+				i: integer;
+				actor: TL2Live;
+				castID: integer;
+			begin
+			while Engine.Status = lsOnline do
+				begin
+				for i:=0 to Charlist.Count - 1 do
+				begin
+				if shouldInterruptHigh(Charlist.Items(i)) and shouldCast(Charlist.Items(i), 30, 850) then
+					begin
+						actor := Charlist.Items(i);
+						castID := actor.Cast.ID;
+						if (User.Target <> actor) then
+							Engine.SetTarget(actor);
+						while (not (isInterrupted(actor, castEndTimeHigh) or (actor.Cast.EndTime = 0) or actor.Dead or (actor.Cast.ID <> castID))) do
+						begin
+							pressKey(F4, true);
+							//Engine.UseSkill(SoulOfPain);
+							if ((actor.Cast.ID = castID) and (isInterrupted(actor, castEndTimeHigh) or actor.Dead)) then
+								print(actor.Name + '. Interrupted ' + actor.Cast.Name);
+						end;
+						isHighPrioritet := false;
+						Engine.SetTarget(previousTarget);
+					end;
+				end;
+				delay(100);
+			end;
+			end;
+
+			procedure sopInterruptNormal;
+			var
+				i: integer;
+				actor: TL2Live;
+				castID: integer;
+			begin
+			while Engine.Status = lsOnline do
+				begin
+				for i:=0 to Charlist.Count - 1 do
+				begin
+				if shouldInterruptNormal(Charlist.Items(i)) and shouldCast(Charlist.Items(i), 30, 700) and not isHighPrioritet then
+					begin
+						actor := Charlist.Items(i);
+						castID := actor.Cast.ID;
+						if (User.Target <> actor) then
+							Engine.SetTarget(actor);
+						while (not (isInterrupted(actor, castEndTimeNormal) or (actor.Cast.EndTime = 0) or actor.Dead or (actor.Cast.ID <> castID)) and not isHighPrioritet and isNormalPrioritet) do
+						begin
+							pressKey(F4, true);
+							//Engine.UseSkill(SoulOfPain);
+							if ((actor.Cast.ID = castID) and (isInterrupted(actor, castEndTimeNormal) or actor.Dead)) then
+								print(actor.Name + '. Interrupted ' + actor.Cast.Name);
+						end;
+						isNormalPrioritet := false;
+						Engine.SetTarget(previousTarget);
+					end;
+				end;
+				delay(100);
+			end;
+			end;
+
+			procedure sopInterruptLow;
+			var
+				i: integer;
+				actor: TL2Live;
+				castID: integer;
+			begin
+			while Engine.Status = lsOnline do
+				begin
+				for i:=0 to Charlist.Count - 1 do
+				begin
+				if shouldInterruptLow(Charlist.Items(i)) and shouldCast(Charlist.Items(i), 30, 700) then
+					begin
+						actor := Charlist.Items(i);
+						castID := actor.Cast.ID;
+						if (User.Target <> actor) then
+							Engine.SetTarget(actor);
+						while not (isInterrupted(actor, castEndTimeLow) or (actor.Cast.EndTime = 0) or actor.Dead or (actor.Cast.ID <> castID) or ShouldCast(Charlist.Items(i), 30, 700) or isHighPrioritet or isNormalPrioritet) do
+						begin
+							pressKey(F4, true);
+							if ((actor.Cast.ID = castID) and (isInterrupted(actor, castEndTimeLow) or actor.Dead)) then
+								print(actor.Name + '. Interrupted ' + actor.Cast.Name);
+						end;
+						isLowPrioritet := false;
+						Engine.SetTarget(previousTarget);
+					end;
+				end;
+			end;
+			end;	
+			
+			procedure partyProtectThread; {вместо User ставим PartyList.ByName('playerName')}
+			var
+				i: integer;
+			begin
+			while Engine.Status = lsOnline do
+				begin
+				for i:=0 to Charlist.Count - 1 do
+				begin
+				if shouldProtect(Charlist.Items(i), User)
+				and shouldCast(Charlist.Items(i), 40, 900)
+				then
+					begin
+						Engine.SetTarget(Charlist.Items(i));
+						Engine.UseSkill(1436);
+						if isTargetChanged(Charlist.Items(i), User) or Charlist.Items(i).Dead then
+							begin
+								Engine.SetTarget(previousTarget);
+							end;
+					end;
+				end;
+				delay(500);
+				end;
+			end;
+			
+			procedure antiFear;
+			var
+				i: integer;
+				fearTemp: TL2Effect;
+			begin
+				while Engine.Status = lsOnline do
+					begin
+						for i:=0 to Charlist.Count - 1 do
+							begin
+								if isFearCasting(Charlist.Items(i)) and User.Running and not isAffraid(User) then
+									begin
+											Engine.UseAction(1);
+											delay(fearCastEndTime + 200);
+											if not User.Running and not User.Buffs.ByID(1169, fearTemp) then
+												begin
+													Engine.UseAction(1);
+												end;
+									end
+								else if not User.Running and not isAffraid(User) then
+									begin
+										Engine.UseAction(1);
+									end;
+							end;
+					delay(500);
+					end;
+			end;
+			
+			procedure buffDispel;
+			var
+				Buff: TL2Effect;
+			begin
+			if User.Buffs.ByID(buffID, Buff) and (fBuffCount >= 23) then
+				begin
+					Engine.Dispel(Buff.Name);
+				end
+			else 
+				exit;
+			end;
+			
+			procedure fearBuffsDispel;
+			var
+				fearTemp: TL2Effect;
+			begin
+				while Engine.Status = lsOnline do
+					begin
+						if User.Buffs.ByID(1169, fearTemp) then
+							begin
+								delay(randomDispersion(1000));
+								buffDispel(1204); {windwalk}
+								buffDispel(1282); {paagrio wind walk}
+								buffDispel(1504); {imporved movement}
+								buffDispel(1535); {chant of movement}
+								buffDispel(2034); {Greater Haste Potion}						
+							end;
+					delay(500);
+					end;
+			end;
+			
+			procedure newDispel;
+			var 
+				buffTemp: TL2Effect;
+			begin
+				while Engine.Status = lsOnline do
+					begin
+						buffDispel(Regeneration);  		
+						buffDispel(DeflectMagic);   	
+						buffDispel(EvasKiss);   		
+						buffDispel(Might);   			
+						buffDispel(Focus);  			
+						buffDispel(ChantOfEvision);   	
+						buffDispel(Guidance);   		
+						buffDispel(Invigor);   			
+						buffDispel(Agility);  
+						buffDispel(BlessedShield);   	
+						buffDispel(AdvancedBlock);  
+						buffDispel(ImpovedShieldDefence);   
+						buffDispel(VampiricRage);   
+						buffDispel(PoisonResistance);   
+						buffDispel(Agility);   
+						buffDispel(DecreaseWeigth);   							
+						buffDispel(LordOfVampire);   							
+						buffDispel(DeathWhisper);   							
+						buffDispel(Haste);   							
+						buffDispel(ForceMeditation);    				
+						buffDispel(Invocation);   						
+						buffDispel(PaagrioOfProtection);   				
+						buffDispel(ChantOfRevenge);   					
+						buffDispel(WarChant);   						
+						buffDispel(GreaterMight);   					
+						buffDispel(CriticalOfPaagrio);   				
+						buffDispel(ChantOfCritical);   					
+						buffDispel(ChantOfBloodAwakening);   			
+						buffDispel(WeaponMaintenance);   				
+						buffDispel(PaagriosEye);   						
+						buffDispel(HolyWeapon);   						
+						buffDispel(PaagriosVision);   					
+						buffDispel(PaagriosHeart);   					
+						buffDispel(PaagriosTact);   					
+						buffDispel(ChantOfLife);   						
+						buffDispel(GreaterHeal);   						
+						buffDispel(GreaterGroupHeal);   			
+						buffDispel(FuryOfPaagrio);   				
+						buffDispel(WarCry);     						
+						buffDispel(RapidShot);     					
+						buffDispel(DuelistSpirit);    				
+						buffDispel(IronShield);    					
+						buffDispel(SpiritOfSagittarius);    		
+						buffDispel(FastShot);    					
+						buffDispel(Sharshooting);    				
+						buffDispel(RapidFire);    					
+						buffDispel(DeadEye);    					
+						buffDispel(Snipe);    						
+						buffDispel(HawkEye);    					
+						buffDispel(FocusChance);    				
+						buffDispel(FocusPower);    					
+						buffDispel(FocusDeath);    					
+						buffDispel(MortalStrike);    				
+						buffDispel(ThrillFight);    				
+						buffDispel(FellSwoop);    					
+						buffDispel(DetectAnimalWeakness);     		
+						buffDispel(DetectDragonWeakness);     		
+						buffDispel(DetectBestWeakness);     		
+						buffDispel(DetectInsectWeakness);     		
+						buffDispel(DetectPlantWeakness);    		
+						buffDispel(EyeOfHunter);    				
+						buffDispel(EyeOfSlayer);    				
+						buffDispel(CombatAura);    					
+						buffDispel(SeedOfRevenge);    				
+						buffDispel(SpiritOfPhoenix);    			
+						buffDispel(EvasWill);    					
+						buffDispel(PainOfShilen);    				
+						buffDispel(Frenzy);    						
+						buffDispel(Rage);     						
+						buffDispel(ReflectDamage);     				
+						buffDispel(DeflectArrow);    				
+						buffDispel(PhysicalMirror);    				
+						{buffDispel(351);}  						
+						buffDispel(Majesty);     					
+						buffDispel(DarkForm);    					
+						buffDispel(SeedOfFire);   					
+						buffDispel(SeedOfWater);   					
+						buffDispel(SeedOfWind);   					
+						buffDispel(FrostArmor);   					
+						buffDispel(FlameArmor);
+						buffDispel(HurricaneArmor);
+						buffDispel(FireResistance);
+						buffDispel(1182);
+						buffDispel(1189);
+						buffDispel(1548);
+						buffDispel(1393);
+						buffDispel(1392);
+						buffDispel(1352);
+						buffDispel(1549);
+						buffDispel(1353);
+						buffDispel(828);
+						buffDispel(829);
+						buffDispel(830);
+						buffDispel(825);
+						buffDispel(826);
+						buffDispel(827);
+						buffDispel(1307);
+						buffDispel(1078);
+						buffDispel(2103);
+						buffDispel(2035);
+						buffDispel(2235);
+						buffDispel(2236);
+						buffDispel(2237);
+						buffDispel(2238);
+						buffDispel(2239);
+						buffDispel(2240);
+						buffDispel(2012);
+						buffDispel(2274);
+						buffDispel(2335);
+						buffDispel(2336);
+						buffDispel(2337);
+						buffDispel(2338);
+						buffDispel(2339);
+						buffDispel(2340);
+						buffDispel(FuryOfPaagiro);
+						buffDispel(MaximizeLongrangeWeaponUse);
+						buffDispel(RecoverForce);
+						buffDispel(MaximumRecovery);
+						buffDispel(Smokescreen);
+						buffDispel(MaximumResistStatus);
+						buffDispel(MaximumDefense);
+					delay(800);
+					end;
+			end;
+			
+		procedure antiBackstab;
+		var
+		i: integer;
+		begin
+			while Engine.Status = lsOnline do
+			begin
+				for i:=0 to Charlist.Count - 1 do
+					begin
+						if (Charlist.Items(i).Target=(User)) and (Charlist.Items(i).Cast.EndTime > 0) and
+								((Charlist.Items(i).Cast.ID = 30) or
+								(Charlist.Items(i).Cast.ID = 263) or
+								(Charlist.Items(i).Cast.ID = 928) or
+								(Charlist.Items(i).Cast.ID = 334)) and ShouldCast(Charlist.Items(i), 20, 700)
+								then
+						begin
+							Engine.SetTarget(Charlist.Items(i));
+							Engine.UseSkill(1394); {1436} //1394 = Trance
+						end;
+					end;
+				delay(50);
+			end;
+		end;
+		
+		
+		procedure medusedTargetAvoid;
+		begin
+			while Engine.Status = lsOnline do
+				begin
+					if isCasting and isMedused(User.Target) {and (enemyAround > 2)} then
+						begin
+							print('hey yo');
+						end;
+					delay(1000);	
+				end;
+		end;
+		
+		procedure antiHate;
+		var
+		i, iHater, iTargetBeforeHate: integer;
+		Hater: TL2Live;
+		TargetBeforeHate: TL2Live;
+		temp: tl2effect;
+		begin
+		while Engine.Status = lsOnline do
+		begin
+			for i:=0 to Charlist.Count-1 do
+			begin
+			if ((Charlist.Items(i).Target = User) and (Charlist.Items(i).Cast.EndTime > 0) and
+				((Charlist.Items(i).Cast.ID = 28) or (Charlist.Items(i).Cast.ID = 979))) then
+				begin
+				TargetBeforeHate:= User.Target;
+				Engine.SetTarget(Charlist.Items(i));
+				Hater:= Charlist.Items(i);
+				iTargetBeforeHate:= 1;
+				iHater := 1;
+				Delay(Charlist.Items(i).Cast.EndTime + 50);
+				end;
+			if ((Charlist.Items(i).Cast.EndTime > 0) and (Charlist.Items(i).Attackable)and (Charlist.Items(i).Cast.ID = 18) and
+				(User.DistTo(Charlist.Items(i)) < 400)) then
+				begin
+				TargetBeforeHate:= User.Target;
+				Engine.SetTarget(Charlist.Items(i));
+				Hater:= Charlist.Items(i);
+				iTargetBeforeHate:= 1;
+				iHater := 1;
+				Delay(Charlist.Items(i).Cast.EndTime + 50);
+				end;
+			if ((iTargetBeforeHate > 0) and (User.Buffs.ByID(28, temp) or User.Buffs.ByID(979, temp) or User.Buffs.ByID(18, temp))
+			and (User.Target = Hater)) then
+				begin
+					Engine.SetTarget(TargetBeforeHate);
+					iTargetBeforeHate:= 0;
+					iHater := 0;
+				end;
+			end;
+			delay(200);
+		end;
+		end;
+		
+		procedure holdTargetOly;
+		var
+		prm1, prm2: pointer;
+		Action : TL2Action;
+		escBtn : boolean;
+		begin
+			while Engine.Status = lsOnline do
+			begin
+				Action := Engine.WaitAction([laUnTarget, laKey], prm1, prm2);
+				if Action = laUnTarget then
+				begin
+					if not (User.Target = currentTarget) and not escBtn then
+					begin
+						delay(100);
+						Engine.SetTarget(currentTarget); 
+					end; 
+					delay(100);
+					escBtn := false;
+				end;
+				if Action = laKey then
+				begin
+					if (Integer(prm1) = $1B) then
+						escBtn := true;
+				end;
+		end;
+		end;
+		
+		procedure cfBuffUser;
+		begin
+			if charFunctor then
+			begin
+				delay(randomDispersion(buffDelay));
+				Engine.UseItem(itemID);
+			end;
+		end;
+		
+		procedure buffController;
+		var
+			checkDelay: Cardinal;
+			effect: TL2Effect;
+			shouldSelfUse: boolean;
+		begin
+			while Engine.Status = lsOnline do
+			begin
+				if cfWWdeadChanter then
+				begin
+					delay(randomDispersion(buffDelay));
+					Engine.UseItem(1374);
+				end;
+				if cfWWAliveChanter then
+				begin
+					checkDelay := GetTickCount + 6 * 1000;
+					while ((checkDelay > GetTickCount) and not fHasWW(User) and not isChanterDead) do
+					begin
+						delay(500);
+					end;
+					if (fBuffable(User) and not fHasWW(User) and not fHasBlockWW(User) and not fHasAntiSummoning(User)) then
+						Engine.UseItem(1374);
+				end;
+			delay(1000);
+			end;
+		end;
+		
+		procedure pressKey;
+		begin
+			if (isMacros) then
+				keybd_event(hexCode, 45, 1, 0 )
+			else if (not isMacros) then
+			begin
+				keybd_event(hexCode, 45, 1, 0 );
+				delay(30);
+			end;
+		end;
+		
+end.			

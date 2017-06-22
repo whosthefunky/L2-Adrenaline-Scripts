@@ -1,0 +1,225 @@
+0	sitstand	Сесть/Встать	Sit/Stand1
+1	walkrun	Ходьба/Бег	Walk/Run
+2	attack	Атака	Attack
+3	trade	Обмен	Exchange
+4	targetnext	Следующая Цель	Next Target
+5	Pickup	Подобрать	Pick Up
+6	assist	Помощь	Assist
+7	partyinvite	Пригласить	Invite
+8	partyleave	Покинуть Группу	Leave Party
+9	partydismiss	Исключить Члена Группы	Dismiss Party Member
+10	vendor	Личный Магазин – Продать	Private Store - Sell
+11	partymatching	Подбор Группы	Party Matching
+12	socialhello	Приветствие	Greeting
+13	socialvictory	Победа	Victory
+14	socialcharge	Наступление	Advance
+15	pethold	Смена Настроек Движения	Change Movement Mode
+16	petattack	Атака	Attack
+17	petstop	Стоп	Stop
+18	petpickup	Подобрать	Pickup
+19	petrevert	Отозвать Питомца	Unsummon Pet
+20	petspecial	Особое Умение	Special skill
+21	summonhold	Смена Настроек Движения	Change Movement Mode
+22	summonattack	Атака	Attack
+23	summonstop	Стоп	Stop
+24	socialyes	Да	Yes
+25	socialno	Нет	No
+26	socialbow	Церемониальный поклон	Bow
+27	summonspecial	Особое Умение	Special skill
+28	buy	Личный Магазин – Купить	Private Store - Buy
+29	socialunaware	Замешательство	Unaware
+30	socialwaitinga	Ожидание	Social Waiting
+31	sociallaugh	Смех	Laugh
+32	summonsiege	Переключение Режимов	Switch Mode
+33	socialapplause	Аплодисменты	Applaud
+34	socialdance	Танец	Dance
+35	socialsad	Скорбь	Sorrow
+36	usesummonskill	Токсичный Дым	Toxic Smoke
+37	manufacture	Производство Гнома	Dwarven Workshop
+38	mountdismount	Оседлать/Спешиться	Mount/Dismount
+39	usesummonskill	Взрыв Паразита	Parasite Burst
+40	commend	Рекомендация	Recommend
+41	usesummonskill	Дикая Пушка	Wild Cannon
+42	usesummonskill	Отражающий Щит	Self Damage Shield
+43	usesummonskill	Водоворот	Hydro Screw
+44	usesummonskill	Взрывная Атака	Boom Attack
+45	usesummonskill	Мастер Перезарядки	Master Recharge
+46	usesummonskill	Удар Шторма	Mega Storm Strike
+47	usesummonskill	Кража Крови	Steal Blood
+48	usesummonskill	Пушка	Mech. Cannon
+49	skill4032	Дикий Нрав	Wield Temper
+50	leaderchange	Смена Лидера Группы	Change of Party Leader
+51	manufacture2	Общее Производство	General Workshop
+52	unsummon	Освобождение	Unsummon
+53	summonmove	Движение	Move
+54	petmove	Движение	Move
+55	replayrecstartstop	Вкл/Выкл. Запись Повтора	Start/End Recording Replay
+56	inviteunion	Приглашение в Канал Команды	Command Channel Invitation
+57	storefind	Поиск Магазина	Find Store
+58	challenge	Дуэль	Duel
+59	cancelchallenge	Отмена	Withdraw
+60	partychallenge	Групповая Дуэль	Party Duel
+61	packagevendor	Магазин для Упаковок	Package Sale
+62	socialcharm	Обаяние	Charm
+63	playminigame	Мини-игра	Mini-Game
+64	teleportbookmark	Свободный телепорт	My Teleports
+65	botreport	Сообщение о бот-программе	Bot Report Button
+66	socialshy	Смущение	Shyness
+67	navigatewheel	Навигация	Steer
+68	leavewheel	Отмена навигации	Cancel Control
+69	startship	Отправление	Destination Map
+70	leaveship	Отмена посадки	Exit Airship
+71	couplebow	Поклон	Exchange Bows
+72	couplehighfive	Дай Пять	High Five
+73	coupledance	Танец Вдвоем	Couple Dance
+74	condinfoonoff	Вкл/Выкл данные о состоянии	Turn On/Off the Status Information
+76	friendinvite	Приглашение друга	Invite Friends
+77	recstartstop	Вкл/Выкл. Запись	Start/End Recording
+78	tacticalsign1	Использование Знака 1	Use Token 1
+79	tacticalsign2	Использование Знака 2	Use Token 2
+80	tacticalsign3	Использование Знака 3	Use Token 3
+81	tacticalsign4	Использование Знака 4	Use Token 4
+82	targettacticalsign1	Автоприцел по Указателю 1	Token 1 Targeting
+83	targettacticalsign2	Автоприцел по Указателю 2	Token 2 Targeting
+84	targettacticalsign3	Автоприцел по Указателю 3	Token 3 Targeting
+85	targettacticalsign4	Автоприцел по Указателю 4	Token 4 Targeting
+86	autopartysearchonoff	Начать/прервать автоматический поиск группы	Start/Stop Automatic Party Search
+87	socialpropose	Намерение	Propose
+88	socialprovocation	Провокация	Provoke
+1000	usesummonskill	Осадный Молот	Siege Hammer
+1001	fakeskill	Предельный Ускоритель	Ultimate Bombastic Buster
+1002	skill4123	Враждебность	Hostile Feeling
+1003	usepetskill	Дикое Оглушение	Wild Stun
+1004	usepetskill	Дикая Защита	Wild Defense
+1005	usepetskill	Яркая Вспышка	Bright Burst
+1006	usepetskill	Исцеляющий Свет	Bright Heal
+1007	usesummonskill	Благословение Королевы	Blessing of Queen
+1008	usesummonskill	Дар Королевы	Gift of Queen
+1009	usesummonskill	Исцеление Королевы	Cure of Queen
+1010	usesummonskill	Благословение Серафима	Blessing of Seraphim
+1011	usesummonskill	Дар Серафима	Gift of Seraphim
+1012	usesummonskill	Исцеление Серафима	Cure of Seraphim
+1013	usesummonskill	Проклятие Тени	Curse of Shade
+1014	usesummonskill	Массовое Проклятие Тени	Mass Curse of Shade
+1015	usesummonskill	Жертва Тени	Shade Sacrifice
+1016	usesummonskill	Проклятый Импульс	Cursed Blow
+1017	usesummonskill	Проклятый Удар	Cursed Strike
+1018	usesummonskill	Проклятие Поглощения Энергии	Cursed Drain Energy
+1019	usesummonskill	Умение Кэт 2	Kat the Cat Skill 2
+1020	usesummonskill	Умение Мяу 2	Mew the Cat Skill 2
+1021	usesummonskill	Умение Кая 2	Kai the Cat Skill 2
+1022	usesummonskill	Умение Юпитера 2	Boxer the Unicorn Skill 2
+1023	usesummonskill	Умение Миража 2	Mirage the Unicorn Skill 2
+1024	usesummonskill	Умение Бекара 2	Merrow the Unicorn Skill 2
+1025	usesummonskill	Теневое Умение 1	Shadow Skill 1
+1026	usesummonskill	Теневое Умение 2	Shadow Skill 2
+1027	usesummonskill	Умение Гекаты	Silhouette Skill 2
+1028	usesummonskill	Умение Воскрешенного 1	Reanimated Man Skill 1
+1029	usesummonskill	Умение Воскрешенного 2	Reanimated Man Skill 2
+1030	usesummonskill	Умение Порочного 2	Corrupted Man Skill 2
+1031	usesummonskill	Рассечение	Slash
+1032	usesummonskill	Режущий Вихрь	Spin Slash
+1033	usesummonskill	Кошачья Хватка	Grip of the Cat
+1034	usesummonskill	Кнут	Whiplash
+1035	usesummonskill	Приливная Волна	Tidal Wave
+1036	usesummonskill	Взрыв Трупа	Corpse Burst
+1037	usesummonskill	Случайная Смерть	Dicing Death
+1038	usesummonskill	Сила Проклятия	Dark Curse
+1039	usesummonskill	Пушечное Мясо	Cannon Fodder
+1040	usesummonskill	Большой Бум	Big Bang
+1041	usepetskill	Укус	Bite Attack
+1042	usepetskill	Кувалда	Maul
+1043	usepetskill	Волчий Рык	Cry of the Wolf
+1044	usepetskill	Пробуждение	Awakening
+1045	usepetskill	Волчий Вой	Wolf Howl
+1046	usepetskill	Рев Ездового Дракона	Strider Roar
+1047		Укус Божественного Зверя	Divine Beast Bite
+1048		Оглушительная Атака Божественного Зверя	Divine Beast Stun Attack
+1049		Огненное Дыхание Божественного Зверя	Divine Beast Fire Breath
+1050		Рев Божественного Зверя	Divine Beast Roar
+1051	usesummonskill	Благословение Тела	Blessed Body
+1052	usesummonskill	Благословение Духа	Blessed Soul
+1053	usesummonskill	Ускорение	Haste
+1054	usesummonskill	Проницательность	Acumen
+1055	usesummonskill	Чистота	Clarity
+1056	usesummonskill	Воодушевление	Empower
+1057	usesummonskill	Дикая Магия	Wild Magic
+1058	usesummonskill	Шепот Смерти	Death Whisper
+1059	usesummonskill	Фокусировка	Focus
+1060	usesummonskill	Наведение	Guidance
+1061	usepetskill	Удар Смерти	Death Blow
+1062	usepetskill	Двойная Атака	Double Attack
+1063	usepetskill	Вихревая Атака	Spin Attack
+1064	usepetskill	Метеоритный дождь	Meteor Shower
+1065	usepetskill	Пробуждение	Awakening
+1066	usepetskill	Удар Молнии	Thunder Bolt
+1067	usepetskill	Молния	Flash
+1068	usepetskill	Световая Волна	Lightning Wave
+1069	usepetskill	Вспышка	Flare
+1070	usepetskill	Контроль Эффекта	Buff Control
+1071	usesummonskill	Мощный удар	Power Striker
+1072	usepetskill	Проникающая Атака	Piercing Attack
+1073	usepetskill	Яростный Ветер	Whirlwind
+1074	usepetskill	Удар Копьем	Lance Smash
+1075	usepetskill	Боевой Клич	Battle Cry
+1076	usepetskill	Мощное Сокрушение	Power Smash
+1077	usepetskill	Шаровая Молния	Energy Burst
+1078	usepetskill	Шоковая Волна	Shock Wave
+1079	usepetskill	Вой	Howl
+1080	usesummonskill	Прилив Феникса	Phoenix Rush
+1081	usesummonskill	Очищение Феникса	Phoenix Cleanse
+1082	usesummonskill	Пылающее Перо Феникса	Phoenix Flame Feather
+1083	usesummonskill	Пылающий Клюв Феникса	Phoenix Flame Beak
+1084	usepetskill	Смена Режима	Switch State
+1086	usesummonskill	Натиск Пантеры	Panther Cancel
+1087	usesummonskill	Темный Коготь Пантеры	Panther Dark Claw
+1088	usesummonskill	Смертоносный Коготь Пантеры	Panther Fatal Claw
+1089	usepetskill	Хвост	Tail Strike
+1090	usepetskill	Укус Ездового Дракона	Strider Bite
+1091	usepetskill	Устрашение Ездового Дракона	Strider Fear
+1092	usepetskill	Рывок Ездового Дракона	Strider Dash
+1093	usepetskill	Удар Магвена	Maguen Strike
+1094	usepetskill	Легкая Походка Магвена	Maguen Wind Walk
+1095	usepetskill	Мощный Удар Магвена	Maguen Power Strike
+1096	usepetskill	Легкая Походка Элитного Магвена	Elite Maguen Wind Walk
+1097	usepetskill	Возвращение Магвена	Maguen Return
+1098	usepetskill	Групповое Возвращение Магвена	Maguen Party Return
+1099	summonattack	Атака	Attack
+1100	summonmove	Перемещение	Move
+1101	summonstop	Прекращение	Stop
+1102	unsummon	Отмена  призыва	Unsummon
+1103	usesummonskill	Пассивность	Passive
+1104	usesummonskill	Защита	Defend
+1106	usesummonskill	Медвежьи Когти	Bear Claw
+1107	usesummonskill	Медвежий Гнев	Bear Tumbling
+1108	usesummonskill	Клык Кугуара	Cougar Bite
+1109	usesummonskill	Прыжок Кугуара	Cougar Pounce
+1110	usesummonskill	Прикосновение Жнеца	Reaper Touch
+1111	usesummonskill	Сила Жнеца	Reaper Power
+1113	usesummonskill	Львиный Рев	Lion Roar
+1114	usesummonskill	Львиный Коготь	Lion Claw
+1115	usesummonskill	Львиный Бросок	Lion Dash
+1116	usesummonskill	Львиное Пламя	Lion Flame
+1117	usesummonskill	Полет Громового Змея	Thunder Flight
+1118	usesummonskill	Очищение Громового Змея	Thunder Purity
+1120	usesummonskill	Стрельба Перьями Громового Змея	Thunder Feather
+1121	usesummonskill	Острые Когти Громового Змея	Thunder Sharp Claw
+1122	usesummonskill	Благословение Жизни	Blessing of Life
+1123	usesummonskill	Осадный Удар	Siege Punch
+5000	usepetskill	Погладить	Hand of Warmth
+5001	usepetskill	Искушение Света Розы	Rosy Seduction
+5002	usepetskill	Запредельное Искушение	Art of Seduction
+5003	usepetskill	Удар Молнии	Thunder Bolt
+5004	usepetskill	Молния	Flash
+5005	usepetskill	Световая волна	Lightning Wave
+5006	usepetskill	Контроль Эффекта	Buff Control
+5007	usepetskill	Проникающая Атака	Piercing Attack
+5008	usepetskill	Вихревая Атака	Spin Attack
+5009	usepetskill	Сокрушение	Impale
+5010	usepetskill	Боевой Клич	Battle Cry
+5011	usepetskill	Мощное Сокрушение	Power Smash
+5012	usepetskill	Шаровая Молния	Energy Burst
+5013	usepetskill	Шоковая Волна	Shock Wave
+5014	usepetskill	Воспламенение	Burst
+5015	usepetskill	Смена Режима	Switch Tactics
+5016	usepetskill	Усиление Кота-Рейнджера	Cat the Ranger Boost

@@ -1,0 +1,1373 @@
+ UseS SellAll;
+var
+  TID: cardinal;
+  Paused: boolean = false;
+  PL : TL2Char;
+Pantheon,Gallint,Black,Katerina,Adv,Dwarf,Devon : TL2Npc;
+  Theodore,Shannon,Evain,Holden,Guard,Aymen,NPCA,herz,took : TL2Npc;
+  dag,soe,quest1,shots : TL2Item;
+  mobs,test,r1nd : integer;
+  obj : tl2effect; 
+  wind:Tl2skill;
+  soul:tl2pet;
+  dw1,dw2,dw3,dw4:TL2NPC;
+
+function questitems:boolean;
+begin
+Inventory.quest.byid(36671,quest1);
+Result:=quest1.Count=900;
+end;
+
+function Figth: boolean;
+var Timer: cardinal;
+begin
+  Result := false;
+  Timer  := GetTickCount + 5000;              
+  while not (User.Target.Dead) and not (user.Target.id=0) do begin         
+    if User.Dead then begin
+      delay(10000);                   
+      Engine.gohome;
+      If (user.level<=18) then TalkingfarmR;  
+      If (user.level<=31) and (user.level>21) then GludiofarmR; 
+      if (user.level<38) and (user.level>31)  then DionFarmR; 
+                         
+      break;                                  
+    end;
+       if User.Target.id = 0 then Engine.Ignore(User.Target);
+       if user.target.level>=86 then Engine.Ignore(User.Target); 
+       If (user.level<=40) then Engine.UseSkill(1090);
+       If (User.level>40) and not (user.target.level>=86) then  Engine.Useskill(1245);
+            if Engine.IsBusy(TL2NPC(User.Target)) then begin engine.Ignore(user.target);Engine.CAnceltarget;break;end;
+       
+    if (GetTickCount > Timer) and (User.Target.HP >= 100) then begin
+      Engine.Ignore(User.Target);             
+      break;                                  
+    end;
+                              
+  end;
+  Result := User.Target.Dead;
+end;
+
+function TalkingfarmR : boolean;
+begin
+Result:=false;
+if not User.Buffs.byid(15650, obj) then
+  begin
+  Inventory.user.ById(2509, shots);Engine.AutoSoulshot(shots.name,True); 
+  Inventory.user.ById(736, soe); 
+  Engine.UseItem(soe);//soe
+  Delay(25000);
+  Engine.MoveTo (-114374, 257657, -1197);
+Engine.MoveTo (-116749, 255386, -1427);
+  Engine.MoveTo (-115131, 254705, -1520);
+  Engine.MoveTo(-114568,254285,-1528);
+npclist.byid(32327,Adv);
+Engine.SetTarget(adv);
+Engine.DlgOpen;
+Engine.DlgSel (2);
+Engine.DlgSel (3);
+Engine.MoveTo(-114527,254094,-1531);
+npclist.byid(33123,Adv); //RICHARD THE GK
+Engine.SetTarget(adv);
+Engine.DlgOpen;
+Engine.DlgSel (4);
+delay(20000);
+  Engine.MoveTo(-109396,237516,-2961);
+  npclist.byid(33180,NPCA); 
+Engine.SetTarget (NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+  Engine.CancelTarget;
+  Engine.MoveTo(-115100,230247,-1656);
+npclist.byid(33197,NPCA); 
+Engine.SetTarget (NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+  Engine.CancelTarget;
+  Engine.MoveTo(-114419,235529,-3087);
+  Engine.MoveTo(-113620,237196,-3041);
+  npclist.byid(33182,NPCA); 
+Engine.SetTarget (NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+  Engine.MoveTo(-116679,233888,-2901);
+ npclist.byid(33189,NPCA); 
+Engine.SetTarget (NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+  Engine.CancelTarget;
+  Engine.MoveTo(-117088,240561,-2741);
+end;
+Result:=True;
+end;
+
+function GludiofarmR : boolean;
+begin
+Result:=false;
+if not User.Buffs.byid(15650, obj) then
+  begin
+  Inventory.user.ById(3948, shots);Engine.AutoSoulshot(shots.name,True); 
+  Inventory.user.ById(736, soe); 
+  Engine.UseItem(soe);//soe
+  Delay(25000);
+  Engine.MoveTo (-14713, 124017, -3122);
+  npclist.byid(32327,NPCA);
+  Engine.SetTarget(NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel (2);
+  Engine.DlgSel (3);
+  Engine.MoveTo (-14538, 124040, -3125);
+  npclist.byid(30256,NPCA);
+  Engine.SetTarget(NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel (2);
+  Engine.DlgSel (16);
+  Delay(10000);
+  Engine.MoveTo (-41777,122284,-3066);
+  Engine.MoveTo (-43032,122305,-2714);
+  Engine.MoveTo (-43607,121511,-2812);
+  Engine.MoveTo (-44728,120823,-3069);
+  Engine.MoveTo (-45621,119847,-3423);
+end;
+Result:=True;
+end;
+
+function DionFarmR : boolean;
+begin
+Result:=false;
+if not User.Buffs.byid(15650, obj) then
+  begin
+  Inventory.user.ById(736, soe); 
+  Engine.UseItem(soe);//soe
+  Delay(25000);
+  Inventory.user.ById(3948, shots);Engine.AutoSoulshot(shots.name,True); 
+  if User.InRange (82876,148960, User.Z, 5000,10) then begin
+    Engine.MoveTo (83402,147946, -3403);
+    Engine.SetTarget(30080);
+    delay(4000);
+    Engine.DlgOpen;
+    Engine.DlgSel(1);Engine.DlgSel(3);delay(15000);end;
+Engine.MoveTo(19134,144847,-3096);
+Engine.MoveTo(17726,145731,-3091);
+Engine.MoveTo(16233,143311,-2784);
+//endsummoner
+Engine.MoveTo(16781,142960,-2668);
+npclist.byid(32327,NPCA); //lars
+Engine.SetTarget (NPCA);
+Engine.DlgOpen;
+Engine.DlgSel(2);
+Engine.DlgSel(3);
+Engine.MoveTo (15615,142887,-2704);
+  npclist.byid(30059,NPCA);//trisha
+  Engine.SetTarget(NPCA);
+  Engine.DlgOpen;
+Engine.DlgSel (1);
+  Engine.DlgSel (14);
+  Delay(10000);
+  Engine.MoveTo (33805, 186799, -3235);
+  Engine.ClearIgnore; 
+end;
+Result:=True;
+end;
+
+
+
+
+
+
+function lvl1to7: boolean;
+begin
+result:=false;
+Engine.ClearZone;
+
+npclist.byid(32972,Pantheon);
+Engine.MoveTo (-114374, 260273, -1179);
+  Engine.SetTarget (Pantheon);
+  Engine.DlgOpen;
+  Engine.DlgSel (3);
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.MoveTo (-114100, 259828, -1198);
+  Engine.MoveTo (-114091, 259176, -1198);
+  Engine.MoveTo (-114333, 258508, -1198);
+  Engine.MoveTo (-114337, 257290, -1136);
+  Engine.MoveTo (-113951, 257053, -1136);
+  Engine.MoveTo (-113954, 256801, -1202);
+  Engine.MoveTo (-114342, 256507, -1282);
+  Engine.MoveTo (-114351, 255149, -1522);
+  npclist.byid(32975,Theodore);
+    Engine.SetTarget (Theodore);
+  Engine.DlgOpen;
+  Engine.DlgSel (3);
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.CancelTarget;
+  Delay (5000);
+
+  Engine.SetTarget (Theodore);
+  Engine.DlgOpen;
+  Engine.DlgSel (3);
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.MoveTo (-112767, 254804, -1524);
+  Engine.MoveTo (-111442, 255834, -1442);
+  npclist.byid(32974,Shannon);
+  Engine.SetTarget (Shannon);
+  Engine.DlgOpen;
+  Engine.DlgSel (2);
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.CancelTarget;
+  Delay (5000);
+  Engine.SetTarget (Shannon);
+  Engine.DlgOpen;
+  Engine.DlgSel (2);
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.CancelTarget;
+  Engine.MoveTo (-111955, 255358, -1446);
+  Engine.MoveTo (-112351, 254733, -1520);
+  Engine.MoveTo (-112209, 254330, -1538);
+  Engine.MoveTo (-111337, 253862, -1736);
+  Engine.MoveTo (-110802, 253652, -1786);
+  Engine.MoveTo (-110771, 253523, -1739);
+  npclist.byid(33464,Evain);
+  Engine.SetTarget (Evain);
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.CancelTarget;
+  Engine.MoveTo (-110863, 253912, -1786);
+
+while not Engine.QuestStatus (10322, 3) do begin
+    while not Engine.AutoTarget (800) do Delay (1000);
+    while not User.Target.Dead do Engine.Attack (2000);
+  end;
+
+
+  Engine.MoveTo (-110928, 253773, -1778);
+  Engine.MoveTo (-110779, 253635, -1787);
+  Engine.MoveTo (-110764, 253504, -1738);
+  Engine.SetTarget (Evain);
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.CancelTarget;
+  Delay (5000);
+
+  Engine.MoveTo (-110745, 253666, -1789);
+npclist.byid(32981,NPCA);
+  Engine.SetTarget (NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Delay (3000);
+  Engine.MoveTo (-110863, 253912, -1786);
+ while not Engine.QuestStatus (10322, 6) do begin
+    while not Engine.AutoTarget (800) do Delay (1000);
+    while not User.Target.Dead do Engine.Attack (2000);
+  end;
+
+  Engine.MoveTo (-110928, 253773, -1778);
+  Engine.MoveTo (-110779, 253635, -1787);
+  Engine.MoveTo (-110764, 253504, -1738);
+  Engine.SetTarget (Evain);
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.CancelTarget;
+  Delay (5000);
+  Engine.SetTarget (Evain);
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+ Inventory.user.ById(7816, dag); //2h staff
+ Engine.UseItem(dag);
+ Engine.MoveTo (-110791, 253719, -1787);
+ Engine.MoveTo (-110594, 253731, -1792);
+ Engine.MoveTo (-110371, 253373, -1781);
+ Engine.MoveTo (-110155, 252540, -1985);
+ Engine.MoveTo (-110364, 252508, -1988);
+ npclist.byid(33194,Holden);
+ Engine.SetTarget (Holden);
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+  Delay (5000);
+ Engine.MoveTo (-114050, 247955, -7874);
+ Engine.MoveTo (-114114, 248423, -7875);
+
+   while not Engine.QuestStatus (10323, 3) do begin
+    while not Engine.AutoTarget (2000, 200) do begin
+      Delay (1000);
+      if Engine.QuestStatus (10323, 3) then break;
+    end;
+    while not User.Target.Dead do Engine.Attack (2000);
+  end;
+Engine.MoveTo (-114742, 248205, -7875);
+Engine.MoveTo (-114832, 248293, -7875);
+npclist.byid(33021,Guard);
+Engine.SetTarget (Guard);
+Engine.DlgOpen;
+Engine.DlgSel (1);
+Engine.CancelTarget;
+Delay (10000);
+Engine.FaceControl(0,true);
+Delay(2000);
+Engine.FaceControl(0,false);
+ Engine.SetTarget (Guard);
+  Engine.DlgOpen;
+  Engine.CancelTarget;
+  Delay (10000);
+
+  while not Engine.QuestStatus (10323, 8) do begin
+    if Engine.AutoTarget (2000, 200) then
+      while not User.Target.Dead do Engine.Attack (2000);
+    Delay (1000);
+  end;
+  Engine.MoveTo (-114021, 247762, -7875);
+  npclist.byid(33193,Aymen);
+  Engine.SetTarget (Aymen);
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+  Delay (5000);
+  Engine.MoveTo (-110112, 252744, -1938);
+  Engine.MoveTo (-110447, 253311, -1789);
+  Engine.MoveTo (-110714, 253787, -1794);
+  Engine.MoveTo (-112087, 254135, -1579);
+  Engine.MoveTo (-112499, 254523, -1532);
+  Engine.MoveTo (-112116, 255151, -1460);
+  Engine.MoveTo (-111490, 255776, -1442);
+  npclist.byid(32974,Shannon);
+  Engine.SetTarget (Shannon);
+  Engine.DlgOpen;
+  Engine.DlgSel (2);
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.CancelTarget;
+  Delay (10000);
+  Engine.SetTarget (Shannon);
+  Engine.DlgOpen;
+  Engine.DlgSel (2);
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.MoveTo (-111533, 256592, -1438);
+  Engine.MoveTo (-112000, 256760, -1437);
+  Engine.MoveTo (-113048, 256681, -1497);
+  Engine.MoveTo (-114139, 255854, -1510);
+  Engine.MoveTo (-114737, 255891, -1510);
+  Engine.MoveTo (-115744, 256178, -1507);
+  Engine.MoveTo (-116381, 255687, -1460);
+  Engine.MoveTo (-116631, 255548, -1428);
+  npclist.byid(32980,Gallint);
+  Engine.SetTarget (Gallint);
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.CancelTarget;
+  Delay (4000);
+  Engine.SetTarget (Gallint);
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+   Engine.CancelTarget;
+  Delay (4000);
+Engine.MoveTo (-116718, 255374, -1428);
+Engine.MoveTo (-117344, 255628, -1296);
+
+//Engine.MoveTo (-117380, 256066, -1296);//kinkaid npclist.byid(32159,Kincaid);
+//Engine.MoveTo (-117612, 255397, -1296);//Cindet npclist.byid(32148,CIndet);
+Engine.MoveTo (-117573, 255128, -1296);
+npclist.byid(32151,Herz);
+Engine.SetTarget (herz);
+Engine.DlgOpen;
+Engine.DlgSel (1);
+Engine.DlgSel (1);
+Engine.MoveTo (-117344, 255628, -1296);
+Engine.MoveTo (-116718, 255374, -1428);
+Engine.MoveTo (-116631, 255548, -1428);
+npclist.byid(32980,Gallint);
+ Engine.SetTarget (Gallint);
+
+
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.CancelTarget;
+  Delay (4000);
+Engine.SetTarget (Gallint);
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.CancelTarget;
+  Delay (4000);
+
+  Engine.MoveTo (-116439, 257817, -1511);
+  Engine.MoveTo (-115021, 257738, -1136);
+  Engine.MoveTo (-114373, 257296, -1136);
+  Engine.MoveTo (-114382, 260220, -1187);
+npclist.byid(32972,Pantheon);
+Engine.SetTarget (Pantheon);
+  Engine.DlgOpen;
+  Engine.DlgSel (3);
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.CancelTarget;
+  Delay (5000);
+ 
+  Engine.LearnSkill (1090);
+result:=true;
+  end;
+
+function lvl7to18: boolean;
+begin
+result:=false;
+
+Inventory.user.ById(2509, shots);Engine.AutoSoulshot(shots.name,True); 
+Engine.LearnSkill (141);
+Engine.LearnSkill (142);
+Engine.LearnSkill (250);
+Engine.LearnSkill (1090);
+Engine.MoveTo (-114100, 259828, -1198);
+Engine.MoveTo (-114091, 259176, -1198);
+Engine.MoveTo (-114333, 258508, -1198);
+Engine.MoveTo (-114337, 257290, -1136);
+Engine.MoveTo (-113951, 257053, -1136);
+Engine.MoveTo (-113954, 256801, -1202);
+Engine.MoveTo (-114342, 256507, -1282);
+Engine.MoveTo (-113436, 255970, -1496);
+npclist.byId(30004,Katerina);
+Engine.SetTarget(Katerina);
+Engine.DlgOpen;
+Engine.DlgSel (1);
+engine.NPCTrade (False, [2509 , 1500] );
+Delay(1000);
+Engine.SetTarget(Katerina);
+Engine.DlgOpen;
+Engine.DlgSel (1);
+engine.NPCTrade (False, [736 , 10] );
+Delay(1000);
+Engine.MoveTo (-114701, 255095, -1526);
+Engine.MoveTo (-114543, 254294, -1530);
+npclist.byId(32327,Adv);
+Engine.SetTarget(Adv);
+Engine.DlgOpen;
+Engine.DlgSel (2);
+Engine.DlgSel (3);
+Delay(1000);
+Engine.MoveTo (-114125, 252497, -1563);
+npclist.byId(33124,Dwarf);
+Engine.SetTarget(Dwarf);
+Engine.DlgOpen;
+Engine.DlgSel (1);
+Engine.MoveTo(-114394,250782,-1778);
+  Engine.MoveTo(-112212,250438,-2094);
+  Engine.MoveTo(-111992,249693,-2276);
+  Engine.MoveTo(-110802,249108,-2550);
+  Engine.MoveTo(-109908,248201,-2721);
+  Engine.MoveTo(-109779,246971,-2960);
+  Engine.MoveTo(-109596,246070,-2966);
+  Engine.MoveTo(-108901,244069,-2914);
+  Engine.MoveTo(-107625,241869,-2407);
+  Engine.MoveTo(-107604,241837,-2393);
+  Engine.MoveTo(-107215,241066,-2187);
+  Engine.MoveTo(-107129,240273,-2092);
+  Engine.MoveTo(-107120,238353,-2356);
+  Engine.MoveTo(-107754,237454,-2547);
+  Engine.MoveTo(-109396,237516,-2961);
+  npclist.byid(33180,NPCA); 
+Engine.SetTarget (NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+  Engine.CancelTarget;
+  Engine.MoveTo(-115100,230247,-1656);
+npclist.byid(33197,NPCA); 
+Engine.SetTarget (NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+  Engine.CancelTarget;
+  Engine.MoveTo(-114419,235529,-3087);
+  Engine.MoveTo(-113620,237196,-3041);
+  npclist.byid(33182,NPCA); 
+Engine.SetTarget (NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+  Engine.MoveTo(-116679,233888,-2901);
+ npclist.byid(33189,NPCA); 
+Engine.SetTarget (NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+  Engine.CancelTarget;
+  Engine.MoveTo(-117088,240561,-2741);
+   Engine.ClearIgnore;   
+  while User.Level<19 do begin
+  if TalkingfarmR then delay(100);
+      if Engine.AutoTarget(2000) then begin           
+      if User.DistTo(User.Target) > 600 then  
+        if not Engine.MoveToTarget(-590) then begin  
+          Engine.Ignore(User.Target);               
+          continue;                           
+        end;                                 
+    
+      if not Figth then continue;             
+                                              
+    
+      if User.Target.Dropped then begin       
+      engine.MoveToTarget;                  
+       engine.pickup(200,100,true,false);
+      end;
+      Engine.ClearIgnore;
+                                               
+   end else Delay(2000);
+
+  end;
+
+ Inventory.user.ById(736, soe); 
+ Engine.UseItem(soe);//Scroll of escape
+
+  delay(60000);
+Engine.LearnSkill (1090);Engine.LearnSkill (1090);Engine.LearnSkill (1090);Engine.LearnSkill (1015);Engine.LearnSkill (1015);Engine.LearnSkill (1015);
+result:=true;
+  end;
+function classchange1: boolean;
+begin
+result:=false;
+Engine.LearnSkill (250);
+Inventory.user.ById(2509, shots);Engine.AutoSoulshot(shots.name,True); 
+  Engine.MoveTo (-114100, 259828, -1198);
+  Engine.MoveTo (-114091, 259176, -1198);
+  Engine.MoveTo (-114333, 258508, -1198);
+  Engine.MoveTo (-114337, 257290, -1136);
+  Engine.MoveTo (-113951, 257053, -1136);
+  Engine.MoveTo (-113954, 256801, -1202);
+  Engine.MoveTo (-114342, 256507, -1282);
+  Engine.MoveTo (-114351, 255149, -1522);
+  Engine.MoveTo (-115131, 254705, -1520);
+  Engine.MoveTo (-116749, 255386, -1427);
+  Engine.MoveTo (-117914, 255892, -1325);
+  Engine.MoveTo (-117732, 256366, -1325);
+
+  
+  npclist.byid(32150,Took);
+  Engine.SetTarget(took);
+  Engine.DlgOpen;
+  Engine.DlgSel (5);
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+  Engine.MoveTo (-117914, 255892, -1325);
+  Engine.MoveTo (-116749, 255386, -1427);
+  Engine.MoveTo (-115131, 254705, -1520);
+  Engine.MoveTo(-114568,254285,-1528);
+npclist.byid(32327,Adv);
+Engine.SetTarget(adv);
+Engine.DlgOpen;
+Engine.DlgSel (2);
+Engine.DlgSel (3);
+Engine.MoveTo(-112290,256937,-1501);
+npclist.byid(30006,Adv); //RICHARD THE GK
+Engine.SetTarget(adv);
+Engine.DlgOpen;
+Engine.DlgSel (2);
+Engine.DlgSel (8);
+delay(10000);
+
+Engine.MoveTo(-109387,237563,-2961);
+delay(1000);
+npclist.byid(32977,Adv);//LAKCIS
+Engine.SetTarget(adv);
+Engine.DlgOpen;
+Engine.DlgSel (1);
+Engine.DlgSel (1);
+Engine.DlgSel (1);
+Engine.DlgSel (1);
+Engine.MoveTo(-111810,231816,-3166);
+npclist.byId(32978,Dwarf);//It;s Sebion
+Engine.SetTarget(Dwarf);
+Engine.DlgOpen;
+Engine.DlgSel(1);
+Engine.DlgSel(1);
+Engine.DlgSel(1);
+Engine.DlgSel(1);
+Engine.DlgSel(1);
+Engine.CancelTarget;
+Delay(2000);
+Engine.MoveTo(-111810,231816,-3166);
+npclist.byId(32978,Dwarf);//It;s Sebion
+Engine.SetTarget(Dwarf);//Still Sebion
+Engine.DlgOpen;
+Engine.DlgSel(1);
+Engine.DlgSel(1);
+Engine.DlgSel(1);
+Delay(1000);
+Engine.MoveTo(-119139,211173,-8591);
+npclist.byId(19155,Dwarf);//Infiltration officer
+Engine.SetTarget(Dwarf);
+Engine.DlgOpen;
+Engine.DlgSel(1);
+Engine.MoveTo(-118653,211148,-8592);
+//npclist.byId(22998,ATK);//Operatives
+SkillList.ByID(1090, wind);
+ 
+begin
+mobs:=0;
+Repeat
+if Engine.AutoTarget(1000) then Begin
+if User.Distto(User.Target) > 100 then Engine.MoveToTarget(50);
+while Not User.Target.Dead do Engine.UseSkill(wind.name);
+inc (mobs);
+
+
+if user.dead then begin Engine.gohome; break; classchange1;end;
+end else Delay (100);
+until mobs = 6;
+end;
+if user.dead then begin Engine.gohome; classchange1; end;
+Delay(10000);
+Engine.MoveTo (-117902, 211557, -8591);
+Engine.MoveTo (-117021, 212455, -8591);
+Delay (5000);
+npclist.byId(19155,Dwarf);//Infiltration officer
+Engine.SetTarget(Dwarf);
+Engine.DlgOpen;
+Engine.DlgSel(1);
+Engine.MoveTo (-116792, 212723, -8592);
+Engine.MoveTo (-116792, 212723, -8564);
+Engine.MoveTo (-116653, 212779, -8592);
+SkillList.ByID(1090, wind); 
+begin
+  repeat
+ inventory.User.ByID (17615, Dag);
+   if Dag.Count >= 3 then break;
+if user.dead then begin break; classchange1;end;
+   if Engine.AutoTarget(700) then Begin
+   if User.Distto(User.Target) > 100 then Engine.MoveToTarget(-50);
+   while Not User.Target.Dead do begin
+   Engine.UseSkill(wind.name);
+
+   if User.Target.Dropped then begin
+   engine.MoveToTarget(0); 
+        engine.pickup(200,100,true,false);
+      end;
+      end;
+      end;
+   until Dag.Count>= 3;
+end;
+npclist.byId(33215,Dwarf);//BELIS
+Engine.SetTarget (Dwarf);
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.CancelTarget;
+  Delay (5000);
+  Engine.SetTarget (Dwarf);
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.CancelTarget;
+  Delay (5000);
+  Engine.SetTarget (Dwarf);
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.CancelTarget;
+  Delay (5000);
+  If User.Dead then begin Engine.gohome;classchange1; end;
+SkillList.ByID(1090, wind); 
+ //Inventory.user.ById(7820, dag);
+ //Engine.UseItem(dag);
+  Delay(5000);
+  if User.HP<90 then Begin Engine.UseSkill(wind.name);
+  Delay(2000);
+  end;
+  Engine.MoveTo (-116654, 212833, -8597);
+  Engine.MoveTo (-116976, 213413, -8591);
+  if User.HP<90 then Begin Engine.UseSkill(wind.name);
+  Delay(2000);
+  end;
+  Engine.MoveTo (-117588, 214062, -8590);
+  Engine.MoveTo (-117831, 214287, -8590);
+  Delay (5000);
+  npclist.byId(19155,Dwarf);
+  Engine.SetTarget (dwarf);
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+   
+  Engine.MoveTo (-117281, 213737, -8592);
+SkillList.ByID(1090, wind);
+  begin
+  mobs:= 0;
+  repeat
+    if engine.autotarget (500) then begin
+    if (User.Target.ID = 23120) or (User.Target.ID = 23119) then test:=1; 
+    while Not User.Target.Dead do Engine.UseSkill(wind.name);
+ 
+     if test=1 then inc (mobs);
+      print (mobs) ;// mobs at the same time considers early eschge
+    end else delay (100);
+  until mobs = 6;
+end;
+Delay (5000);
+Engine.MoveTo (-118263, 214635, -8594);
+Engine.MoveTo (-118811, 214336, -8590);
+Engine.MoveTo (-119203, 213886, -8590);
+Engine.MoveTo (-119180, 213725, -8590);
+npclist.byId(19155,Dwarf);
+SkillList.ByID(1090, wind);
+  Engine.SetTarget (Dwarf);
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+  Delay (5000);
+  Engine.MoveTo (-118204, 212898, -8680);
+
+ Delay(45000);
+  if engine.settarget('Nemertess') then
+
+      while Not User.Target.Dead do Engine.UseSkill(wind.name);
+    
+    
+       Delay (35000);
+       npclist.byId(19155,Dwarf);
+  Engine.SetTarget (dwarf);
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+
+  Delay (25000);
+  npclist.byId(32978,Dwarf);
+  Engine.SetTarget (dwarf);
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+   Engine.DlgSel (1);
+   Delay (5000);
+   Inventory.user.ById(736, soe); 
+ Engine.UseItem(soe);//Scroll of escape
+    Delay (25000);
+    Engine.MoveTo (-114359, 260267, -1180);
+    npclist.byid(32972,Pantheon);
+    Engine.SetTarget (Pantheon);
+  Engine.DlgOpen;
+  Engine.DlgSel (3);
+   Engine.DlgSel (1);
+   Engine.DlgSel (1);
+   Engine.DlgSel (1);
+     Engine.CancelTarget;
+  Delay (5000);
+  Engine.MoveTo (-114100, 259828, -1198);
+  Engine.MoveTo (-114091, 259176, -1198);
+  Engine.MoveTo (-114333, 258508, -1198);
+  Engine.MoveTo (-114337, 257290, -1136);
+  Engine.MoveTo (-113951, 257053, -1136);
+  Engine.MoveTo (-113954, 256801, -1202);
+  Engine.MoveTo (-114342, 256507, -1282);
+  Engine.MoveTo (-114351, 255149, -1522);
+  Engine.MoveTo (-115131, 254705, -1520);
+  Engine.MoveTo (-116749, 255386, -1427);
+  Engine.MoveTo (-117914, 255892, -1325);
+  Engine.MoveTo (-117732, 256366, -1325);
+  npclist.byid(32150,Took);
+  Engine.SetTarget(took);
+   Engine.DlgOpen;
+  Engine.DlgSel (5);
+  Engine.DlgSel(1); 
+Engine.DlgSel(1);//class choice
+  Delay(5000);
+  Engine.CancelTarget;
+  npclist.byid(32150,Took);
+  Engine.SetTarget(took);
+   Engine.DlgOpen;
+  Engine.DlgSel (2);
+Engine.NpcExchange(11693,1);
+Engine.NpcExchange(12083,1);
+Engine.NpcExchange(12082,1);
+Engine.NpcExchange(12077,1);
+Engine.NpcExchange(12079,1);
+Engine.NpcExchange(12311,1);
+Engine.NpcExchange(12312,1);
+Engine.NpcExchange(12313,1);
+  Engine.NpcExchange(3948, 5);
+Inventory.user.ById(11693, dag); 
+ Engine.UseItem(dag);
+Inventory.user.ById(12083, dag); 
+ Engine.UseItem(dag); 
+Inventory.user.ById(12082, dag); 
+ Engine.UseItem(dag); 
+Inventory.user.ById(12077, dag); 
+ Engine.UseItem(dag);
+Inventory.user.ById(12079, dag); 
+ Engine.UseItem(dag);
+Inventory.user.ById(12311, dag); 
+ Engine.UseItem(dag);
+Inventory.user.ById(12312, dag); 
+ Engine.UseItem(dag);
+Inventory.user.ById(12313, dag); 
+ Engine.UseItem(dag);   
+  
+result:=true;
+end;  
+
+function CoP20to32: boolean;
+begin
+result:=false;
+
+Inventory.user.ById(3948, shots);Engine.AutoSoulshot(shots.name,True); 
+  Engine.CancelTarget;
+engine.loadzone('C:\Maps\zonefarm.smp');
+Engine.LearnSkill (1090);Engine.LearnSkill (1090);
+  Engine.LearnSkill(113);
+  Engine.LearnSkill(141);
+  Engine.LearnSkill(142);
+  Engine.LearnSkill(208);
+  Engine.LearnSkill(233);
+ Engine.LearnSkill(250);
+  Engine.LearnSkill(294);
+  if User.InRange (-114295,255150, User.Z, 5000,200) then begin
+  Engine.MoveTo (-117979, 255821, -1320);
+  npclist.byid(30565,NPCA);
+  Engine.SetTarget(NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel (5);
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.MoveTo (-117702, 255798, -1304);
+  Engine.MoveTo (-115644, 254720, -1513);
+  Engine.MoveTo (-113365, 256506, -1505);
+  Engine.MoveTo (-113365, 256506, -1505);
+  Engine.MoveTo (-112263, 256990, -1474);
+  npclist.byid(30006,NPCA);
+  Engine.SetTarget(NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel (2);
+  Engine.DlgSel (7);
+  end;
+  Delay(15000);
+   Engine.MoveTo (-14929, 123995, -3120);
+   Engine.MoveTo (-14852, 124461, -3112);
+   npclist.byid(30254,NPCA);
+  Engine.SetTarget(NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+  engine.NPCTrade (False, [736 , 20] );
+  engine.NPCTrade (False, [3948 , 3500] );
+  Engine.NPCTrade (true , [461,1]);
+  Engine.NPCTrade (true , [425,1]);
+  Engine.NPCTrade (true , [17,1000]);
+  Engine.NPCTrade (true , [1060,100]);
+mustbesoldmassive;
+  Delay(5000);
+  Engine.MoveTo (-14929, 123995, -3120);
+  Engine.MoveTo (-13898, 123789, -3115);
+  Engine.MoveTo (-13899, 123796, -3112);
+  npclist.byid(30332,NPCA);
+  Engine.SetTarget(NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel (5);
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.MoveTo (-14713, 124017, -3122);
+  npclist.byid(32327,NPCA);
+  Engine.SetTarget(NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel (2);
+  Engine.DlgSel (3);
+  Engine.MoveTo (-14538, 124040, -3125);
+  npclist.byid(30256,NPCA);
+  Engine.SetTarget(NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel (2);
+  Engine.DlgSel (16);
+  Delay(10000);
+  Engine.MoveTo (-41777,122284,-3066);
+  Engine.MoveTo (-43032,122305,-2714);
+  Engine.MoveTo (-43607,121511,-2812);
+  Engine.MoveTo (-44728,120823,-3069);
+  Engine.MoveTo (-45621,119847,-3423);
+     Engine.ClearIgnore;   
+  while User.Level<32 do begin
+  if GludiofarmR then delay(100);
+  if Engine.AutoTarget(2000) then begin           
+      if User.DistTo(User.Target) > 750 then  
+        if not Engine.MoveToTarget(-700) then begin  
+          Engine.Ignore(User.Target);               
+          continue;                           
+        end;                                 
+    
+      if not Figth then continue;             
+                                              
+    
+      if User.Target.Dropped then begin       
+      engine.MoveToTarget;                  
+       engine.pickup(200,100,true,false);
+      end;
+      Engine.ClearIgnore;
+                                               
+   end else Delay(2000);
+  end;
+
+ Inventory.user.ById(736, soe); 
+ Engine.UseItem(soe);//Scroll of escape
+  delay(60000);
+Engine.LearnSkill (1178);Engine.LearnSkill (1178);
+result:=true;
+end;
+function CoP32to38: boolean;
+begin
+result:=false;
+
+Inventory.user.ById(3948, shots);Engine.AutoSoulshot(shots.name,True); 
+Engine.MoveTo (-14713, 124017, -3122);
+  npclist.byid(32327,NPCA);
+  Engine.SetTarget(NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel (2);
+  Engine.DlgSel (3);
+  Engine.MoveTo (-14538, 124040, -3125);
+  npclist.byid(30256,NPCA);
+  Engine.SetTarget(NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel (2);
+  Engine.DlgSel (5);
+  Delay(10000);
+  Engine.MoveTo (15635, 142900, -2704);
+  npclist.byid(30059,NPCA);
+  Engine.SetTarget(NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+  Engine.DlgSel (14);
+  Delay(10000);
+  Engine.MoveTo (33805, 186799, -3235);
+  Engine.ClearIgnore; 
+  while User.Level<38 do begin
+  if DionFarmR then delay(100);
+  if Engine.AutoTarget(2000) then begin           
+      if User.DistTo(User.Target) > 750 then  
+        if not Engine.MoveToTarget(-700) then begin  
+          Engine.Ignore(User.Target);               
+          continue;                           
+        end;                                 
+    
+      if not Figth then continue;             
+                                              
+    
+      if User.Target.Dropped then begin       
+      engine.MoveToTarget;                  
+       engine.pickup(200,100,true,false);
+      end;
+      Engine.ClearIgnore;
+                                               
+   end else Delay(2000);
+
+  end;
+
+ Inventory.user.ById(736, soe); 
+ Engine.UseItem(soe);//Scroll of escape
+  delay(60000);
+  Engine.LearnSkill (1090);Engine.LearnSkill (1090);
+result:=true;
+end;
+function Classchange2: boolean;
+begin
+result:=false;
+
+Inventory.user.ById(3948, shots);Engine.AutoSoulshot(shots.name,True); 
+if user.dead then engine.gohome;
+Delay(5000);
+  Inventory.user.ById(32226, soe); 
+Engine.UseItem(soe);//Scroll of escape TALKING
+Delay(35000);
+Engine.MoveTo (-114594, 255344, -1511);
+  Engine.MoveTo (-113170, 256599, -1498);
+  Engine.MoveTo (-112283, 256959, -1474);
+  npclist.byid(30006,NPCA);
+  Engine.SetTarget(NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel (2);
+  Engine.DlgSel (7);
+  Delay(15000);
+  Engine.MoveTo (-14929, 123995, -3120);
+  Engine.MoveTo (-14852, 124461, -3112);
+   npclist.byid(30254,NPCA);
+  Engine.SetTarget(NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+  engine.NPCTrade (False, [3948 , 1000] );
+  Engine.MoveTo (-14929, 123995, -3120);
+  Engine.MoveTo (-14713, 124017, -3122);
+  npclist.byid(32327,NPCA);
+  Engine.SetTarget(NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel (2);
+  Engine.DlgSel (3);
+ //for orc
+ Engine.MoveTo (-14335, 123960, -3119);
+ Engine.MoveTo (-14318, 124838, -3132);
+ Engine.MoveTo (-12803, 125387, -3134);
+ Engine.MoveTo (-12772, 124888, -3120);
+ npclist.byid(30505,NPCA);
+ Engine.SetTarget(NPCA);
+ Engine.DlgOpen;
+ Engine.DlgSel (6);
+ Engine.DlgSel (1);
+ Engine.DlgSel (1);
+ Engine.DlgSel (1);
+ Delay(45000);
+ //end orc
+  //for dwarf
+  // Engine.MoveTo (-15330, 124052, -3112);
+  //Engine.MoveTo (-15297, 124675, -3113);
+  //Engine.MoveTo (-15206, 124743, -3112);
+   // npclist.byid(30504,NPCA);
+ // Engine.SetTarget(NPCA);
+ // Engine.DlgOpen;
+  //Engine.DlgSel (6);
+ // Engine.DlgSel (1);
+ // Engine.DlgSel (1);
+  // Engine.DlgSel (1);
+ // Delay(15000);
+ //end dwarf
+ //for orc
+ // Engine.MoveTo (-14335, 123960, -3119);
+ // Engine.MoveTo (-14318, 124838, -3132);
+  // Engine.MoveTo (-12803, 125387, -3134);
+    // Engine.MoveTo (-12772, 124888, -3120);
+    // npclist.byid(30505,NPCA);
+ // Engine.SetTarget(NPCA);
+ // Engine.DlgOpen;
+  //Engine.DlgSel (6);
+ // Engine.DlgSel (1);
+ // Engine.DlgSel (1);
+  // Engine.DlgSel (1);
+ // Delay(15000);
+ //end orc
+  Engine.MoveTo (-24615,188760, -3946);
+  npclist.byid(33524,NPCA);
+  Engine.SetTarget(NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+  Engine.MoveTo (-25701,186033, -3893);
+  Engine.MoveTo (-25700,183767, -3599);
+Inventory.user.ById(3948, shots);Engine.AutoSoulshot(shots.name,True); 
+SkillList.ByID(1090, wind);
+begin
+  mobs:= 0;
+  test:= 0;
+  repeat
+    if engine.autotarget (1500) then begin
+    if (User.Target.ID = 27459) then test:=1; 
+    while Not User.Target.Dead do Engine.UseSkill(wind.name);
+  
+     if test=1 then inc (mobs);
+      print (mobs) ;
+    end else delay (100);
+  until mobs = 1;
+end;
+  Delay(5000);
+
+  Delay(5000);
+  Engine.MoveTo (-25788,183389, -3599);
+  npclist.byid(33516,NPCA);
+  Engine.SetTarget(NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+  Engine.MoveTo (-28346,183342, -3712);
+  Engine.MoveTo (-30665,185374, -4123);
+  Engine.MoveTo (-29692,186615, -3920);
+  Delay(5000);
+Inventory.user.ById(3948, shots);Engine.AutoSoulshot(shots.name,True);
+SkillList.ByID(1090, wind);
+begin
+  mobs:= 0;
+  test:= 0;
+  repeat
+    if engine.autotarget (1500) then begin
+    if (User.Target.ID = 27460) then test:=1; 
+    while Not User.Target.Dead do Engine.UseSkill(wind.name);
+ 
+     if test=1 then inc (mobs);
+      print (mobs) ;
+    end else delay (100);
+  until mobs = 1;
+end;
+  Delay(5000);
+
+  Delay(5000);
+  Engine.MoveTo (-29672,186886, -3940);
+  npclist.byid(33517,NPCA);
+  Engine.SetTarget(NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+  
+  Engine.MoveTo (-31282,187338, -3928);
+   Engine.MoveTo (-35008,189296,-3667);
+  Engine.MoveTo (-36244,191179, -3628);
+Inventory.user.ById(3948, shots);Engine.AutoSoulshot(shots.name,True);
+SkillList.ByID(1090, wind);
+  begin
+  mobs:= 0;
+  test:= 0;
+  repeat
+    if engine.autotarget (1500) then begin
+    if (User.Target.ID = 27453) then test:=1; 
+    while Not User.Target.Dead do Engine.UseSkill(wind.name);
+    
+     if test=1 then inc (mobs);
+      print (mobs) ;// mobs at the same time considers early eschge
+    end else delay (100);
+  until mobs = 1;
+end;
+  Delay(5000);
+ 
+  Engine.MoveTo (-37064,192049, -3604);
+  npclist.byid(33518,NPCA);
+  Engine.SetTarget(NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+  Delay(5000);
+  Inventory.user.ById(736, soe); 
+ Engine.UseItem(soe);//Scroll of escape
+  Delay(40000);
+ Engine.MoveTo (-14335, 123960, -3119);
+ Engine.MoveTo (-14318, 124838, -3132);
+ Engine.MoveTo (-12803, 125387, -3134);
+ Engine.MoveTo (-12772, 124888, -3120);
+ npclist.byid(30505,NPCA);
+ Engine.SetTarget(NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel(6);
+  Engine.DlgSel(2);
+
+  Delay(30000); Engine.CancelTarget;
+  Engine.LearnSkill (1245);
+  npclist.byid(30505,NPCA);
+  Engine.SetTarget(NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel(2);
+Engine.NpcExchange(12115,1);
+Engine.NpcExchange(11793,1);
+
+Engine.NpcExchange(12118,1);
+
+Engine.NpcExchange(12329,1);
+Engine.NpcExchange(12331,1);
+
+  Engine.NpcExchange(3948, 2);
+Inventory.user.ById(12115, dag); 
+ Engine.UseItem(dag);
+Inventory.user.ById(11793, dag); 
+ Engine.UseItem(dag); 
+ 
+Inventory.user.ById(12118, dag); 
+ Engine.UseItem(dag);
+
+Inventory.user.ById(12329, dag); 
+ Engine.UseItem(dag);
+Inventory.user.ById(12331, dag); 
+ Engine.UseItem(dag);
+
+  Delay(30000);
+
+  engine.facecontrol(0, false);
+npclist.byid(30505,NPCA);
+  Engine.SetTarget(NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel(6);
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+Engine.MoveTo (-12712, 123575, -3104);
+  Engine.MoveTo (-12704, 123133, -3100);
+  Engine.MoveTo (-14713, 124017, -3122);
+  npclist.byid(32327,NPCA);
+  Engine.SetTarget(NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel (2);
+  Engine.DlgSel (3);
+   Engine.MoveTo (-14929, 123995, -3120);
+  Engine.MoveTo (-14852, 124461, -3112);
+   npclist.byid(30254,NPCA);
+  Engine.SetTarget(NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+
+  engine.NPCTrade (False, [3948 , 2000] );
+  Engine.MoveTo (-14929, 123995, -3120);
+  Engine.MoveTo (-14713, 124017, -3122);
+  Engine.MoveTo (-13893, 123807, -3115);
+delay(2000);
+npclist.byid(30332,NPCA);
+delay(2000);
+  Engine.SetTarget(NPCA);
+delay(2000);
+  Engine.DlgOpen;
+delay(2000);
+  Engine.DlgSel(5);
+delay(2000);
+Engine.DlgSel(2);
+delay(2000);
+  Engine.DlgSel(1);
+delay(2000);
+  Engine.DlgSel(1);
+delay(2000);
+  Engine.DlgSel(1);
+delay(2000);
+  Engine.CancelTarget;delay(5000);
+npclist.byid(30332,NPCA);
+delay(2000);
+  Engine.SetTarget(NPCA);
+delay(2000);
+  Engine.DlgOpen;
+delay(2000);
+  Engine.DlgSel(5);
+delay(2000);
+Engine.DlgSel(2);
+delay(2000);
+  Engine.DlgSel(1);
+delay(2000);
+  Engine.DlgSel(1);
+delay(2000);
+  Engine.DlgSel(1);
+delay(2000);
+  Engine.CancelTarget;delay(5000);
+npclist.byid(30332,NPCA);
+delay(2000);
+  Engine.SetTarget(NPCA);
+delay(2000);
+  Engine.DlgOpen;
+delay(2000);
+  Engine.DlgSel(5);
+delay(2000);
+  Engine.DlgSel(2);
+delay(2000);
+  Engine.DlgSel(1);
+delay(2000);
+Engine.DlgSel(1);
+delay(2000);
+  Engine.DlgSel(1);
+delay(5000);
+
+  Inventory.user.ById(37112, dag); //Heine scroll
+  Engine.UseItem(dag);
+  Delay(20000);
+  Engine.MoveTo (108402, 221568, -3596);
+  npclist.byid(30916,NPCA); //CPT GOSTA HEINE
+delay(1000);
+  Engine.SetTarget(NPCA);
+delay(1000);
+  Engine.DlgOpen;
+delay(1000);
+  Engine.DlgSel(5);
+delay(1000);
+  Engine.DlgSel(1);
+delay(1000);
+  Engine.DlgSel(1);
+delay(1000);
+  Engine.DlgSel(1);
+delay(5000);
+  Inventory.user.ById(37025, dag); //Aligator scroll
+  Engine.UseItem(dag);
+  Delay(20000);
+engine.facecontrol(0, false);
+   Engine.MoveTo (114425, 191397, -3550);
+   Engine.MoveTo (114424, 191395, -3550);
+  npclist.byid(33858,NPCA); //ELI Aligator ISLAND
+delay(1000);
+  Engine.SetTarget(NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+ Engine.DlgSel(1);
+ Engine.DlgSel(1);
+delay(1000);
+  Engine.CancelTarget;
+  Delay(2000);
+  npclist.byid(33858,NPCA);
+delay(1000);
+  Engine.SetTarget(NPCA);
+delay(1000);
+  Engine.DlgOpen;
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+ Engine.DlgSel(1);
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+   Engine.MoveTo (115585, 191580, -3367);
+  npclist.byid(33861,NPCA); //Chet
+delay(1000);
+  Engine.SetTarget(NPCA);
+delay(1000);
+  Engine.DlgOpen;
+delay(1000);
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+  Engine.CancelTarget;
+  npclist.byid(33860,NPCA); //ENON
+delay(1000);
+  Engine.SetTarget(NPCA);
+  Engine.DlgOpen;
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+  Engine.MoveTo (115643, 188759, -3725);
+  Engine.MoveTo (116915, 187735, -3400);
+  Engine.MoveTo (117432, 185700, -3728);
+  
+result:=true;
+end;
+
+
+
+
+begin
+  
+     
+  while Engine.Status= lsOnline do begin
+  
+If User.Level<7 then lvl1to7;
+If (User.Level>=7) and (User.Level<19) then lvl7to18;
+if User.Level = 19 then classchange1;
+if (User.Level>20) and (User.Level < 32 )then CoP20to32;
+if (User.Level >= 32) and (user.Level<38) then CoP32to38;
+if User.Level = 38 then Classchange2;
+
+
+  end;
+
+
+
+end.

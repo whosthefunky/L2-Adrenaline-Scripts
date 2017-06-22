@@ -1,0 +1,47 @@
+uses sysutils, dialogs;
+ 
+function StringInArray(const Value: string; Strings: array of string): Boolean;
+var I: Integer;
+begin
+  Result := True;
+  for I := Low(Strings) to High(Strings) do
+    if Strings[i] = Value then Exit;
+  Result := False;
+end;
+ 
+const numberOfNames = 10000;
+var i,j: integer = 0;    
+    usedNames: array[0..numberOfNames] of string;
+    currentName,sName,fName: string;
+    mailSubj: string = 'clan';
+    textToWrite: string = 'Im looking for an english speaking clan, Im hawkeye lvl 74';
+    messageDelay: integer = 5000;
+begin
+  //InputQuery('Spam bot', 'Enter the mail subject', mailSubj);
+  //InputQuery('Spam bot', 'Enter the mail and PM text', textToWrite);
+  while true do begin
+    currentName:= CharList.Items(i).Name;
+    if not (currentName = '') then begin
+      if not (StringInArray(currentName,usedNames)) then begin
+        Engine.Say(textToWrite,2,currentName);
+        //Engine.SendMail(currentName,mailSubj,textToWrite,[57,1]);
+        usedNames[j]:= currentName;
+        inc(i);
+        inc(j);
+        delay(messageDelay);      
+      end else begin
+        print('Char already used!');
+        inc(i);
+        delay(2000);
+      end;
+    end else begin
+      print('No chars to pm!');
+      i:= 0;
+      delay(2000);
+    end;
+delay(2000);
+    Engine.Say(textToWrite,1,'');
+delay(2000);
+    Engine.Say(textToWrite,8,'');
+  end;
+end.

@@ -1,0 +1,84 @@
+function BytesToASCII(const bin: array of byte): AnsiString;
+var
+  i: integer;
+begin
+  SetLength(Result, Length(bin));
+  for i := 0 to Length(bin)-1 do
+    Result[1+i] := AnsiChar(bin[i]);
+end;
+
+function getHttpResponse(const host: string; const dest: string): string;
+const
+  httpPort = '80';
+var
+  i: integer;
+  socket: TTCPBlockSocket;
+  contentLength: integer;
+  request: TStringList;
+  response: string;
+  buffer: array of byte;
+  lastByte: byte;
+begin
+  Result := '';
+  lastByte := 0;
+  
+  request := TStringList.Create;
+  request.Add('GET ' + dest + ' HTTP/1.1');            //Создаем запрос, который пошлем серверу
+  request.Add('Accept: */*');
+  request.Add('Accept-Encoding: gzip, deflate');
+  request.Add('Host: ' + host);
+  request.Add('Connection: Close');
+  request.Add(#10#13);
+
+  socket := TTCPBlockSocket.Create;
+  socket.connect(host, httpPort);
+
+  if (socket.LastError <> 0) then
+    exit;
+
+  socket.SendString(Request.text);
+
+  if (socket.LastError <> 0) then
+    exit;
+
+  repeat
+    response := socket.RecvString(5000);
+    if (response <> '') then
+      break;
+  until
+    socket.LastError <> 0;
+  
+  if (Pos('HTTP/', response) = 1) then
+  begin
+    repeat
+      response := socket.RecvString(5000);
+      if Pos('Content-Length:', response) = 1 then
+        contentLength := StrToIntDef(Trim(Copy(response, 16, MaxInt)), -1);
+      if response = '' then
+        break;
+    until
+      socket.LastError <> 0;
+
+    if (contentLength <= 0) then
+      exit;
+
+    SetLength(buffer, contentLength);
+    
+    repeat
+      if (lastByte = 191) then
+      begin
+        for i:=0 to contentLength-1 do
+        begin
+          buffer[i] := socket.RecvByte(5000);
+        end;
+        break;
+      end;
+      lastByte := socket.RecvByte(5000);
+    until
+      Socket.LastError <> 0;
+  end;
+  
+  request.Free;
+  socket.Free;
+  Result := BytesToASCII(buffer);
+end;

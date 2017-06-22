@@ -1,0 +1,147 @@
+uses
+  SysUtils, Classes;
+
+var
+	currentTarget: TL2Live;
+	previousTarget: TL2Live;
+  res: int64;
+  timer: tdatetime;
+  iHater, iTargetBeforeHate: integer;
+	Hater: TL2Live;
+	TargetBeforeHate: TL2Live;
+
+const
+  Date1900 {: LongInt} = $0001AC05;  {Julian day count for 01/01/1900 -- TDateTime Start Date}
+  Date1970 {: LongInt} = $00020FE4;  {Julian day count for 01/01/1970 -- Unix Start Date}
+  Unix0Date: TDateTime = 25568;      {Date1970 - Date1900}
+
+  SecondsInDay    = 86400;  {Number of seconds in a day}
+  SecondsInHour   =  3600;  {Number of seconds in an hour}
+  SecondsInMinute =    60;  {Number of seconds in a minute}
+  HoursInDay      =    24;  {Number of hours in a day}
+  MinutesInHour   =    60;  {Number of minutes in an hour}
+  MinutesInDay    =  1440;  {Number of minutes in a day}
+
+
+function AbDateTimeToUnixTime(DateTime : TDateTime) : LongInt;
+{ convert Delphi TDateTime to unix date }
+var
+  Hrs, Mins, Secs, MSecs : Word;
+  Dt, Tm : TDateTime;
+begin
+  Dt := Trunc(DateTime);
+  Tm := DateTime - Dt;
+  if Dt < Unix0Date then
+    Result := 0
+  else
+    Result := Trunc(Dt - Unix0Date) * SecondsInDay;
+
+  DecodeTime(Tm, Hrs, Mins, Secs, MSecs);
+  Result := Result + (Hrs * SecondsInHour) + (Mins * SecondsInMinute) + Secs;
+end;
+
+procedure targetSaver;
+var
+	Action : TL2Action;
+	Prm1, Prm2: pointer;
+begin
+	while Engine.Status = lsOnline do
+	begin
+		Action := engine.WaitAction([latarget], Prm1, Prm2);
+		if Action = latarget then
+		begin
+			if (User.Target <> currentTarget) then
+			begin
+				previousTarget := currentTarget;
+				currentTarget := User.Target;
+			end;
+		end;
+		delay(30);
+	end;
+end; 
+		
+procedure holdTarget;
+var
+	prm1, prm2: pointer;
+	Action : TL2Action;
+	escBtn : boolean;
+begin
+	while Engine.Status = lsOnline do
+	begin
+		Action := Engine.WaitAction([laUnTarget, laKey], prm1, prm2);
+		if Action = laUnTarget then
+		begin
+			if not (User.Target = currentTarget) and not escBtn then
+			begin
+				delay(100);
+				Engine.SetTarget(currentTarget); 
+			end; 
+			delay(100);
+			escBtn := false;
+		end;
+		if Action = laKey then
+		begin
+			escBtn := (Integer(prm1) = $1B);
+		end;
+		delay(30);
+	end;
+end;
+
+procedure antiHate;
+var
+	i: integer;
+begin
+while Engine.Status = lsOnline do
+begin
+	for i:=0 to Charlist.Count-1 do
+	begin
+	if ((Charlist.Items(i).Target = User) and (Charlist.Items(i).Cast.EndTime > 0) and
+		((Charlist.Items(i).Cast.ID = 28) or (Charlist.Items(i).Cast.ID = 979))) then
+		begin
+			TargetBeforeHate:= User.Target;
+			Engine.SetTarget(Charlist.Items(i));
+			Hater:= Charlist.Items(i);
+			iTargetBeforeHate:= 1;
+			iHater := 1;
+			Delay(Charlist.Items(i).Cast.EndTime + 50);
+		end;
+	if ((Charlist.Items(i).Cast.EndTime > 0) and (Charlist.Items(i).Attackable)and (Charlist.Items(i).Cast.ID = 18) and
+		(User.DistTo(Charlist.Items(i)) < 400)) then
+		begin
+			TargetBeforeHate:= User.Target;
+			Engine.SetTarget(Charlist.Items(i));
+			Hater:= Charlist.Items(i);
+			iTargetBeforeHate:= 1;
+			iHater := 1;
+			Delay(Charlist.Items(i).Cast.EndTime + 50);
+		end;
+	end;
+	delay(200);
+end;
+end;
+
+procedure antiHateBackTarget;
+var
+  temp: TL2Buff;
+begin
+  while Engine.Status = lsOnline do
+  begin
+  if ((iTargetBeforeHate > 0)
+	and not (User.Buffs.ByID(28, temp) and not User.Buffs.ByID(979, temp) and not User.Buffs.ByID(18, temp))
+	and (User.Target = Hater)) then
+		begin
+			Engine.SetTarget(TargetBeforeHate);
+			iTargetBeforeHate:= 0;
+			iHater := 0;
+		end;
+	delay(50);
+	end;
+end;
+
+begin
+
+  script.newThread(@holdTarget);
+	script.newThread(@targetSaver);
+	script.newThread(@antiHate);
+
+end.

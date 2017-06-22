@@ -1,0 +1,455 @@
+uses
+  sysutils, Classes, SettingsModule;
+
+const
+  SCRIPT_END_TIME = 1413586800;  //1413586800  1413673200
+  UnixStartDate: TDateTime = 25569.0;
+  
+var
+  keyTimer: Cardinal;
+  keyClickedCount: integer;
+  highPrioritySkills: array of integer;
+  middlePrioritySkills: array of integer;
+  lowPrioritySkills: array of integer;
+  stealEffects: array of integer;
+  castEndTimeHigh, castEndTimeNormal, castEndTimeLow: cardinal;
+  isHighPrioritet: boolean;
+	isNormalPrioritet: boolean;
+	isLowPrioritet: boolean;
+	Settings: TSettings;
+	currentDay: TDateTime;
+
+function getState(stateType: string; stateValue: string; value: integer): integer;
+begin
+	Settings.SetFile(Script.Path + User.Name + '_Settings.ini');
+	Result := Settings.Load(stateType, stateValue, value);
+end;
+
+function getArray(param: string): array of integer;
+var
+	sl:TStringList;
+	i: integer;
+	resStr: string;
+begin
+	sl := TStringList.Create;
+	Settings.SetFile(Script.Path + User.Name + '_Settings.ini');
+	resStr := Settings.Load('Skills', param, '0;0');
+  try
+    sl.Delimiter     := ';';
+    sl.DelimitedText := resStr;
+    SetLength(Result, sl.Count);
+    for i:=0 to sl.count-1 do
+		  Result[i] := StrToInt(sl[i]);
+
+  finally
+    sl.Free;
+  end;
+end;
+
+function BoolToStr(const value : boolean): string;
+begin
+   if value then
+    Result := 'True'
+   else
+    Result := 'False';
+end;
+
+function keybd_event(bVk,bScan:byte;dwFlags,dwExtraInfo: integer): integer;  stdcall; external 'user32.dll';
+
+procedure pressKey(hexCode: BYTE; isMacros: boolean = true);
+begin
+	if (isMacros) then
+		keybd_event(hexCode, 45, 1, 0 )
+	else if (not isMacros) then
+	begin
+		keybd_event(hexCode, 45, 1, 0 );
+		delay(30);
+	end;
+end;
+
+procedure useMacro(hexCode: BYTE; skillID: integer);
+var
+  skill: TL2Skill;
+begin
+  if SkillList.ByID(skillID, skill) then
+  begin
+    if (skill.EndTime < getState('Skills', 'Macros refresh value', 950)) then
+      pressKey(hexCode, true)
+    else begin
+      delay(abs(skill.EndTime - getState('Skills', 'Macros refresh value', 950)));
+      pressKey(hexCode, true);
+    end;
+  end;
+end;
+
+//char status
+function isTranced(obj: TL2Live): boolean;
+var
+	buffsTemp: tl2effect;
+begin
+  Result := obj.Buffs.ByID(1394, buffsTemp);
+end;
+
+function isAffraid(obj: TL2Live): boolean;
+var
+	buffsTemp: tl2effect;
+begin
+	 Result := obj.Buffs.ByID(1169, buffsTemp) // curse fear
+			or obj.Buffs.ByID(1092, buffsTemp) // wark fear
+			or obj.Buffs.ByID(1381, buffsTemp) // mass fear
+			or obj.Buffs.ByID(763, buffsTemp);  // heal scream
+end;
+
+function isMedused(obj: TL2Live): boolean;
+var
+	 buffsTemp: tl2effect;
+begin
+   Result := obj.Buffs.ByID(367, buffsTemp); 
+end;
+
+function isAnchored(obj: TL2Live): boolean;
+var
+  buffsTemp: tl2effect;
+begin
+  Result := obj.Buffs.ByID(6092, buffsTemp) // Lightning Shock
+			or obj.Buffs.ByID(5592, buffsTemp) // Lightning Barrier
+			or obj.Buffs.ByID(6090, buffsTemp) // Lightning Strike
+			or obj.Buffs.ByID(6091, buffsTemp) // Anchor
+			or obj.Buffs.ByID(791, buffsTemp) // Lightning Shock 1st part
+			or obj.Buffs.ByID(279, buffsTemp) // Lightning Strike 1st part
+			or obj.Buffs.ByID(1170, buffsTemp); // Anchor 1st part
+end;
+
+function isSilenced(obj: TL2Live): boolean;
+var
+  buffsTemp: tl2effect;
+begin
+  Result := obj.Buffs.ByID(1246, buffsTemp) // Seal of Silence
+			or obj.Buffs.ByID(1064, buffsTemp) // Silence
+			or obj.Buffs.ByID(437, buffsTemp) // Song of Silence
+			or obj.Buffs.ByID(1336, buffsTemp); // Curse of Doom
+end;
+
+function isInvincible(obj: TL2Live): boolean;
+var
+  buffsTemp: tl2effect;
+begin
+  Result := obj.Buffs.ByID(1418, buffsTemp) or obj.Buffs.ByID(1427, buffsTemp) or
+					obj.Buffs.ByID(1505, buffsTemp) or obj.Buffs.ByID(3158, buffsTemp) or
+					obj.Buffs.ByID(655, buffsTemp) or obj.Buffs.ByID(5576, buffsTemp) or
+					obj.Buffs.ByID(1540, buffsTemp) or obj.Buffs.ByID(837, buffsTemp);
+end;
+
+function isDisabled(obj: TL2Live): boolean;
+var
+	buffsTemp: TL2Effect;
+begin
+	Result := isMedused(obj) 
+	or isTranced(obj) or isAnchored(obj) or isAffraid(obj) or
+	obj.Buffs.ByID(1376, buffsTemp); 
+end;
+
+//arrays
+function isContains(arr: array of integer; val: integer): boolean;
+var
+  i: integer;
+begin
+  Result := false;
+  
+  if Length(arr) = 0 then
+    exit;
+
+  for i:=0 to Length(arr)-1 do
+  begin
+    if (arr[i] = val) then
+    begin
+      Result := true;
+      exit;
+    end;
+  end;
+end;
+
+procedure keyTimerUpdate;
+begin
+  while true do
+  begin
+    if GetTickcount > keyTimer then
+      keyClickedCount := 0;
+  end;
+end;
+
+procedure keyThread;
+var
+  KeyCode, param: integer;
+  Action: TL2Action;
+  tmp: tl2effect;
+  plr: TL2Live;
+begin
+  while true do
+  begin
+    Action:= Engine.WaitAction([laKey], KeyCode, param);
+      if Action = laKey then
+      begin
+       if KeyCode = 90 then       { z }
+        begin
+        //keyClickedCount := keyClickedCount + 1;
+        //keyTimer := GetTickCount + 1000;
+        //Engine.SetTarget(mageArray[keyClickedCount]);
+        //print(fBuffCount);
+
+        end;
+       if KeyCode = 221 then      { ] }
+       begin
+        keyClickedCount := keyClickedCount + 1;
+        keyTimer := GetTickCount + 1000;
+
+       end;
+       if KeyCode = 219 then      { [ }
+       begin
+        keyClickedCount := keyClickedCount + 1;
+        keyTimer := GetTickCount + 1000;
+
+       end;
+      end;
+  end;
+end;   
+
+function shouldCast(obj: TL2Live; hp: Cardinal; range: Cardinal): boolean;
+var
+	buffsTemp: TL2Effect;
+begin
+	Result := not User.Dead 
+	and (User.HP > hp) 
+	and not obj.Dead
+	and not isSilenced(User) 
+	and not isDisabled(User)
+	and not isInvincible(User)
+	//and (User.Cast.EndTime = 0)
+	and (User.DistTo(obj) < range);
+end;
+			
+function isInterrupted(obj: TL2Live; _castEndTime: Cardinal): boolean;
+begin
+	Result := (obj.Cast.EndTime = 0) and (GetTickCount < _castEndTime);
+end;
+
+function shouldInterruptHigh(obj: TL2Live): boolean;
+begin
+	if (obj.Cast.EndTime > 500) then
+	begin
+		if isContains(highPrioritySkills, obj.Cast.ID) then
+			begin
+				castEndTimeHigh := GetTickCount + obj.Cast.EndTime;
+				isHighPrioritet := true;
+				Result := true;
+			end;
+	end
+	else
+	Result := false;
+end;
+
+function shouldInterruptNormal(obj: TL2Live): boolean;
+begin
+	if (obj.Cast.EndTime > 550) then
+	begin
+		if isContains(middlePrioritySkills, obj.Cast.ID) then
+			begin
+				castEndTimeNormal := GetTickCount + obj.Cast.EndTime;
+				isNormalPrioritet := true;
+				Result := true;
+			end;
+	end
+	else
+	Result := false;
+end;
+
+function shouldInterruptLow(obj: TL2Live): boolean;		
+begin
+	if (obj.Cast.EndTime > 550) then
+	begin
+		if isContains(lowPrioritySkills, obj.Cast.ID) then
+			begin
+				castEndTimeLow := GetTickCount + obj.Cast.EndTime;
+				isLowPrioritet := true;
+				Result := true;
+			end;
+	end
+	else
+	Result := false;
+end;
+ 		
+procedure sopInterruptHigh;
+var
+	i: integer;
+	actor: TL2Live;
+	castID: integer;
+begin
+while Engine.Status = lsOnline do
+	begin
+	for i:=0 to Charlist.Count - 1 do
+	begin
+	if shouldInterruptHigh(Charlist.Items(i)) and shouldCast(Charlist.Items(i), 30, 850) then
+		begin
+			actor := Charlist.Items(i);
+			castID := actor.Cast.ID;
+			if (User.Target <> actor) then
+				Engine.SetTarget(actor);
+			while
+			not isInterrupted(actor, castEndTimeHigh)
+			and (actor.Cast.EndTime <> 0)
+			and not actor.Dead and (actor.Cast.ID = castID)
+			and shouldCast(Charlist.Items(i), 30, 850) do
+			begin
+				pressKey($71); 
+				if ((actor.Cast.ID = castID) and (isInterrupted(actor, castEndTimeHigh) or actor.Dead)) then
+					print(actor.Name + '. Interrupted ' + actor.Cast.Name);
+				delay(10);
+			end;
+			{print('start');
+			print(BoolToStr(not isInterrupted(actor, castEndTimeHigh)));
+			print(BoolToStr((actor.Cast.EndTime <> 0)));
+			print(BoolToStr(not actor.Dead));
+			print(BoolToStr((actor.Cast.ID = castID)));
+			print(BoolToStr(shouldCast(Charlist.Items(i), 30, 850)));
+			print(actor.name);
+			print(actor.cast.name);
+			print(actor.cast.endtime);
+			print('end');  }
+			isHighPrioritet := false;
+		end;
+	end;
+	delay(100);
+end;
+end;
+
+procedure sopInterruptNormal;
+var
+	i: integer;
+	actor: TL2Live;
+	castID: integer;
+begin
+while Engine.Status = lsOnline do
+	begin
+	for i:=0 to Charlist.Count - 1 do
+	begin
+	if shouldInterruptNormal(Charlist.Items(i)) and shouldCast(Charlist.Items(i), 30, 700) and not isHighPrioritet then
+		begin
+			actor := Charlist.Items(i);
+			castID := actor.Cast.ID;
+			if (User.Target <> actor) then
+				Engine.SetTarget(actor);
+			while
+			not (isInterrupted(actor, castEndTimeNormal)
+			and (actor.Cast.EndTime <> 0) and not actor.Dead
+			and (actor.Cast.ID = castID)) and not isHighPrioritet
+			and isNormalPrioritet and ShouldCast(Charlist.Items(i), 30, 700) do
+			begin
+			  pressKey($71);
+				if ((actor.Cast.ID = castID) and (isInterrupted(actor, castEndTimeNormal) or actor.Dead)) then
+					print(actor.Name + '. Interrupted ' + actor.Cast.Name);
+				delay(10);
+			end;
+			isNormalPrioritet := false;
+		end;
+	end;
+	delay(100);
+end;
+end;
+
+procedure sopInterruptLow;
+var
+	i: integer;
+	actor: TL2Live;
+	castID: integer;
+begin
+while Engine.Status = lsOnline do
+	begin
+	for i:=0 to Charlist.Count - 1 do
+	begin
+	if shouldInterruptLow(Charlist.Items(i)) and shouldCast(Charlist.Items(i), 30, 700) then
+		begin
+			actor := Charlist.Items(i);
+			castID := actor.Cast.ID;
+			if (User.Target <> actor) then
+				Engine.SetTarget(actor);
+			while
+			not isInterrupted(actor, castEndTimeLow)
+			and (actor.Cast.EndTime <> 0)
+			and not actor.Dead and (actor.Cast.ID = castID)
+			and not isHighPrioritet and not isNormalPrioritet
+			and ShouldCast(Charlist.Items(i), 30, 700) do
+			begin
+				pressKey($71);
+				if ((actor.Cast.ID = castID) and (isInterrupted(actor, castEndTimeLow) or actor.Dead)) then
+					print(actor.Name + '. Interrupted ' + actor.Cast.Name);
+				delay(10);
+			end;
+			isLowPrioritet := false;
+		end;
+	end;
+end;
+end;
+
+function shouldSteal(actor: TL2Live): boolean; {check steal status after enemy cast}
+begin
+  Result := (actor.Cast.EndTime <> 0) and isContains(stealEffects, actor.Cast.ID); 
+end;
+
+procedure stealThread;
+var
+  i: integer;
+begin
+while Engine.Status = lsOnline do
+	begin
+	for i:=0 to Charlist.Count - 1 do
+	begin
+	if shouldSteal(Charlist.Items(i))
+		and shouldCast(Charlist.Items(i), 30, 700) and (skillCoolTime(1440) < 1050)
+	then
+		begin
+		  delay(Charlist.items(i).Cast.EndTime + 100);
+		  Engine.SetTarget(Charlist.Items(i));
+		  pressKey($72);
+		end;
+	end;
+	delay(500);
+	end;
+end;
+			
+function skillCoolTime(skillId: integer): integer;
+var
+  skill: TL2Skill;
+begin
+  Result := High(int64);
+  if SkillList.ByID(skillId, skill) then
+    Result := skill.EndTime;
+end;
+
+procedure loadSettings;
+begin
+  highPrioritySkills := getArray('High Priority');
+  middlePrioritySkills := getArray('Middle Priority');
+  lowPrioritySkills := getArray('Low Priority');
+  stealEffects := getArray('Effects for steal');
+  print('High priority skills count: ' + inttostr(Length(highPrioritySkills)));
+  print('Middle priority skills count: ' + inttostr(Length(middlePrioritySkills)));
+  print('Low priority skills count: ' + inttostr(Length(lowPrioritySkills)));
+  print('Effects for steal count: ' + inttostr(Length(stealEffects)));
+end;
+
+function DateTimeToUnix(ConvDate: TDateTime): Longint;
+begin
+  //example: DateTimeToUnix(now);
+  Result := Round((ConvDate - UnixStartDate) * 86400);
+end;
+
+begin
+  loadSettings;
+
+  script.NewThread(@sopInterruptHigh);
+  script.NewThread(@sopInterruptNormal);
+  script.NewThread(@sopInterruptLow);
+  script.NewThread(@stealThread);
+  delay(-1);
+end.
+

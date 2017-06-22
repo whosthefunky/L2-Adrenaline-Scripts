@@ -1,0 +1,80 @@
+unit CityModule;
+
+interface
+
+uses LocationsModule, SettingsModule;
+
+function GetCity(shouldGoHome: boolean = true; inCityEvt: boolean = false): TCity;
+procedure GoHome(ItemID: integer = -1; skillID: integer = -1; Val: boolean = false);
+procedure InCity;
+
+implementation
+
+function GetCity(shouldGoHome: boolean = true; inCityEvt: boolean = false): TCity;
+var
+	City : TCity;
+begin
+	City := NON_CITY;
+	if User.InRange(-83139,243145,User.Z,5000,10) then City := TALKING_ISLAND;
+	if User.InRange(116569,-179848,User.Z,7000,10) then City := DWARVEN;
+	if User.InRange(-118184, 46024, User.Z, 7000, 10) then City := KAMAEL;
+	if User.InRange(44904, 49800, User.Z, 7000, 10) then City := ELVEN;
+	if User.InRange(-45080, -113576, User.Z, 5000, 10) then City := ORC;
+	if User.InRange(111434,220426,User.Z,5000,10)  then City := HEINE;
+	if User.InRange(18591,144708,User.Z,5000,10)   then City := DION;
+	if User.InRange(82876,148960,User.Z,5000,10)   then City := GIRAN;
+	if User.InRange(147509,25928,User.Z,5000,10)   then City := ADEN;
+	if User.InRange(147713,-56202,User.Z,5000,10)  then City := GODDARD;
+	if User.InRange(-14236,123701,User.Z,5000,10)  then City := GLUDIO;
+	if User.InRange(-81311,152663,User.Z,5000,10)  then City := GLUDIN;
+	if User.InRange(88041,-142502,User.Z,5000,10)  then City := SHTUTTGART;
+	if User.InRange(117144, 76824,User.Z,5000,10)  then City := HUNTER;
+	if User.InRange(11416, 16856,User.Z,5000,10)  then City := DARK_ELVEN;
+	if User.InRange(43838,-48222,User.Z,5000,10) or User.InRange(38283,-48102,User.Z,5000,10) then City := RUNE;
+	if User.InRange(81150,54880,User.Z,5000,10)    then City := OREN;
+	if (City = NON_CITY) and (shouldGoHome) then
+	begin
+		GoHome(-1, -1, inCityEvt);
+		City := GetCity;
+	end;
+	Result := City;
+end;
+
+procedure GoHome(ItemID: integer = -1; skillID: integer = -1; Val: boolean = false);
+var
+	Skill: TL2Skill;
+	Item: TL2Item;
+begin
+  if not User.Dead then
+  begin
+	if (itemID <> -1) and Inventory.User.ByID(itemID, Item) then
+	begin
+		Engine.UseItem(itemID);
+		delay(100);
+		delay(User.Cast.EndTime + 100);
+	end;
+
+	if (skillID <> -1) and (itemID = -1) and SkillList.ByID(skillID, Skill) then
+	begin
+		Engine.UseSkill(skillID);
+		delay(100);
+		delay(User.Cast.EndTime + 100);
+	end;
+	
+	if (skillID = -1) and (itemID = -1) and Inventory.User.ByID(736, Item) then
+	begin
+		Engine.UseItem(Item);
+		delay(20 * 1000);
+	end;
+	
+  end else
+	Engine.GoHome;
+
+  Delay(5 * 1000);
+  if Val then
+	InCity;
+end;
+
+
+BEGIN
+END.

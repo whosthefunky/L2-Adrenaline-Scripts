@@ -1,0 +1,69 @@
+unit varExtended;
+
+   interface
+   
+		uses
+			Classes, SysUtils;
+	
+		function ifThen(val: boolean; ifTrue: integer; ifFalse: integer): integer;
+		procedure addVar(actor: TL2Live; param1: integer; param2: integer);
+		function getVarFromList(actor: TL2Live; dataIndex: integer): integer;
+		procedure clearVar(actor: TL2Live);
+		function getParam1(actor: TL2Live): integer;
+		function getParam2(actor: TL2Live): boolean;
+			
+   implementation
+   
+		function ifThen;
+		begin
+			if val then
+				Result := ifTrue
+			else
+				Result := ifFalse;
+		end;
+					
+		procedure addVar;
+		var
+			data: TStringList;
+		begin
+			data := TStringList.Create;
+			
+			data.add(IntToStr(ifThen(param1 = 0, getVarFromList(actor, 0), param1)));
+			data.add(IntToStr(ifThen(param2 = 0, getVarFromList(actor, 1), param2)));
+			
+			actor.SetVar(Cardinal(data));
+		end;
+		
+		function getVarFromList;
+		begin
+			try
+				Result := StrToInt(TStringList(actor.getvar)[dataIndex]);
+			except
+				Result := 0;
+			end; 
+		end;
+		
+		procedure clearVar;
+		begin
+			try
+				TStringList(actor.getvar).Free;
+			except
+				//
+			end; 	
+		end;
+		
+		function getParam1;
+		begin
+			Result := getVarFromList(actor, 0);
+		end;
+		
+		function getParam2;
+		begin
+			if (getVarFromList(actor, 1) <= 0) then
+				Result := false
+			else
+				Result := true;
+		end;
+
+   
+end.

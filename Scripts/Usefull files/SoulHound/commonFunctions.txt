@@ -1,0 +1,967 @@
+unit commonFunctions;
+   interface
+			
+			type
+				TBaseFunctor = function(actor: TL2Live): boolean;
+				TCharFunctor = function(actor: TL2Char): boolean;
+				TPartyFind = Array of TL2Live;
+				
+			var
+				vLastSkill: integer;
+				vLastSkillTime : integer;
+				vNotBuffCount: integer = 0;
+				partyFindArray: array of TL2Live;
+				
+   			{etc}
+			function liveToChar(obj: TL2Live):TL2Char;
+			function effectTime(actor: TL2Live; effect: integer): Cardinal;
+			function fManaCheck(manaPerCount: integer): boolean;
+			function fBuffable(actor: TL2Live): boolean;
+			function checkLastBuff(skill: integer): boolean;
+			function partyCount(functor: TBaseFunctor; withMe: boolean): integer; 
+			procedure partyFind(functor: TBaseFunctor; withMe: boolean);
+			function skillCoolTime(ID: integer): cardinal;
+			function getNearestPlayer(victim: TL2Live): TL2Live;
+			function getLowerHP: TL2Live;
+			function isFriend(victim: TL2Live): boolean;
+			function isClanMember(victim: TL2Live): boolean;
+			function countPartyDead: integer;
+			function isPvpStatus: boolean;
+			{math functions}
+			function distanceBetween(x1,y1,x2,y2: integer): extended;
+			function randomDispersion(x: integer): integer;
+			procedure addToArray(var iArray: Array of TL2Live; actor: TL2Live);
+			{----------------}
+			{character status}
+			{function isStunned(obj: TL2Live): boolean;}
+			function isTranced(obj: TL2Live): boolean;
+			function isAffraid(obj: TL2Live): boolean;
+			function isMedused(obj: TL2Live): boolean;
+			function isAnchored(obj: TL2Live): boolean;
+			{function isBleeding(obj: TL2Live): boolean;
+			function isRooted(obj: TL2Live): boolean;}
+			function isDeathMark(obj: TL2Live): boolean;
+			function isSilenced(obj: TL2Live): boolean;
+			function isRealTarget(obj: TL2Live): boolean;
+			{function isUltimateDefense(obj: TL2Live): boolean;
+			function isShadowed(obj: TL2Live): boolean;}
+			function isInvincible(obj: TL2Live): boolean;
+			function isDisabled(obj: TL2Live): boolean;
+			function isOverweight(limit: integer): boolean;
+			function fNotBuff(sName: string): boolean;
+			function fBuffCount: integer;
+			procedure fNotBuffCount;
+			{----------------}
+			{class defination}
+
+			function getClassName(obj: TL2Char): string;
+			function isHealer(obj: TL2Char): boolean;
+			function isMage(obj: TL2Char): boolean;
+			function isWarrior(obj: TL2Char): boolean;
+			function isArcher(obj: TL2Char): boolean;
+			function isRoque(obj: TL2Char): boolean;
+			function isSummoner(obj: TL2Char): boolean;
+			function isKnight(obj: TL2Char): boolean;
+			function isEnchanter(obj: TL2Char): boolean;
+			function isBard(obj: TL2Char): boolean;
+			function isAnakim(obj: TL2Char): boolean;
+			function isHellKnight(obj: TL2Char): boolean;
+			
+			{--------------------}
+			{buffs status}
+			function fHasShield(actor: TL2Live) : boolean;
+			function fHasBlockShield(actor: TL2Live) : boolean;		
+			function fHasGreaterShield(actor: TL2Live) : boolean;		
+			function fHasMagicBarrier(actor: TL2Live) : boolean; 		
+			function fHasNoble(actor: TL2Live) : boolean; 			
+			function fHasSpirit(actor: TL2Live) : boolean;			
+			function fHasWW(actor: TL2Live) : boolean; 
+			function fHasBlockWW(actor: TL2Live) : boolean;
+			function fHasAntiSummoning(actor: TL2Live) : boolean;
+			function fHasCriticalAttack(actor: TL2Live) : boolean;		
+			function fHasGuidance(actor: TL2Live) : boolean;			
+			function fHasGreaterMight(actor: TL2Live) : boolean; 			
+			function fHasAcumen(actor: TL2Live) : boolean;
+			
+			{-------------}
+			{class status}
+			function fEagleClass(actor: TL2Char) : boolean;
+			function fWarChantClass(actor: TL2Char) : boolean;
+			function fCriticalAttackClass(actor: TL2Char) : boolean;
+ 			function fBloodAwakeningClass(actor: TL2Char) : boolean;
+ 			function fFlameChantClass(actor: TL2Char) : boolean;
+			
+
+	
+	implementation
+			
+			{etc}
+			
+			function liveToChar;
+			var
+				perlimHolder: tl2char;
+			begin
+				if Charlist.ByName(obj.name, perlimHolder) then
+					Result := perlimHolder
+				else 
+					Result := nil;
+			end;
+			
+			function partyCount;
+			var
+				i: integer;
+				perlimResult: integer;
+			begin
+				perlimResult := 0;
+				for i:=0 to Party.Chars.Count-1 do
+				begin
+					if (functor(Party.Chars.Items(i))) then
+						perlimResult := perlimResult + 1;
+				end;
+				if (withMe) then
+				begin
+					if functor(User) then
+						perlimResult := perlimResult + 1;
+				end;
+				Result := perlimResult;
+			end;
+			
+			
+			function partyFind;
+			var
+				i: integer;
+				arrayLength: integer;
+			begin
+				SetLength(partyFindArray, partyCount(functor, withMe));
+				for i:=0 to Party.Chars.Count-1 do
+				begin
+					if (functor(Party.Chars.Items(i))) then
+						addToArray(partyFindArray, Party.Chars.Items(i));
+				end;
+				if (withMe) then
+				begin
+					if functor(User) then
+						addToArray(partyFindArray, User);
+				end;
+			end;
+			
+			procedure addToArray;
+			var
+				i: integer;
+			begin
+				for i:=0 to Length(iArray)-1 do
+				begin
+					if (iArray[i] = nil) then
+					begin
+						iArray[i] := actor;
+						exit;
+					end;
+				end;
+			end;
+			
+			function effectTime;
+			var
+			  tmpEffect: tl2effect;
+			begin
+				if (actor.Buffs.ByID(effect, tmpEffect)) then
+					Result := tmpEffect.EndTime
+				else
+					Result := 0;
+			end;
+
+			function fManaCheck;
+			var
+				effect: tl2effect;
+			begin
+				if (User.Buffs.ByID(1533, effect) or User.Buffs.ByID(1532, effect) or User.Buffs.ByID(3282, effect) or (User.MP > manaPerCount)) then
+					fManaCheck := true
+				else
+					fManaCheck := false;
+			end;
+			
+			function fBuffable;
+			var
+				effect: tl2effect;
+			begin
+				if (not actor.Dead) and (User.DistTo(actor) < 900) and not isMedused(actor) and not actor.Buffs.ByID(1422, effect) then
+					fBuffable := true
+				else
+					fBuffable := false;
+			end;
+			
+			function checkLastBuff; {добавить поток который будет обновлять vLastSkillTime (vLastSkillTime + 1500)}
+			begin
+				if ((vLastSkill <> skill) or ((vLastSkill = skill) and (vLastSkillTime < GetTickCount))) then
+					checkLastBuff := true
+				else
+					checkLastBuff := false;
+			end;
+			
+			function skillCoolTime;
+			var
+			   skill: TL2Skill;
+			begin
+				if Skilllist.byID(id, skill) then
+					Result := skill.Endtime
+				else  
+					Result := High(cardinal);	
+			end;
+			{math functions}
+			
+			function distanceBetween;
+			begin
+				distanceBetween:= sqrt(((x2 - x1)*(x2 - x1)) + ((y2 - y1)*(y2 - y1)));
+			end;
+			
+			function randomDispersion;
+			var
+				min, max: integer;
+			begin
+				min:= Trunc(x * 0.8);
+				max:= Trunc(x * 1.2);
+				randomDispersion := Random(max - min + 1) + min;  
+			end;
+			
+			function fNotBuff;
+			begin
+				if ((Pos('Dance',  sName) <> 0) or
+				(Pos('Dance' ,sName) <> 0) or
+				(Pos('Song' ,sName) <> 0) or
+				(Pos('Seal' ,sName) <> 0) or
+				(Pos('Block' ,sName) <> 0) or
+				((Pos('Lightning' ,sName) <> 0) and not (Pos('Barrier' ,sName) <> 0)) or
+				(Pos('Vortex' ,sName) <> 0) or
+				(Pos('Surrender' ,sName) <> 0) or
+				(Pos('Curse' ,sName) <> 0) or
+				((Pos('Symphony' ,sName) <> 0) and not (Pos('Noblesse' ,sName) <> 0)) or
+				((Pos('Decrease' ,sName) <> 0) and not (Pos('Weight' ,sName) <> 0)) or
+				((Pos('Poison' ,sName) <> 0) and not (Pos('Resist' ,sName) <> 0)) or
+				((Pos('Shock' ,sName) <> 0) and not (Pos('Resist' ,sName) <> 0)) or
+				((Pos('Freezing' ,sName) <> 0) and not (Pos('Skin' ,sName) <> 0)) or
+				((Pos('Arcane' ,sName) <> 0) and not (Pos('Protection' ,sName) <> 0)) or
+				(Pos('Transform' ,sName) <> 0) or
+				(Pos('Shackle' ,sName) <> 0) or
+				(Pos('Mass' ,sName) <> 0) or
+				(Pos('Rush' ,sName) <> 0) or
+				(Pos('Death' ,sName) <> 0) or
+				(Pos('Stun' ,sName) <> 0) or
+				(Pos('Root' ,sName) <> 0) or
+				(Pos('Hold' ,sName) <> 0) or
+				(Pos('Paraly' ,sName) <> 0) or
+				(Pos('Doom' ,sName) <> 0) or
+				(Pos('Hot Springs' ,sName) <> 0) or
+				(Pos('Silence' ,sName) <> 0) or
+				(Pos('Sleep' ,sName) <> 0) or
+				(Pos('Trance' ,sName) <> 0) or
+				(Pos('Fear' ,sName) <> 0) or
+				(Pos('Terror' ,sName) <> 0) or
+				(Pos('Horror' ,sName) <> 0) or
+				(Pos('Slow' ,sName) <> 0) or
+				(Pos('Anchor' ,sName) <> 0) or
+				(Pos('Anger' ,sName) <> 0) or
+				(Pos('Bleed' ,sName) <> 0) or
+				(Pos('Stigma' ,sName) <> 0) or
+				(Pos('Turn to Stone' ,sName) <> 0) or
+				(Pos('Magical Backfire' ,sName) <> 0) or
+				(Pos('Heroic Grandeur' ,sName) <> 0) or
+				(Pos('Dread' ,sName) <> 0) or
+				(Pos('Disarm' ,sName) <> 0) or
+				(Pos('Real Target' ,sName) <> 0) or
+				(Pos('Critical Wound' ,sName) <> 0) or
+				(Pos('Arrest' ,sName) <> 0) or
+				(Pos('Hate' ,sName) <> 0) or
+				(Pos('Aggression' ,sName) <> 0) or
+				(Pos('Burning Chop' ,sName) <> 0) or
+				(Pos('Ignore Shield Defense' ,sName) <> 0) or
+				(Pos('Speed Down' ,sName) <> 0) or
+				(Pos('Violent Temper' ,sName) <> 0) or
+				(Pos('Shield Bash' ,sName) <> 0) or
+				(Pos('Shield Slam' ,sName) <> 0) or
+				(Pos('Earthquake' ,sName) <> 0) or
+				(Pos('Cripple' ,sName) <> 0) or
+				(Pos('Entangle' ,sName) <> 0) or
+				(Pos('Hex' ,sName) <> 0) or
+				(Pos('Break' ,sName) <> 0) or
+				(Pos('Hamstring' ,sName) <> 0) or
+				(Pos('Sting' ,sName) <> 0) or
+				(Pos('Bluff' ,sName) <> 0) or
+				(Pos('Tribunal' ,sName) <> 0) or
+				(Pos('Judgment' ,sName) <> 0) or
+				(Pos('Sand Bomb' ,sName) <> 0) or
+				(Pos('Weapon Blockade' ,sName) <> 0) or
+				(Pos('Onslaught of Pa''agrio' ,sName) <> 0) or
+				(Pos('Aura Sink' ,sName) <> 0) or
+				(Pos('Frost' ,sName) <> 0) or
+				(Pos('Ice Dagger' ,sName) <> 0) or
+				(Pos('Blizzard' ,sName) <> 0) or
+				(Pos('Demon Wind' ,sName) <> 0) or
+				(Pos('Decay' ,sName) <> 0) or
+				(Pos('Diamond Dust' ,sName) <> 0) or
+				(Pos('Throne' ,sName) <> 0) or
+				(Pos('Count of Fire' ,sName) <> 0) or
+				(Pos('Vampiric Mist' ,sName) <> 0) or
+				(Pos('Bind' ,sName) <> 0) or
+				(Pos('Blink' ,sName) <> 0) or
+				(Pos('Flame Armor' ,sName) <> 0) or
+				(Pos('Hurricane Armor' ,sName) <> 0) or
+				(Pos('Dreaming Spirit' ,sName) <> 0) or
+				(Pos('Inferno' ,sName) <> 0) or
+				(Pos('Antharas' ,sName) <> 0) or
+				(Pos('Heat of Desert' ,sName) <> 0) or
+				(Pos('Inquisitor' ,sName) <> 0) or
+				(Pos('Charm of Courage' ,sName) <> 0) or
+				(Pos('Protection Power' ,sName) <> 0) or
+				(Pos('Enchanter Ability' ,sName) <> 0) or
+				(Pos('Knight Ability' ,sName) <> 0) or
+				(Pos('PvP Armor - Critical Down' ,sName) <> 0) or
+				(Pos('PvP Weapon - Casting' ,sName) <> 0) or
+				(Pos('Great Fury' ,sName) <> 0) or
+				(Pos('Maximum Ability' ,sName) <> 0) or
+				(Pos('Counter Rapid Shot' ,sName) <> 0) or
+				(Pos('Counter Dash' ,sName) <> 0) or
+				(Pos('Totem''s Energy',sName) <> 0) or
+				(Pos('Morale Boost' ,sName) <> 0)) then
+					fNotBuff := true
+				else
+					fNotBuff := false;
+			end;
+			
+			procedure fNotBuffCount;
+			var 
+				i: integer;
+				perlimResult : integer;
+			begin
+				while Engine.Status = lsOnline do
+				begin
+					perlimResult := 0;
+					for i:=0 to User.Buffs.Count-1 do
+					begin
+						if fNotBuff(User.Buffs.Items(i).Name) then
+							perlimResult := perlimResult + 1;
+						if (User.Buffs.Items(i).ID = 6059) then
+							perlimResult := perlimResult + 1;
+						if (User.Buffs.Items(i).ID = 4268) then
+							perlimResult := perlimResult + 1;
+					end;
+					vNotBuffCount := perlimResult;
+					delay(500);
+				end;
+			end;
+			
+			function fBuffCount;
+			begin
+				Result := User.Buffs.Count - vNotBuffCount; 
+			end;
+			{----------------}
+			{character status}
+		
+			{function isStunned;
+			begin
+			if obj.abnormalid = 64 then
+				isStunned := true
+			else
+				isStunned := false;
+			end;}
+			
+			function isTranced;
+			var
+				buffsTemp: tl2effect;
+			begin
+			if obj.Buffs.ByID(1394, buffsTemp) then
+			isTranced := true
+			else
+			isTranced := false;
+			end;
+			
+			function isAffraid;
+			var
+				buffsTemp: tl2effect;
+			begin
+			if obj.Buffs.ByID(1169, buffsTemp) // curse fear
+			or obj.Buffs.ByID(1092, buffsTemp) // wark fear
+			or obj.Buffs.ByID(1381, buffsTemp) // mass fear
+			or obj.Buffs.ByID(763, buffsTemp)  // heal scream
+			then
+			isAffraid := true
+			else
+			isAffraid := false;  
+			end;
+			
+			function isMedused;
+			var
+				buffsTemp: tl2effect;
+			begin
+			if obj.Buffs.ByID(367, buffsTemp) then // dance of medusa
+			isMedused := true
+			else
+			isMedused := false;  
+			end;
+			
+			function isAnchored;
+			var
+				buffsTemp: tl2effect;
+			begin
+			if obj.Buffs.ByID(6092, buffsTemp) // Lightning Shock
+			or obj.Buffs.ByID(5592, buffsTemp) // Lightning Barrier
+			or obj.Buffs.ByID(6090, buffsTemp) // Lightning Strike
+			or obj.Buffs.ByID(6091, buffsTemp) // Anchor
+			or obj.Buffs.ByID(791, buffsTemp) // Lightning Shock 1st part
+			or obj.Buffs.ByID(279, buffsTemp) // Lightning Strike 1st part
+			or obj.Buffs.ByID(1170, buffsTemp) // Anchor 1st part
+			then
+			isAnchored := true
+			else
+			isAnchored := false;
+			end;
+			
+			{function isBleeding;
+			begin
+			if obj.abnormalid = 1 then
+			isBleeding := true
+			else
+			isBleeding := false;
+			end;
+			
+			function isRooted;
+			begin
+			if obj.abnormalid = 512 then
+			isRooted := true
+			else
+			isRooted := false;
+			end;
+			}
+			function isDeathMark;
+			var
+				buffsTemp: tl2effect;
+			begin
+			if obj.Buffs.ByID(1435, buffsTemp) then// Death Mark
+			isDeathMark := true
+			else
+			isDeathMark := false;
+			end;
+			
+			function isSilenced;
+			var
+				buffsTemp: tl2effect;
+			begin
+			if obj.Buffs.ByID(1246, buffsTemp) // Seal of Silence
+			or obj.Buffs.ByID(1064, buffsTemp) // Silence
+			or obj.Buffs.ByID(437, buffsTemp) // Song of Silence
+			or obj.Buffs.ByID(1336, buffsTemp) // Curse of Doom
+			then
+			isSilenced := true
+			else
+			isSilenced := false;
+			end;
+			
+			function isRealTarget;
+			var
+				buffsTemp: tl2effect;
+			begin
+			if obj.Buffs.ByID(1522, buffsTemp) then// Real Target
+			isRealTarget := true
+			else
+			isRealTarget := false;
+			end;
+			{
+			function isUltimateDefense;
+			begin
+			if obj.abnormalid = 134217728 then
+			isUltimateDefense := true
+			else
+			isUltimateDefense := false;
+			end;
+			
+			function isShadowed;
+			begin
+			if obj.abnormalid = 1048576 then
+			isShadowed := true
+			else
+			isShadowed := false;
+			end;
+			}
+			function isInvincible;
+			var
+				buffsTemp: TL2Effect;
+			begin
+				if obj.Buffs.ByID(1418, buffsTemp) or obj.Buffs.ByID(1427, buffsTemp) or
+					obj.Buffs.ByID(1505, buffsTemp) or obj.Buffs.ByID(3158, buffsTemp) or
+					obj.Buffs.ByID(655, buffsTemp) or obj.Buffs.ByID(5576, buffsTemp) or
+					obj.Buffs.ByID(1540, buffsTemp) or obj.Buffs.ByID(837, buffsTemp) then
+				isInvincible:= true
+				else
+				isInvincible:= false;     
+			end;
+			
+			function isDisabled;
+			var
+				buffsTemp: TL2Effect;
+			begin
+				if {isStunned(obj) or }isMedused(obj) 
+				or isTranced(obj) or isAnchored(obj) or isAffraid(obj) or
+				obj.Buffs.ByID(1376, buffsTemp) then
+				isDisabled:= true
+				else
+				isDisabled:= false;     
+			end;
+				
+			function isOverweight;
+			var
+				perlimResult: integer;
+			begin
+				if (User.Load >= limit) then
+					isOverweight := true
+				else 
+					isOverweight := false;
+			end;
+			
+			{----------------}
+			{class defination}
+			
+			function getClassName;
+			begin
+				if isMage(obj) then
+					Result := 'Mage'
+				else if isHealer(obj) then
+					Result := 'Healer'
+				else if isKnight(obj) then
+					Result := 'Knight'
+				else if isEnchanter(obj) then
+					Result := 'Enchanter'
+				else if isWarrior(obj) then
+					Result := 'Warrior'
+				else if isBard(obj) then
+					Result := 'Enchanter'			
+			end;
+		
+		
+			function isHealer;
+			begin
+				if ((obj.ClassID = 97) 
+				or (obj.ClassID = 105) 
+				or (obj.ClassID = 112)) 
+				then
+					isHealer:= true
+				else
+					isHealer:= false;
+			end;
+			
+			function isMage;
+			begin
+				if ((obj.ClassID = 94) {archmage}
+				or (obj.ClassID = 95) {soultaker}
+				or (obj.ClassID = 103) {mystic muse}
+				or (obj.ClassID = 110) {storm screamer}
+				or (obj.ClassID = 133) {female soul hound}
+				or (obj.ClassID = 132)) {male soul hound}
+				then
+					isMage:= true
+				else
+					isMage:= false;
+			end;
+			
+			function isWarrior;
+			begin
+				if ((obj.ClassID = 88) {duelist} 
+				or (obj.ClassID = 89) {deadnought}
+				or (obj.ClassID = 113) {titan}
+				or (obj.ClassID = 114) {grand khautari}
+				or (obj.ClassID = 117) {forutne seeker}
+				or (obj.ClassID = 118) {maestro}
+				or (obj.ClassID = 131)) {doombringer}
+				then
+					isWarrior:= true
+				else
+					isWarrior:= false;
+			end;
+			
+			function isArcher;
+			begin
+				if ((obj.ClassID = 92) {sagittarius} 
+				or (obj.ClassID = 102) {moonlight sentinel}
+				or (obj.ClassID = 109) {ghost sentinel}
+				or (obj.ClassID = 134)) {trickster}
+				then
+					isArcher:= true
+				else
+					isArcher:= false;
+			end;
+			
+			function isRoque;
+			begin
+				if ((obj.ClassID = 101) {wind rider} 
+				or (obj.ClassID = 108) {ghost hunter}
+				or (obj.ClassID = 93)) {adventurer}
+				then
+					isRoque:= true
+				else
+					isRoque:= false;
+			end;
+			
+			function isSummoner;
+			begin
+				if ((obj.ClassID = 96) {arcana lord}
+				or (obj.ClassID = 104) {elemental summoner}
+				or (obj.ClassID = 111)) {phantom summoner}		
+				then
+					isSummoner:= true
+				else
+					isSummoner:= false;
+			end;
+			
+			function isKnight;
+			begin
+				if ((obj.ClassID = 90) {phoenix knight}
+				or (obj.ClassID = 91) {hell knight}
+				or (obj.ClassID = 99) {eva templar}				
+				or (obj.ClassID = 106)) {shillien templar}
+				then
+					isKnight:= true
+				else
+					isKnight:= false;
+			end;
+			
+			function isBard;
+			begin
+				if ((obj.ClassID = 100) {sword muse}
+				or (obj.ClassID = 107)) {spectral dancer}
+				then
+					isBard := true
+				else
+					isBard := false;
+			end;
+			
+			function isEnchanter;
+			begin
+				if ((obj.ClassID = 115) {dominator}
+				or (obj.ClassID = 116) {doomcryer}				
+				or (obj.ClassID = 136)){judicator}
+				then
+					isEnchanter:= true
+				else
+					isEnchanter:= false;
+			end;
+			
+			function isAnakim;
+			begin
+				if (obj.Cast.EndTime > 0) and
+				((obj.Cast.ID = 720) or
+				(obj.Cast.ID = 721) or
+				(obj.Cast.ID = 722) or
+				(obj.Cast.ID = 723) or
+				(obj.Cast.ID = 724))
+				then
+					isAnakim:= true
+				else
+					isAnakim:= false;
+			end;
+			
+			function isHellKnight;
+			begin
+				if (obj.ClassID = 91) {hk}
+				then
+					isHellKnight:= true
+				else
+					isHellKnight:= false;
+			end;
+			
+			{buffs status}
+						
+			function fHasShield;
+			begin
+				if ((effectTime(actor, 1517) > 60000) or (effectTime(actor, 1536) > 60000) or (effectTime(actor, 1499) > 60000) or (effectTime(actor, 1009) > 60000) or (effectTime(actor, 1010) > 60000) or (effectTime(actor, 1040) > 60000)) then
+					fHasShield := true
+				else 
+					fHasShield := false;
+			end;
+			
+			function fHasBlockShield;
+			var
+				effect: TL2Effect;
+			begin
+				if (actor.Buffs.ByID(1358, effect) or actor.Buffs.ByID(1358, effect)) then
+					fHasBlockShield := true
+				else
+					fHasBlockShield := false;
+			end;
+			
+
+			function fHasGreaterShield;
+			begin
+				if ((effectTime(actor, 1389) > 60000) or (effectTime(actor, 1391) > 60000)) then
+					fHasGreaterShield := true
+				else
+					fHasGreaterShield := false;
+			end;
+			
+			 
+			function fHasMagicBarrier;
+			begin
+				if ((effectTime(actor, 1006) > 60000) or (effectTime(actor, 1365) > 60000) or (effectTime(actor, 1500) > 60000) or (effectTime(actor, 1036) > 60000)) then
+					fHasMagicBarrier := true
+				else
+					fHasMagicBarrier := false;
+			end;
+			
+			 
+			function fHasNoble;
+			begin
+				if ((effectTime(actor, 1323) > 60000) or (effectTime(actor, 1410) > 60000)) then
+					fHasNoble := true
+				else
+					fHasNoble := false;
+			end;
+			
+			 
+			function fHasSpirit;
+			begin
+				if ((effectTime(actor, 1354) > 60000) or (effectTime(actor, 1362) > 60000)) then
+					fHasSpirit := true
+				else
+					fHasSpirit := false;
+			end;
+			
+
+			function fHasWW;
+			begin
+				if ((effectTime(actor, 1535) > 60000) or (effectTime(actor, 1504) > 60000) or (effectTime(actor, 2034) > 60000) or (effectTime(actor, 1204) > 60000)) then
+					fHasWW := true
+				else
+					fHasWW := false;
+			end;
+			
+			 
+			function fHasBlockWW;
+			var
+				effect: TL2Effect;
+			begin
+				if (actor.Buffs.ByID(1359, effect) or actor.Buffs.ByID(1361, effect)) then
+					fHasBlockWW := true
+				else
+					fHasBlockWW := false;
+			end;
+			
+			 
+			function fHasAntiSummoning;
+			var
+				effect: tl2effect;
+			begin
+				if actor.Buffs.ByID(5134, effect) then
+					fHasAntiSummoning := true
+				else
+					fHasAntiSummoning := false;
+			end;
+			
+
+			function fHasCriticalAttack;
+			begin
+				if ((effectTime(actor, 1518) > 60000) or (effectTime(actor, 1502) > 60000) or (effectTime(actor, 1537) > 60000)) then
+					fHasCriticalAttack := true
+				else
+					fHasCriticalAttack := false;
+			end;
+			
+			function fHasGuidance;
+			begin
+				if ((effectTime(actor, 1240) > 60000) or (effectTime(actor, 1309) > 60000) or (effectTime(actor, 1364) > 60000)) then
+					fHasGuidance := true
+				else
+					fHasGuidance := false;
+			end;
+			
+			
+			function fHasGreaterMight;
+			begin
+				if ((effectTime(actor, 1390) > 60000) or (effectTime(actor, 1388) > 60000)) then
+					fHasGreaterMight := true
+				else
+					fHasGreaterMight := false;
+			end;
+			
+			function fHasAcumen;
+			begin
+				if ((effectTime(actor, 1085) > 60000) or (effectTime(actor, 1002) > 60000) or (effectTime(actor, 1004) > 60000) or (effectTime(actor, 2169) > 60000)) then
+					fHasAcumen := true
+				else
+					fHasAcumen := false;
+			end;
+		
+		
+			{class status}
+			
+ 			function fEagleClass;
+			begin
+				if (isArcher(actor) {or isHeroStick(actor)}) then
+					fEagleClass := true
+				else
+					fEagleClass := false;
+			end;
+			
+			function fWarChantClass;
+			begin
+				if (isArcher(actor) or isRoque(actor) or isKnight(actor) or isWarrior(actor)) then
+					fWarChantClass := true
+				else
+					fWarChantClass := false;
+			end;
+			
+			function fCriticalAttackClass;
+			begin
+				if (isArcher(actor) or isRoque(actor) or isKnight(actor) or isWarrior(actor)) then
+					fCriticalAttackClass := true
+				else
+					fCriticalAttackClass := false;
+			end;
+			
+			
+ 			function fBloodAwakeningClass;
+			begin
+				if (isArcher(actor) or isRoque(actor) or isBard(actor) or isKnight(actor) or isWarrior(actor)) then
+					fBloodAwakeningClass := true
+				else
+					fBloodAwakeningClass := false;
+			end;			
+
+ 			function fFlameChantClass;
+			begin
+				if (isSummoner(actor) or isHealer(actor) or isEnchanter(actor) or isMage(actor)) then
+					fFlameChantClass := true
+				else
+					fFlameChantClass := false;
+			end;
+			
+			function getNearestPlayer;
+			const
+				skillRadius = 300;
+			var
+				i: integer;
+				tempPlayer: tl2live;
+				perlimRange: integer;
+			begin
+				perlimRange := High(integer);
+				if ((victim = nil) or (victim = user)) then
+				begin
+					Result := User;
+					exit;
+				end;
+				for i:=0 to Charlist.Count-1 do
+				begin
+				if (
+					(victim.DistTo(Charlist.Items(i)) < perlimRange)
+					and not Charlist.Items(i).Dead
+					and (Charlist.Items(i) <> victim)
+					and isFriend(Charlist.Items(i))
+					)
+					then
+					begin
+					perlimRange := victim.DistTo(Charlist.Items(i));
+					tempPlayer := Charlist.Items(i);
+				end;        
+				end;
+				for i:=0 to npclist.Count-1 do
+				begin
+					if (
+					(victim.DistTo(npclist.Items(i)) < perlimRange)
+					and not npclist.Items(i).Dead
+					and npclist.Items(i).isPet
+					and isFriend(npclist.Items(i))
+					)
+					then
+					begin
+					perlimRange := victim.DistTo(npclist.Items(i));
+					tempPlayer := npclist.Items(i);
+				end;
+				end;
+			if (perlimRange > 300) then
+				Result := victim
+			else 
+				Result := tempPlayer;
+			end;
+			
+			function isFriend;
+			begin
+			if not victim.Attackable
+				and (
+				not victim.pvp
+				or (victim.pvp and victim.isMember)
+				or (victim.pvp and isClanMember(victim))
+				)
+			then
+				isFriend := true
+			else
+				isFriend := false;
+			end;
+			
+			function isClanMember;
+			begin
+			if (User.ClanID = victim.ClanID) then
+				isClanMember := true
+			else
+				isClanMember := false;
+			end;
+
+			function countPartyDead;
+			const
+				deadCountRadius = 2000;
+			var
+				i: integer;
+				perlimResult: integer;
+			begin
+				perlimResult := 0;
+				for i:=0 to party.chars.count-1 do
+				begin
+					if Party.Chars.Items(i).Dead and (User.DistTo(Party.Chars.Items(i)) < deadCountRadius) then
+						perlimResult := perlimResult + 1;
+				end;
+				Result := perlimResult;
+			end;
+			
+			function isPvpStatus;
+			const
+				enemySearchRadius = 2000;
+			var
+				i: integer;
+				perlimResult: integer;
+			begin
+				perlimResult := 0;
+				for i:=0 to Charlist.count-1 do
+				begin
+					if Charlist.Items(i).Dead and (User.DistTo(Charlist.Items(i)) < enemySearchRadius)
+					and not isFriend(Charlist.Items(i)) and not Charlist.Items(i).isMember then
+						perlimResult := perlimResult + 1;
+				end;
+				if (perlimResult > 5) then
+					isPvpStatus := true
+				else
+					isPvpStatus := false;
+			end;
+			
+			function getLowerHP;
+			var
+				i: integer;
+				perlimResult : Cardinal;
+				tempPlayer: TL2Live;
+			begin
+				perlimResult := High(Cardinal);
+				tempPlayer := nil;
+				if (Party.Chars.Count = 0) then
+				begin
+					Result := User;
+					exit;
+				end;
+				for i:=0 to Party.Chars.Count-1 do
+				begin
+					if (Party.Chars.Items(i).HP < perlimResult)
+					and not Party.Chars.Items(i).Dead and (User.DistTo(Party.Chars.Items(i)) < 900) then
+					begin
+						perlimResult := Party.Chars.Items(i).HP;
+						tempPlayer := Party.Chars.Items(i); 
+					end;
+				end;
+				Result := tempPlayer;
+			end;
+end.
+			
+      
+       
+  

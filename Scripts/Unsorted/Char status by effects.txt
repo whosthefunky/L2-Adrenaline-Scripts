@@ -1,0 +1,83 @@
+//effects
+function isTranced(obj: TL2Live): boolean;
+var
+	buffsTemp: tl2effect;
+begin
+	Result := obj.Buffs.ByID(1394, buffsTemp);
+end;
+
+function isAffraid(obj: TL2Live): boolean;
+var
+	buffsTemp: tl2effect;
+begin
+	Result :=  obj.Buffs.ByID(1169, buffsTemp) // curse fear
+	or obj.Buffs.ByID(1092, buffsTemp) // wark fear
+	or obj.Buffs.ByID(1381, buffsTemp) // mass fear
+	or obj.Buffs.ByID(763, buffsTemp);  // heal scream
+end;
+
+function isMedused(obj: TL2Live): boolean;
+var
+	buffsTemp: tl2effect;
+begin
+	Result :=  obj.Buffs.ByID(367, buffsTemp);
+end;
+
+function isAnchored(obj: TL2Live): boolean;
+var
+	buffsTemp: tl2effect;
+begin
+	Result := obj.Buffs.ByID(6092, buffsTemp) // Lightning Shock
+	or obj.Buffs.ByID(5592, buffsTemp) // Lightning Barrier
+	or obj.Buffs.ByID(6090, buffsTemp) // Lightning Strike
+	or obj.Buffs.ByID(6091, buffsTemp) // Anchor
+	or obj.Buffs.ByID(791, buffsTemp) // Lightning Shock 1st part
+	or obj.Buffs.ByID(279, buffsTemp) // Lightning Strike 1st part
+	or obj.Buffs.ByID(1170, buffsTemp); // Anchor 1st part
+end;
+
+function isDeathMark(obj: TL2Live): boolean;
+var
+	buffsTemp: tl2effect;
+begin
+	Result := obj.Buffs.ByID(1435, buffsTemp);
+end;
+
+function isSilenced(obj: TL2Live): boolean;
+var
+	buffsTemp: tl2effect;
+begin
+	Result := obj.Buffs.ByID(1246, buffsTemp) // Seal of Silence
+	or obj.Buffs.ByID(1064, buffsTemp) // Silence
+	or obj.Buffs.ByID(437, buffsTemp) // Song of Silence
+	or obj.Buffs.ByID(1336, buffsTemp); // Curse of Doom
+end;
+
+function isRealTarget(obj: TL2Live): boolean;
+var
+	buffsTemp: tl2effect;
+begin
+	Result := obj.Buffs.ByID(1522, buffsTemp);
+end;
+
+function isInvincible(obj: TL2Live): boolean;
+var
+	buffsTemp: TL2Effect;
+begin
+	Result := obj.Buffs.ByID(1418, buffsTemp) or obj.Buffs.ByID(1427, buffsTemp) or
+		obj.Buffs.ByID(1505, buffsTemp) or obj.Buffs.ByID(3158, buffsTemp) or
+		obj.Buffs.ByID(655, buffsTemp) or obj.Buffs.ByID(5576, buffsTemp) or
+		obj.Buffs.ByID(1540, buffsTemp) or obj.Buffs.ByID(837, buffsTemp);
+end;
+
+function isDisabled(obj: TL2Live): boolean;
+var
+	buffsTemp: TL2Effect;
+begin
+	Result := {isStunned(obj) or }isMedused(obj) 
+	or isTranced(obj) or isAnchored(obj) or isAffraid(obj) or
+	obj.Buffs.ByID(1376, buffsTemp);
+end;
+
+begin
+end.

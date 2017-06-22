@@ -1,0 +1,256 @@
+uses
+  Classes, SysUtils, partyFunctions;
+  
+type
+  TActor = record
+      actor: TL2Live;
+      time: Cardinal;
+  end;
+  
+  PActor = ^TActor;
+  
+var
+  ignoreList: TList;
+  turnOn : boolean = true;
+  startTime: cardinal;
+
+//
+function countEffectsShouldEnd(list: TStringList; effEndTime: integer): integer;
+var
+  i, j: integer;
+begin
+  Result := 0;
+  for i:=0 to Party.Chars.Count-1 do
+  begin
+    for j:=0 to Party.Chars.Items(i).Buffs.Count-1 do
+    begin
+      if not isContains(list, Party.Chars.Items(i).Buffs.Items(j).ID) or
+      (isContains(list, Party.Chars.Items(i).Buffs.Items(j).ID) and (Party.Chars.Items(i).Buffs.Items(j).EndTime < effEndTime)) then
+          inc(Result);
+    end;
+  end;
+
+  for j:=0 to User.Buffs.Count-1 do
+  begin
+    if not isContains(list, User.Buffs.Items(j).ID) or
+    (isContains(list, User.Buffs.Items(j).ID) and (User.Buffs.Items(j).EndTime < effEndTime)) then
+        inc(Result);
+  end;
+    
+end;
+
+function isAssistable(actor: TL2Char): boolean;
+begin
+  Result := (isMage(actor) or isWarrior(actor)) and Assigned(actor.Target)
+  and not actor.target.pvp and actor.target.attackable
+  and not actor.dead and not actor.target.dead
+  and (User.DistTo(actor.target) < 600) and (actor.Target.HP <> 100);
+end;
+
+//thread
+procedure antiAfkThread;
+var
+  lastActionTime: int64;
+  lastX, lastY: integer;
+  actionVal : integer;
+  action : TL2Action;
+  p1, p2 : pointer;
+begin
+  lastX := User.X;
+  lastY := User.Y;
+  lastActionTime := GetTickCount;
+  actionVal := 0;
+  
+  while Engine.Status = lsOnline do
+  begin
+  delay(50);
+
+  if (Party.Chars.Count = 0) or User.Dead then
+  begin
+    delay(10 * 1000);
+    continue;
+  end;
+  
+  if (lastActionTime + 6 * 1000 < GetTickCount) then
+  begin
+    if (actionVal = 1) then
+      Engine.MoveTo(User.X + 50, User.Y + 50, User.Z)
+    else if (actionVal > 0) and Odd(actionVal) then
+      Engine.MoveTo(User.X + 100, User.Y + 100, User.Z)
+    else
+      Engine.MoveTo(User.X - 100, User.Y - 100, User.Z);
+  
+    lastX := User.X;
+    lastY := User.Y;
+    lastActionTime := GetTickCount;
+    inc(actionVal);
+    continue;
+  end;
+  
+
+  if (lastX <> User.X) or (lastY <> User.Y) then
+  begin
+    lastX := User.X;
+    lastY := User.Y;
+    lastActionTime := GetTickCount;
+  end;
+
+  end;
+end;
+
+procedure autoFollow(nickName: string = '');
+var
+  followActor: TL2Live;
+begin
+  while Engine.Status = lsOnline do
+  begin
+  delay(50);
+
+  if isCasting(User) or (Party.Chars.Count = 0) or not turnOn then
+    continue;
+
+  if (Length(nickName) = 0) or not Party.Chars.ByName(nickName, followActor) then
+    followActor := Party.leader;
+    
+  if (User.DistTo(followActor) > 300) and (User.DistTo(followActor) < 3000)
+    {and (partyCount(pClarityF, true) = 0)
+    and (partyCount(pMentalF, true) = 0)
+    //and (partyCount(pResistShockF, true) = 0)
+    and (partyCount(pWildMagicF, true) = 0)
+    and (partyCount(pSpiritF, true) = 0)
+    and (partyCount(pConcentrationF, true) = 0)  }
+    and not isStunned(User) and not isRooted(User) and not isAffraid(User)
+    then
+      Engine.MoveTo(followActor, -200);  
+  
+  end;
+end;
+
+procedure kookaController;
+var
+  actingProc: TActingWrapper;
+begin
+  while Engine.Status = lsOnline do
+  begin
+  delay(50);
+
+  if (petlist.count = 0) or isCasting(User) or not turnOn or isActing then
+    continue;
+
+  if (petlist.items(0).mp > 10) and (petlist.items(0).hp > 50)
+  and not User.inCombat and (User.MP < 60) and not petlist.items(0).dead
+  and (User.DistTo(petlist.items(0)) < 400)
+  then
+  begin
+    actingProc := procedure
+    begin
+      Engine.SetTarget(petlist.items(0));
+      Engine.UseSkill(1177, true);
+      delay(500);
+    
+      if (User.Cast.EndTime > 0) then
+			  delay(user.cast.endTime);
+    end;
+
+    actingAction(actingProc);
+  end;
+
+  if (petlist.items(0).hp < 50) and not petlist.items(0).dead then
+  begin
+    doCast(petlist.items(0), $70);
+    continue;
+  end;
+  
+  end;
+end;
+
+procedure turnOffProc;
+begin
+  while Engine.Status = lsOnline do
+  begin
+  delay(100);
+    if isKeyPressed($11) and isKeyPressed($10) and isKeyPressed($41) then
+      turnOn := false;
+
+    if isKeyPressed($11) and isKeyPressed($12) and isKeyPressed($41) then
+      turnOn := true;
+  end;  
+end;
+
+procedure inCombatProc;
+var
+  actor: TL2Live;
+  npc: TL2Live;
+begin
+  while Engine.Status = lsOnline do
+  begin
+  delay(100);
+
+  if (Party.Chars.Count = 0) or isCasting(User) or (Petlist.count = 0) or not turnOn
+    or (Petlist.Items(0).MP < 10) {or (User.MP > 60)} or User.inCombat or Petlist.Items(0).Dead
+    or (User.DistTo(petlist.Items(0)) > 400) then
+    continue;
+    
+  if not Assigned(getPartyMember(isAssistable, false)) then
+    continue;
+
+  actor := getPartyMember(isAssistable, false);
+
+  if Assigned(actor) and (actor.target <> npc) then
+  begin     
+    Engine.SetTarget(actor.target);
+    Engine.UseSkill(1177);
+    npc := actor.target;
+    delay(500);
+  end;
+  
+  end;
+end;
+
+
+procedure turnOnListener;
+begin
+  while true do
+  begin
+  delay(200);
+  if not turnOn then
+    print('turn off');
+  end;
+end;
+
+
+procedure foo;
+begin
+  while true do
+  begin
+  delay(100);
+    if (ChatMessage.Sender = 'name') and (integer(ChatMessage.ChatType) = 2) and (ChatMessage.Unread) then
+    begin
+      print(chatmessage.text);
+      print(ChatMessage.ChatType);
+    end;
+  end;
+end;
+
+procedure p1(p: pointer);
+begin
+  while true do
+  begin
+  delay(1000);
+  print(string(p));
+  end;
+end;
+    //list на диспел: ид
+    
+begin
+  //script.newThread(@inCombatProc);
+  startDispel;
+  script.newThread(@turnOffProc);
+  script.newThread(@rebufProc);
+  //script.newThread(@healProc);
+  script.newThread(@turnOnListener);
+  //script.newThread(@cannotSeeTargetListener);
+  //script.newThread(@autoFollow('RachelRoXXX')); 
+  
+  script.newThread(@rechargeProc); 
+end.

@@ -1,0 +1,21 @@
+procedure countProfit(weaponPrice, crystalAmount, cryPerCraft, orePrice, orePerCraft, craftAmount, sellPrice: integer);
+var
+  cryCost : extended;
+  totalCost : extended;
+  craftCost : extended;
+  profitPerSell : extended;
+begin
+  cryCost := (weaponPrice / crystalAmount);
+  totalCost := cryCost * cryPerCraft + orePrice * orePerCraft;
+  craftCost := (totalCost / craftAmount);
+  profitPerSell := sellPrice - craftCost;
+  print(cryCost);
+  print(totalCost);
+  print(craftCost);
+  print(profitPersell);
+
+end;
+
+begin
+  countProfit(1387000, 2561, 3, 250, 9, 468, 11);
+end.

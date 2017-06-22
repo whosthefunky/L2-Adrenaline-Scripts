@@ -1,0 +1,366 @@
+unit PathOfTheElvenOracleQuest;
+
+interface
+
+uses 
+	SysUtils, Classes, LocationModule, SettingsModule, Functions, UserFunctions;
+	
+const
+	//npcs
+	MANUEL = 30293;
+	ALLANA = 30424;
+	PERRIN = 30428;
+	RAYMOND = 30289;
+	TAMIL = 27035;
+	LIZARD_WARRIOR = 27032;
+	LIZARD_SOLDIER = 27033;
+	LIZARD_SOLDIER2 = 27034;
+	//quest items
+	CRYSTAL_MEDALLION = 1231;
+	SWINDLERS_MONEY = 1232;
+	ALLANAS_DIARY = 1233;
+	LIZARD_CAPTIAN_ORDER = 1234;	
+	LEAF_OF_ORACLE = 1235;
+	HALF_DIARY = 1236;
+	TAMILS_NECKLACE = 1275;
+
+var
+	pathOfTheElvenOracleQuestState: integer;
+	QuestSettings: TSettings;
+	
+	pathOfTheElvenOracleArray1: DimensionArray;
+	pathOfTheElvenOracleArray2: DimensionArray;
+	pathOfTheElvenOracleArray3: DimensionArray;
+	pathOfTheElvenOracleArray4: DimensionArray;
+	pathOfTheElvenOracleArray5: DimensionArray;
+	
+	procedure ExecuteQuestPathOfTheElvenOracle;
+	procedure initArrays;
+	function PathOfTheElvenOracleDone: boolean;
+	
+implementation
+
+procedure ExecuteQuestPathOfTheElvenOracle;
+var
+	i: integer;
+	obj: TL2Live;
+	currentCity: TCity;
+	npc: TL2Live;
+	questMob: TL2Live;
+	questItem: TL2Item;
+begin
+	QuestSettings.SetFile(Script.Path + User.Name + '_Settings.ini');
+	pathOfTheElvenOracleQuestState := QuestSettings.Load('Quests', 'Path of the Elven Oracle state', -1);
+	initArrays;
+	while (Engine.Status = lsOnline) and (pathOfTheElvenOracleQuestState <> -1) do
+	begin
+	  //if AfterDeadEvt then continue
+		case pathOfTheElvenOracleQuestState of
+			0 :
+			begin
+			if isRightCity(TALKING_ISLAND) then
+			begin
+				Engine.MoveTo(-83308, 244104, -3755);
+				Engine.MoveTo(-83705, 244794, -3754);
+				Engine.MoveTo(-84137, 244573, -3755);
+				
+				NpcList.ByID(30006, npc);
+				Engine.SetTarget(npc);
+				Engine.DlgOpen;
+				delay(500);
+				Engine.DlgSel(2);
+				delay(500);
+				Engine.DlgSel(1);
+				delay(1000);
+			end;
+		
+			  if toRightCity(GLUDIO) then
+				begin
+
+				  npc := nil;
+				  NpcList.ById(MANUEL, npc);
+				  
+				  if npc = nil then
+				    continue;
+				    
+					Engine.MoveTo(npc);
+					Engine.SetTarget(npc);
+					Engine.DlgOpen;
+					delay(500);
+					Engine.DlgSel(4);
+					delay(500);
+					Engine.DlgSel(1);
+
+					if Inventory.Quest.ById(CRYSTAL_MEDALLION, questItem) then
+					begin
+					  QuestSettings.Save('Quests', 'Path of the Elven Oracle state', 1);
+					  pathOfTheElvenOracleQuestState := 1;
+					end;  
+				end;
+			end;
+			1 :
+			begin
+				if Inventory.Quest.ById(HALF_DIARY, questItem) then
+					begin
+					  QuestSettings.Save('Quests', 'Path of the Elven Oracle state', 2);
+					  pathOfTheElvenOracleQuestState := 2;
+					end;
+					
+				if isRightCity(GLUDIO) then
+				begin
+					Engine.MoveTo(-13075, 121828, -2994);
+					Engine.MoveTo(-13089, 122263, -3008);
+					Engine.MoveTo(-13289, 122481, -3016);
+					Engine.MoveTo(-13235, 122675, -3080);
+					Engine.MoveTo(-12838, 122730, -3143);
+				end;
+				
+				if toRightCity(GLUDIN) then
+				begin
+				  moveToLoc(pathOfTheElvenOracleArray1);
+				  
+				  npc := nil;
+				  NpcList.ById(ALLANA, npc);
+				  
+				  if npc = nil then
+				    continue;
+				    
+					Engine.MoveTo(npc);
+					Engine.SetTarget(npc);
+					Engine.DlgOpen;
+					Engine.DlgSel(1);
+					delay(500);
+					Engine.DlgSel(2);
+					delay(500);
+					Engine.DlgSel(2);
+					delay(500);
+					Engine.DlgSel(2);
+
+				  while not Inventory.Quest.ById(LIZARD_CAPTIAN_ORDER, questItem) or User.Dead do
+				  begin
+				    questMob := nil;
+				    NpcList.ById(LIZARD_WARRIOR, questMob);
+				    
+				    if (questMob = nil) or (User.DistTo(questMob) > 1000) then
+				      continue;
+				      
+					  while not questMob.Dead or User.Dead do
+					  begin
+				      Engine.SetTarget(questMob);
+				      Engine.UseSkill(1177);
+					  end;
+					end;  
+
+					if Inventory.Quest.ById(LIZARD_CAPTIAN_ORDER, questItem) then
+					begin
+					  npc := nil;
+					  NpcList.ById(ALLANA, npc);
+				  
+					  if npc = nil then
+						continue;
+				    
+				    Engine.MoveTo(npc);
+				    Engine.SetTarget(npc);
+				    Engine.DlgOpen;
+					delay(500);
+				    Engine.DlgSel(1);
+				  end;
+				  
+					if Inventory.Quest.ById(HALF_DIARY, questItem) then
+					begin
+					  QuestSettings.Save('Quests', 'Path of the Elven Oracle state', 2);
+					  pathOfTheElvenOracleQuestState := 2;
+					end;
+				end;
+					if Inventory.Quest.ById(HALF_DIARY, questItem) then
+					begin
+					  QuestSettings.Save('Quests', 'Path of the Elven Oracle state', 2);
+					  pathOfTheElvenOracleQuestState := 2;
+					end;
+			end;
+			2 :
+			begin
+			  if inRange(User, -90120, 151400, -3600, 7000) then
+			  begin
+				 Engine.MoveTo(-91148, 153578, -3534);
+					Engine.MoveTo(-90238, 152220, -3659);
+ 
+			    moveToLoc(pathOfTheElvenOracleArray2);
+
+				  while not Inventory.Quest.ById(TAMILS_NECKLACE, questItem) or User.Dead do
+				  begin
+				  
+					npc := nil;
+				    NpcList.ById(PERRIN, npc);
+				  
+				    if npc = nil then
+				      break;
+				    
+				    Engine.MoveTo(npc);
+				    Engine.SetTarget(npc);
+				    Engine.DlgOpen;
+				    Engine.DlgSel(1);
+					delay(500);
+				    Engine.DlgSel(1);
+				    delay(500);
+					Engine.DlgSel(1);
+
+				    questMob := nil;
+				    NpcList.ById(TAMIL, questMob);  //возможно сделать через цикл, ч
+				                              //то бы брать с макс. хп(типо своего)
+
+				    if (questMob = nil) or (User.DistTo(questMob) > 3000) then
+				      continue;
+
+				    while not questMob.Dead or User.Dead do
+				    begin
+				      Engine.SetTarget(questMob);
+				      Engine.UseSkill(1177);
+				    end;  
+				    
+				    delay(100);
+				  end;
+
+          if Inventory.Quest.ById(TAMILS_NECKLACE, questItem) then
+          begin
+            npc := nil;
+            NpcList.ById(PERRIN, npc);
+				    if npc = nil then
+				      break;
+				    
+				    Engine.MoveTo(npc);
+				    Engine.SetTarget(npc);
+				    Engine.DlgOpen;
+				    delay(500);
+					Engine.DlgSel(1);     
+          end;
+
+          if Inventory.Quest.ById(SWINDLERS_MONEY, questItem) then
+          begin
+            QuestSettings.Save('Quests', 'Path of the Elven Oracle state', 3);
+            pathOfTheElvenOracleQuestState := 3;  
+          end;
+			    
+			  end
+			  else if toRightCity(GLUDIN) then
+			  begin
+			      moveToLoc(pathOfTheElvenOracleArray3);
+			  end; 
+			end;
+			3 :
+			begin
+			  if inRange(User, -90120, 151400, -3600, 7000) then
+			  begin
+			    moveToLoc(pathOfTheElvenOracleArray4);
+
+			    npc := nil;
+			    NpcList.ById(ALLANA, npc);
+				  if npc = nil then
+				    break;
+
+				  Engine.MoveTo(npc);
+				  Engine.SetTarget(npc);
+				  Engine.DlgOpen;
+				  delay(500);
+				  Engine.DlgSel(1);
+
+				  
+          if Inventory.Quest.ById(ALLANAS_DIARY, questItem) then
+          begin
+            QuestSettings.Save('Quests', 'Path of the Elven Oracle state', 4);
+            pathOfTheElvenOracleQuestState := 4;       
+          end;
+			    
+			  end
+			  else if toRightCity(GLUDIN) then
+			  begin
+			    moveToLoc(pathOfTheElvenOracleArray5);
+			  end;  
+			end;
+			4 :
+			begin
+			  if toRightCity(GLUDIO) then
+			  begin
+			    npc := nil;
+				  NpcList.ById(MANUEL, npc);
+				  
+				  if npc = nil then
+				    break;
+				    
+					Engine.MoveTo(npc);
+					Engine.SetTarget(npc);
+					Engine.DlgOpen;
+					delay(500);
+					Engine.DlgSel(4);
+
+					if Inventory.Quest.ById(LEAF_OF_ORACLE, questItem) then
+					begin
+					  QuestSettings.Save('Quests', 'Path of the Elven Oracle state', -1);
+					  pathOfTheElvenOracleQuestState := -1;
+					end;  
+			  end;
+			end;
+			-1 :
+			  print('Quest done or not taken');
+		end;	
+	delay(500);	
+	end;	
+end;
+
+procedure initArrays;
+begin
+	SetLength(pathOfTheElvenOracleArray1, 9, 3);
+	SetLength(pathOfTheElvenOracleArray2, 5, 3);
+	SetLength(pathOfTheElvenOracleArray3, 7, 3);
+	SetLength(pathOfTheElvenOracleArray4, 7, 3);
+	SetLength(pathOfTheElvenOracleArray5, 7, 3);
+	
+	writeToArray(pathOfTheElvenOracleArray1[0], -80856, 150040, -3024);
+	writeToArray(pathOfTheElvenOracleArray1[1], -81909, 150926, -3067);
+	writeToArray(pathOfTheElvenOracleArray1[2], -83064, 151912, -3104);
+	writeToArray(pathOfTheElvenOracleArray1[3], -83080, 152824, -3152);
+	writeToArray(pathOfTheElvenOracleArray1[4], -85448, 152760, -3152);
+	writeToArray(pathOfTheElvenOracleArray1[5], -87736, 153112, -3248);
+	writeToArray(pathOfTheElvenOracleArray1[6], -88933, 153349, -3591);
+	writeToArray(pathOfTheElvenOracleArray1[7], -90863, 153536, -3586);
+	writeToArray(pathOfTheElvenOracleArray1[8], -91912, 154088, -3336);
+	
+	writeToArray(pathOfTheElvenOracleArray2[0], -90200, 152792, -3632);
+	writeToArray(pathOfTheElvenOracleArray2[1], -89528, 148760, -3432);
+	writeToArray(pathOfTheElvenOracleArray2[2], -89103, 147753, -3070);
+	writeToArray(pathOfTheElvenOracleArray2[3], -89656, 147096, -3056);
+	writeToArray(pathOfTheElvenOracleArray2[4], -92920, 147480, -2720);
+	
+	writeToArray(pathOfTheElvenOracleArray3[0], -80856, 150040, -3024);
+	writeToArray(pathOfTheElvenOracleArray3[1], -81909, 150926, -3067);
+	writeToArray(pathOfTheElvenOracleArray3[2], -83064, 151912, -3104);
+	writeToArray(pathOfTheElvenOracleArray3[3], -83080, 152824, -3152);
+	writeToArray(pathOfTheElvenOracleArray3[4], -85448, 152760, -3152);
+	writeToArray(pathOfTheElvenOracleArray3[5], -87736, 153112, -3248);
+	writeToArray(pathOfTheElvenOracleArray3[6], -88933, 153349, -3591);
+	
+	writeToArray(pathOfTheElvenOracleArray4[0], -89736, 147256, -3056);
+	writeToArray(pathOfTheElvenOracleArray4[1], -89256, 147768, -3088);
+	writeToArray(pathOfTheElvenOracleArray4[2], -89338, 149168, -3499);
+	writeToArray(pathOfTheElvenOracleArray4[3], -89728, 150579, -3581);
+	writeToArray(pathOfTheElvenOracleArray4[4], -90650, 153074, -3628);
+	writeToArray(pathOfTheElvenOracleArray4[5], -91401, 153766, -3482);
+	writeToArray(pathOfTheElvenOracleArray4[6], -92152, 154184, -3312);
+
+	writeToArray(pathOfTheElvenOracleArray5[0], -80856, 150040, -3024);
+	writeToArray(pathOfTheElvenOracleArray5[1], -81909, 150926, -3067);
+	writeToArray(pathOfTheElvenOracleArray5[2], -83064, 151912, -3104);
+	writeToArray(pathOfTheElvenOracleArray5[3], -83080, 152824, -3152);
+	writeToArray(pathOfTheElvenOracleArray5[4], -85448, 152760, -3152);
+	writeToArray(pathOfTheElvenOracleArray5[5], -87736, 153112, -3248);
+	writeToArray(pathOfTheElvenOracleArray5[6], -88933, 153349, -3591);
+				
+end; 	
+
+function PathOfTheElvenOracleDone;
+begin
+	Result := getState('Quests', 'Path of the Elven Oracle state', -1) = -1;
+end;
+
+begin
+end.

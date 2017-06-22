@@ -1,0 +1,27 @@
+unit TeleportModule;
+
+interface
+
+uses SettingsModule;
+
+function teleport: Boolean;
+
+implementation
+
+procedure teleport;
+begin
+Print('Teleport to Wall of Argos.');   
+    Engine.SetTarget(31275);
+    Engine.MoveToTarget;
+    Engine.DlgOpen;
+    Delay(500);
+    Engine.DlgSel(1);
+    Delay(500);
+    Engine.DlgSel(12);
+    Delay(10*1000);
+	Print('Teleported.');
+end;
+
+
+BEGIN
+END.

@@ -1,0 +1,266 @@
+﻿{
+	Level: 	10 - 16
+	Reward 	Sword of Solidarity (Novice) Sword of Solidarity
+	Race: 	Human
+	Class: 	Any class 
+    1. Talk to Grand Master Roien in Cedric's Training Hall on the Talking Island.
+    2. Talk to Blacksmith Altran in the middle of the Talking Island Village.
+    3. Go to the Elven Ruins, hunt Tunath Orc Marksman and Tunath Orc Warrior Captain, until you have Broken Blade Bottom Broken Blade Bottom and Broken Blade Top Broken Blade Top .
+    4. Talk to Blacksmith Altran in the middle of the Talking Island Village.
+    5. Talk to Grand Master Roien in Cedric's Training Hall on the Talking Island.
+    6. Talk to Blacksmith Altran in the middle of the Talking Island Village and get the reward.
+}
+
+unit Quest_SwordOfSolidarity;
+
+interface
+
+uses 
+	SysUtils, Classes, LocationModule, SettingsModule, Functions, NpcFunctions, UserFunctions;
+	
+const
+	// NPCs
+	ROIEN = 30008;
+	ALTRAN = 30283; 
+	SIF = 50124; // orig 30427
+	QUEST_NAME = 'Sword of solidarity';
+	TUNATH_ORC_MARKSMAN = 20361;
+	TUNATH_ORC_WARRIOR_CAPTAIN = 20362;
+	QUEST_ID = 101;
+	
+	// Items
+	ROIENS_LETTER = 796;
+	HOWTOGO_RUINS = 937;
+	BROKEN_SWORD_HANDLE = 739;
+	BROKEN_BLADE_BOTTOM = 740;
+	BROKEN_BLADE_TOP = 741;
+	ALLTRANS_NOTE = 742;
+	SWORD_OF_SOLIDARITY = 738;
+
+var
+	QuestStatus: integer;
+	
+	startPath: DimensionArray; // to Roien
+	path1: DimensionArray; // to Altran
+	path2: DimensionArray; 
+	
+	procedure ExecuteSwordOfSolidarity;
+	procedure initArrays;
+	function inInstance: boolean;
+	function SwordOfSolidarityDone: boolean;
+	
+implementation
+
+procedure ExecuteSwordOfSolidarity;
+var
+	i: integer;
+	questItem: TL2Item;
+	npc: TL2Live;
+begin
+	initArrays;
+	QuestStatus := getState('Quests', QUEST_NAME + ' state', -1);
+	while (Engine.Status = lsOnline) and (QuestStatus <> -1) do
+	begin
+		delay(200);
+		case QuestStatus of
+			0 :
+			begin
+			if toRightCity(TALKING_ISLAND) and not inRange(User, -71736, 257944, -3080, 2000) then
+			begin
+				moveToLoc(startPath);
+					
+				if not startDialog(ROIEN) then
+					continue;
+					
+					Engine.DlgSel(1);
+					Engine.DlgSel(1);
+					Engine.DlgSel(1); 
+			
+					if (Engine.QuestStatus(QUEST_ID, 1)) then
+					begin
+						QuestStatus := 1;
+						updateState('Quests', QUEST_NAME + ' state', 1);
+					end;	
+				end;
+			end;
+			1 :
+			begin
+			if toRightCity(TALKING_ISLAND) then
+			begin
+				moveToLoc(path1);
+					
+				if not startDialog(ALTRAN) then
+					continue;
+					
+					Engine.DlgSel(1);
+					Engine.DlgSel(1);
+					Engine.DlgSel(1); 
+			
+					if (Engine.QuestStatus(QUEST_ID, 2)) then
+					begin
+						QuestStatus := 2;
+						updateState('Quests', QUEST_NAME + ' state', 2);
+					end;	
+				end;
+			end;
+			2 : 
+			begin
+				if not inRange(User, -112472, 234760, -3680, 1500) and not inInstance then 
+				begin
+					DoTeleportToLocation('elven ruins');
+				end;
+				
+				if inRange(User, -112472, 234760, -3680, 4000) and not inInstance then
+				begin
+				
+					if not startDialog(SIF) then
+						continue;
+						
+					Engine.DlgSel(1);
+				
+				end;
+				
+				if inInstance then
+				begin
+					Engine.MoveTo(43608, 248456, -6480);
+					while not User.Dead and not Inventory.Quest.ByID(BROKEN_BLADE_BOTTOM, questItem) and not Inventory.Quest.ByID(BROKEN_BLADE_TOP, questItem) do
+					begin
+						if NpcList.ByID(TUNATH_ORC_WARRIOR_CAPTAIN, npc) then
+						begin
+							if isMage and (User.MP > 5) and (User.HP > 10) then
+							begin
+								Engine.SetTarget(npc);
+								Engine.UseSkill(1177);
+							end;	
+							
+							if not isMage and (User.HP > 10) then
+							begin
+								Engine.SetTarget(npc);
+								Engine.Attack;
+							end;
+						end;
+						delay(200);
+					end;
+				end;
+				
+				if (Engine.QuestStatus(QUEST_ID, 3)) then
+				begin
+					QuestStatus := 3;
+					updateState('Quests', QUEST_NAME + ' state', 3);
+				end;	
+			
+			end;
+			3 :
+			begin
+			if toRightCity(TALKING_ISLAND) then
+			begin
+				moveToLoc(path1);
+					
+				if not startDialog(ALTRAN) then
+					continue;
+					
+				Engine.DlgSel(1);
+				Engine.DlgSel(1);
+				Engine.DlgSel(1); 
+		
+				if (Engine.QuestStatus(QUEST_ID, 3)) then
+				begin
+					QuestStatus := 4;
+					updateState('Quests', QUEST_NAME + ' state', 4);
+				end;	
+			end;	
+			end;
+			4 :
+			begin
+			if toRightCity(TALKING_ISLAND) and not inRange(User, -90344, 248472, -3568, 4000) then
+			begin
+				moveToLoc(startPath);
+					
+				if not startDialog(ROIEN) then
+					continue;
+					
+				Engine.DlgSel(1);
+				Engine.DlgSel(1);
+				Engine.DlgSel(1); 
+		
+				if (Engine.QuestStatus(QUEST_ID, 5)) then
+				begin
+					QuestStatus := 5;
+					updateState('Quests', QUEST_NAME + ' state', 5);
+				end;	
+			end;
+			end;
+			5 :
+			begin
+			if toRightCity(TALKING_ISLAND) then
+			begin
+				moveToLoc(path1);
+					
+				if not startDialog(ALTRAN) then
+					continue;
+					
+				Engine.DlgSel(1);
+				Engine.DlgSel(1);
+				Engine.DlgSel(1); 
+		
+				if not (Engine.QuestStatus(QUEST_ID, 1)) then
+				begin
+					QuestStatus := -1;
+					updateState('Quests', QUEST_NAME + ' state', -1);
+					updateState('Current state', 'Should take newbie quest', 'true');
+				end;	
+			end;	
+			end;
+			
+		//end of case
+	end;
+	
+	end;
+end;
+
+function inInstance;
+var
+	npc: TL2Npc;
+begin
+	Result := NpcList.ByID(20362, npc) or NpcList.ByID(20097, npc) or NpcList.ByID(20404, npc) or NpcList.ByID(20118, npc) or NpcList.ByID(20361, npc) or NpcList.ByID(20362, npc); 
+end;
+
+procedure initArrays;
+begin
+
+	SetLength(startPath, 8, 3);
+
+	writeToArray(startPath[0], -82481, 244840, -3712);
+	writeToArray(startPath[1], -80845, 247045, -3644);
+	writeToArray(startPath[2], -79019, 249292, -3554);
+	writeToArray(startPath[3], -77931, 250605, -3431);
+	writeToArray(startPath[4], -76904, 251816, -3312);
+	writeToArray(startPath[5], -74472, 254888, -3232);
+	writeToArray(startPath[6], -72824, 256712, -3104);
+	writeToArray(startPath[7], -72008, 257656, -3104);
+	
+	SetLength(path1, 4, 3);
+ 
+	writeToArray(path1[0], -119448, 47992, 376);
+	writeToArray(path1[1], -119392, 46815, 372);
+	writeToArray(path1[2], -118541, 46782, 371);
+	writeToArray(path1[3], -116936, 46568, 368);
+	
+	SetLength(path2, 6, 3);
+	
+	writeToArray(path2[0], -122328, 73544, -2864);
+	writeToArray(path2[1], -122425, 74452, -2953);
+	writeToArray(path2[2], -123099, 76133, -3205);
+	writeToArray(path2[3], -123610, 77145, -3332);
+	writeToArray(path2[4], -124568, 78344, -3488);
+	writeToArray(path2[5], -124648, 79064, -3536);
+ 
+	
+end; 	
+
+function SwordOfSolidarityDone;
+begin
+	Result := getState('Quests', QUEST_NAME + ' state', -1) = -1;
+end;
+begin
+end.

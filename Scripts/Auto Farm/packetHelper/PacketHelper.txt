@@ -1,0 +1,286 @@
+unit PacketHelper;
+
+interface
+
+uses SysUtils, Classes;
+
+//////////////////////////////////////////////////////////////////////////////////
+//                                                                              //
+//              Описание                                                        //
+//                                                                              //
+//  Типы данных используемые в пакетах:                                         //
+//   c: Byte (1 байт)                                                           //
+//   h: Word (2 байта)                                                          //
+//   d: DWord (4 байта)                                                         //
+//   f: Double (8 байт)                                                         //
+//   q: Int64 (8 байт целое)                                                    //
+//   s: String                                                                  //
+//   i: DWord (4 байта) - отведен специально для ItemID                         //
+//   l: DWord (4 байта) - отведен специально для SkillID                        //
+//   o: DWord (4 байта) - отведен специально для ObjectID и CharID              //
+//                                                                              //
+//   b: Array of Byte - массив байт, записывается в виде: b(Key:0016), где      //
+//        Key - описание;                                                       //
+//    0016 - размер массива;                                                    //
+//   В пакетах Kamael возможна ситуация, когда размер массива задается          //
+//       в предидущем куске пакета, пример:                                     //
+//      09=RequestSetPledgeCrest:d(CrestSize)b(Data:Back)                       //
+//          т.е. размер будет идти в CrestSize,                                 //
+//  для этого я делаю b(Data:Back)                                              //
+//      Back - означает что размер нужно прочитать из предидущего куска пакета. //
+//                                                                              //
+//   Во многих пакетах, очень часто встречаются циклические списки,             //
+//  пример:                                                                     //
+//  18=StatusUpdate:o(ObjectID)d(ListSize:Loop.1.2)d(ID)d(Value)                //
+//                                                                              //
+//   здесь в куске d(ListSize:Loop.0001.0002)                                   //
+//         ListSize - количество повторов цикла                                 //
+//         Loop - означает что будет цикл                                       //
+//     0001 - элемент пакета с которого начинать цикл                           //
+//     0002 - сколько элементов циклить                                         //
+//                                                                              //
+//   т.е. элементы d(ID) и d(Value) будут повторятся ListSize количество раз.   //
+//                                                                              //
+//////////////////////////////////////////////////////////////////////////////////
+
+type
+  TSettings = packed record
+  private
+    fFile: string;
+  public
+    procedure SetFile(const Name: string);
+    procedure Save(const Section, Key, Data: string); overload;
+    procedure Save(const Section, Key: string; Data: Integer); overload;
+    function  Load(const Section, Key: string; DefData: string  = ''): string; overload;
+    function  Load(const Section, Key: string; DefData: integer = 0) : integer; overload;
+    end;
+
+  TL2PacketValueType = (
+    lpvNone,
+    lpvString,
+    lpvByte,
+    lpvWord,
+    lpvDWord,
+    lpvInteger,
+    lpvDouble,
+    lpvInt64,
+    lpvList
+  );
+
+  TL2PacketValue = record
+  public
+    name: string;
+    valueType: TL2PacketValueType;
+    hexValue: string;
+    stringValue: string;
+    byteValue: byte;
+    wordValue: word;
+    integerValue: integer;
+    doubleValue: double;
+    int64Value: int64;
+    listValue: array of TL2Packetvalue;
+  end;
+  
+  TL2Packet = record
+  private
+    function fetchValueFromMemory(const value: string; data: pointer; var offset: word): TL2PacketValue;
+  public
+    name: string;
+    contents: array of TL2PacketValue;
+    procedure fetchFromMemory(const structPath: string; id, id2: cardinal; data: pointer; size: word; isClentPacket: boolean = false);
+    function valueWithName(const name: string; desiredType: TL2PacketValueType = lpvNone): TL2PacketValue;
+  end;
+
+implementation
+
+var buf: array [0..8192] of Byte;
+
+procedure TSettings.SetFile(const Name: string);
+begin
+  fFile := Name;
+end;
+
+function GetPrivateProfileIntW(lpAppName, lpKeyName: PChar; nDefault: Integer; lpFileName: PChar): Integer; stdcall; external 'Kernel32.dll';
+function GetPrivateProfileStringW(lpAppName, lpKeyName, lpDefault: PWideChar; lpReturnedString: Pointer; nSize: DWORD; lpFileName: PWideChar): DWORD; stdcall; external 'Kernel32.dll';
+function WritePrivateProfileStringW(lpAppName, lpKeyName, lpString, lpFileName: PChar): Boolean; stdcall; external 'Kernel32.dll';
+
+procedure TSettings.Save(const Section, Key, Data: string);
+begin
+  WritePrivateProfileStringW(PChar(Section), PChar(Key), PChar(Data), PChar(fFile));
+end;
+
+procedure TSettings.Save(const Section, Key: string; Data: Integer);
+begin
+  Save(Section, Key, IntToStr(Data));
+end;
+
+function TSettings.Load(const Section, Key: string; DefData: string = ''): string;
+begin
+  GetPrivateProfileStringW(PChar(Section), PChar(Key), PChar(DefData), @buf, 8192, PChar(fFile));
+  Result := PChar(@buf);
+end;
+
+function TSettings.Load(const Section, Key: string; DefData: integer = 0): Integer;
+begin
+  Result := GetPrivateProfileIntW(PChar(Section), PChar(Key), DefData, PChar(fFile));
+end;
+
+function TL2Packet.fetchValueFromMemory: TL2PacketValue;
+begin
+  result.name:= copy(value, 3, length(value) - 2);
+  case value[1] of
+    'c':
+    begin
+      result.valueType:= lpvByte;
+      result.byteValue:= pbyte(pointer(integer(data) + offset))^;
+      result.stringValue:= result.byteValue.toString;
+      result.hexValue:= memToHex(pointer(integer(data) + offset)^, 1);
+      offset:= offset + 1;
+    end;
+    'h':
+    begin
+      result.valueType:= lpvWord;
+      result.wordValue:= pword(pointer(integer(data) + offset))^;
+      result.stringValue:= result.wordValue.toString;
+      result.hexValue:= memToHex(pointer(integer(data) + offset)^, 2);
+      offset:= offset + 2;
+    end;
+    'd', 'i', 'l', 'o':
+    begin
+      result.valueType:= lpvInteger;
+      result.integerValue:= pinteger(pointer(integer(data) + offset))^;
+      result.stringValue:= result.integerValue.toString;
+      result.hexValue:= memToHex(pointer(integer(data) + offset)^, 4);
+      offset:= offset + 4;
+    end;
+    'f':
+    begin
+      result.valueType:= lpvDouble;
+      result.doubleValue:= pdouble(pointer(integer(data) + offset))^;
+      result.stringValue:= result.doubleValue.toString;
+      result.hexValue:= memToHex(pointer(integer(data) + offset)^, 8);
+      offset:= offset + 8;
+    end;
+    'q':
+    begin
+      result.valueType:= lpvInt64;
+      result.int64Value:= pint64(pointer(integer(data) + offset))^;
+      result.stringValue:= result.int64Value.toString;
+      result.hexValue:= memToHex(pointer(integer(data) + offset)^, 8);
+      offset:= offset + 8;
+    end;
+    's':
+    begin
+      result.valueType:= lpvString;
+      result.stringValue:= string(pchar(pointer(integer(data) + offset)));
+      result.hexValue:= memToHex(pointer(integer(data) + offset)^, (length(result.stringValue) + 1) * 2);
+      offset:= offset + (length(result.stringValue) + 1) * 2;
+    end;    
+  end;
+end; 
+
+procedure TL2Packet.fetchFromMemory;
+var
+  struct, temp, idStr: string;
+  ini: TSettings;
+  valuesCount, listLoopsCount, listSize, listStartFrom: cardinal;
+  i, j, k: cardinal;
+  offset: word;
+  values: TStringList;
+  listInfo: TL2PacketValue;
+begin
+  ini.setFile(structPath);
+
+  idStr:= intToHex(id, 2);
+
+  if id2 > 0 then
+    idStr:= idStr + intToHex(id2, 2);
+
+  if isClentPacket then
+    struct:= ini.load('client', idStr, '')
+  else
+    struct:= ini.load('server', idStr, '');
+
+  if struct = '' then
+    exit;
+    
+  name:= copy(struct, 1, pos(':', struct) - 1);
+  delete(struct, 1, pos(':', struct));
+  struct:= stringReplace(struct, ')', #13#10, [rfReplaceAll, rfIgnoreCase]);
+  values:= TStringList.create;
+  values.text:= struct;
+  
+  valuesCount:= 0;
+  for i:= 0 to values.count - 1 do
+    if pos('Loop', values[i]) = 0 then
+      inc(valuesCount);
+      
+  offset:= 0;
+  i:= 0;
+  setLength(contents, valuesCount);
+  while (size > offset) and (i < valuesCount) do
+  begin
+
+    if pos('Loop', values[i]) > 0 then
+    begin
+      listInfo:= fetchValueFromMemory(values[i], data, offset);
+      listLoopsCount:= strToInt(listInfo.stringValue);
+      temp:= copy(values[i], 3, length(values[i]) - 2);
+      delete(temp, 1, pos('.', temp));
+      
+      listStartFrom:= strToInt(copy(temp, 1, pos('.', temp) - 1));
+
+      delete(temp, 1, pos('.', temp));
+
+      listSize:= strToInt(temp);
+      values.delete(i);
+
+      for j:= 0 to listSize - 1 do
+      begin  
+        setLength(contents[i + j].listValue, listLoopsCount);
+        contents[i + j].name:= copy(values[i + j], 3, length(values[i + j]) - 2);
+        contents[i + j].valueType:= lpvList;
+        contents[i + j].stringValue:= format('list[%d]', [listLoopsCount]);
+      end;
+      
+      if listLoopsCount > 0 then 
+        for j:= 0 to listLoopsCount - 1 do
+          for k:= 0 to listSize - 1 do
+            contents[i + k].listValue[j]:= fetchValueFromMemory(values[i + k], data, offset);
+      
+      inc(i, listSize);
+      
+    end
+    else
+    begin
+      contents[i]:= fetchValueFromMemory(values[i], data, offset);
+      inc(i);
+    end;
+    
+  end;
+  values.free;
+end;
+
+function TL2Packet.valueWithName: TL2Packetvalue;
+var
+  i: cardinal;
+begin
+  for i:= 0 to high(contents) do
+    if ansiCompareText(contents[i].name, name) = 0 then
+    begin
+      if desiredType = lpvNone then
+      begin
+        result:= contents[i];
+        exit;
+      end
+      else
+        if contents[i].valueType = desiredType then
+        begin
+          result:= contents[i];
+          exit;
+        end;
+    end;
+end;
+
+begin
+end.

@@ -1,0 +1,196 @@
+http://boards.lineage2.com/showthread.php?t=203220
+{
+Recipe: Braided Hemp
+Goblin Scout lvl 7 ( Talking Island, near Obelisk of Victory)
+
+
+Recipe: Coarse Bone Powder
+Utuku Orc Archer lvl 8 (Dwarven Village, Western Mining Zone)
+
+
+Recipe: Cokes
+RakeClaw Imp Hunter lvl 7 (Outside Orc Village)
+Kuruka Ratman lvl 16 (Orc Village, Near Cave of Trials)
+
+
+Recipe: Leather
+Kaboo Orc lvl 6 (Outside Elven Village)
+Rakeclaw Imp Chieften lvl 10 (Orc Village, Valley of Heroes West)
+
+
+Recipe : Steel
+Goblin Lookout lvl 8 (Near the Catacomb of Dark Omens, Dark Elven Village)
+Garum Werewolf lvl 9 (Dwarven Village, Western Mining Zone)
+
+
+Recipe: Compound Braid
+Scarlet Salamander lvl 17 (Orc Village, Cave of Trials)
+Pitchstone Golem lvl 19 (Dwarven Village, Abandoned Coal Mines)
+Lesser Succubus lvl 20 (Dark Elven Village, School of Dark Arts)
+
+
+Recipe: Cord
+Tainted Zombie lvl 18 (Dark Elven Village, School of Dark Arts)
+Arachnid Tracker lvl 19 (Spider Nest/Neutral Zone/Windmill Hill/Orc Barracks)
+
+
+Recipe: High Grade Suede
+Tracker Skeleton lvl 17 (Gludio, Ruins of Agony)
+Ratman Hunter lvl 18 (Gludio, Evil Hunting Grounds)
+Sukar Wererat lvl 18 (Elven Village, Outside Elven Fortress)
+Lycanthrope lvl 20 ( Neutral Zone)
+
+
+Recipe: Silver Mold
+Ratman Hunter lvl 18 (Gludio, Evil Hunting Grounds)
+Scavenger Bat lvl 18 (Gludio, Ruins of Despair)
+Undead Slave lvl 19 (Orc Village, Valey of the Lords)dddd
+
+
+Recipe: Steel Mold
+Shade Horror lvl 17 (Elven Village, Elven Fortress)
+Sukar Wererat Leader lvl 19 ((Elven Village, Elven Fortress)
+Enku Orc Shaman lvl 20 (Dion Town, Outside East Gate)
+
+
+Recipe: Synthetic Cokes
+Whinstone Golem lvl 14 (Dwarven Village, Western Mining Zone)
+Moonstone Beast lvl 17 ( Neutral Zone)
+Undead Slve lvl 19 (Orc Village, Valley of the Lords)
+
+
+Recipe: Varnish Of Purity
+Akaste Bone Lord lvl 19 (Dwarven Village, Mithril Mines)
+Lirein Elder lvl 19 (Neutral Zone, Before the Bridge at the right side)
+
+
+Recipe: Soulshot: D-Grade
+Akaste Succubus Turen lvl 21 (Dwarven Village, Mithril Mines)
+Giant Poison Bee lvl 21 (Oracle of Dawn/Fellmere Harvest Grounds)
+Ruin Spartoi lvl 21 (Gludio, Ruins of Agony)
+Ol Mahum Deserter lvl 23 (Gludin Village, Abandoned Camp)
+Ol Mahum Reserve lvl 23 (Gludin Village, Abandoned Camp)
+
+
+Recipe: Spiritshot D-Grade
+Nightmare Weaver lvl 21 (Dwarven Village, Mithril Mines)
+Ruin Imp Elder lvl 21 (Gludio, Ruins of Agony)
+Ruins Spartoi lvl 21 (Gludio, Ruins of Agony)
+
+
+Recipe: Blessed Spiritshot D-Grade
+Turec Orc Supllier lvl 27 (Gludin Village, Orc Barracks)
+Basilisk lvl 28 (Gludio, Wasteland/Ant Nest)
+
+
+Recipe: Artisan's Frame
+Tyrant lvl 35 (Gludio, Wasteland)
+Grandis lvl 40 (Town of Giran, Death Pass)
+
+
+Recipe: Blacksmith's Frame
+Marh Stakato Soldier lvl 33 (Town of Dion, Cruma Marhlands)
+
+
+Recipe: Crafted Leather <<--->> DROP ONLY!!
+Gaurdian Basilisk lvl 36 (Town of Giran, Death Pass)
+Wasp Leader lvl 37 (Town of Dion, Behive)
+
+
+Recipe: Durable Metal Plate <<--->> DROP ONLY!!
+Lageos lvl 38 (Heine, Field of Whispers)
+Shaman of the Plains lvl 39 (Town of Oren, Fields of the Lizardmen)
+Giant Fangus lvl 40 (Town of Oren, Sea of Spores - as you enter the TP zone)
+Grandis lvl 40 (Town of Giran, Death Pass)
+Lienrik Lad lvl 40 (Heine, Fields of Silence)
+
+
+Recipe: Metal Hardener
+Aligator lvl 40 (Heine, Aligator Beach / Aligator Island)
+Zaken's Pikeman lvl 43 (Town of Giran Teleport or swim from Giran Harbor, inside the Devil's Isle)
+Ossiud lvl 47 (Town of Dion, Cruma Tower 1st floor)
+Liangma lvl 49 (Town of Dion, Cruma Tower 1st floor)
+
+
+Recipe: Metallic Fiber
+Ant Warrior Captain lvl 39 (Gludio, Ant Nest / Wasteland)
+
+
+Recipe: Metallic Thread <<--->> DROP ONLY!!
+Noble Ant Leader lvl 38 (Gludio, Ant Nest deep inside near the Queen Ant RB)
+
+
+Recipe: Mithril Alloy
+Cave Ant lvl 37 (Gludio, Ant Nest inside)
+Frozen Wasteland Werewolf lvl 38 (Town of Shuttgurt, outside west gate / Sky wagon relic)
+Pageos lvl 38 (Heine, Field of Whispers)
+Warrior of the Plains lvl 38 (Town of Oren, Plains of the Lizardmen)
+Tasaba lizardman sniper lvl 39 (Heine, Fields of Silence)
+Windsus lvl 39 (Town of Giran, Death Pass)
+
+
+Recipe: Oriharukon
+Zaken's Pikeman lvl 43 (Town of Giran Teleport or swim from Giran Harbor, inside the Devil's Isle)
+Cave Ant lvl 37 (Gludio, Ant Nest inside)
+Wasp Leader lvl 37 (Town of Dion, Behive)
+Lageos lvl 38 (Heine, Field of Whispers)
+Crockian Warrior lvl 38 (Heine, Aligator Beach / Aligator Island)
+Fettered Soul lvl 38 (Town of Giran, Death Pass)
+Shaman of the Plains lvl 39 (Town of Oren, Plains of the Lizardmen)
+Noble Ant Leader lvl 38 (Gludio, Ant Nest deep inside near the Queen Ant RB)
+
+
+Recipe: Soulshot: C-Grade
+Light Worm lvl 41 (Heine, Garden of Eva)
+Timak Orc Archer lvl 41 (Town of Oren, Timak Outpost)
+Snipe Cohort lvl 42 (Town of Dion, Cruma Tower 1st Floor)
+Crockian Lad Warrior lvl 43 (Heine, Aligator Island)
+Zaken's Elitte Pikeman lvl 43 (Town of Giran Teleport or swim from Giran Harbor, inside the Devil's Isle)
+
+
+Recipe: Spiritshot C <<--->> DROP ONLY!!
+Zaken's Seer lvl 45 (Town of Giran Teleport or swim from Giran Harbor, inside the Devil's Isle)
+Blade Stakato Warrior lvl 43 (Heine, Garden of Eva)
+
+
+Recipe: Blessed Spiritshot C
+Dire Wyrm lvl 42 (Town of Oren, Sea of Spores)
+Enchanted Stone Golem lvl 42, (Town of Oren, Ivory Tower - inside the crater)
+Timak Orc Warrior lvl 43 (Town of Oren, Timak Outpost)
+
+
+Recipe: Craftsman Mold
+Doom Knight lvl 65 (Town of Aden, Devestated Castle / The Forbidden Gateway)
+
+
+Recipe: Maestro Anvil Lock
+Hatar Hanishee lvl 49 (Town of Aden, Wartorn Plains)
+
+
+Recipe: Maestro Holder
+Tarik Basilisk lvl 50 (Town of Oren, Outlaw Forest)
+
+
+Recipe: Maestro Mold
+Tarlk Bugbear High Warrior lvl 49 (Town of Oren, Ivory Tower - near the Ivory Fortress)
+
+
+Recipe: Soulshot: B-Grade
+Crimson Doll Blader lvl 53 (Town of Giran Teleport or swim from Giran Harbor, inside the Devil's Isle)
+Oel Mahum lvl 53 (Town of Oren, Outlaw Forest)
+Pobby's Maid lvl 53 (Town of Oren, Outside)
+Connabi lvl 54 (Town of Oren, Skyshadow Meadow)
+Satyr Elder lvl 54 (Hunters Village, South Part of Enchanted Valley)
+Bloody Queen lvl 61 (Town of Aden, Forbidden Gateway / Dragon Valley)
+
+
+Recipe: Spiritshot B-Grade
+Valley Treant Elder lvl 53 (Hunters Village, Enchanted Valley Deep)
+Marsh Drake lvl 55 (Town of Aden, Forshaken Plains)
+Pobby's Escort lvl 55 (Town of Oren Outside)
+
+
+Recipe: Blessed Spiritshot B-Grade
+Harit Lizardman Warrior lvl 53 (Hunters Village, Forest of Mirrors near Anghel Waterfall)
+Marluk Succubus lvl 55 (Town of Giran, Gorgon's Flower Garden)
+}

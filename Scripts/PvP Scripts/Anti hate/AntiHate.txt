@@ -1,0 +1,47 @@
+procedure antiHate;
+var
+	i, iHater, iTargetBeforeHate: integer;
+	Hater: TL2Live;
+	TargetBeforeHate: TL2Live;
+	temp: tl2effect;
+begin
+while Engine.Status = lsOnline do
+begin
+	for i:=0 to Charlist.Count-1 do
+	begin
+	if ((Charlist.Items(i).Target = User) and (Charlist.Items(i).Cast.EndTime > 0) and
+		((Charlist.Items(i).Cast.ID = 28) or (Charlist.Items(i).Cast.ID = 979))) then
+		begin
+			TargetBeforeHate:= User.Target;
+			Engine.SetTarget(Charlist.Items(i));
+			Hater:= Charlist.Items(i);
+			iTargetBeforeHate:= 1;
+			iHater := 1;
+			Delay(Charlist.Items(i).Cast.EndTime + 50);
+		end;
+	if ((Charlist.Items(i).Cast.EndTime > 0) and (Charlist.Items(i).Attackable)and (Charlist.Items(i).Cast.ID = 18) and
+		(User.DistTo(Charlist.Items(i)) < 400)) then
+		begin
+			TargetBeforeHate:= User.Target;
+			Engine.SetTarget(Charlist.Items(i));
+			Hater:= Charlist.Items(i);
+			iTargetBeforeHate:= 1;
+			iHater := 1;
+			Delay(Charlist.Items(i).Cast.EndTime + 50);
+		end;
+	if ((iTargetBeforeHate > 0) and (User.Buffs.ByID(28, temp) or User.Buffs.ByID(979, temp) or User.Buffs.ByID(18, temp))
+	and (User.Target = Hater)) then
+		begin
+			Engine.SetTarget(TargetBeforeHate);
+			iTargetBeforeHate:= 0;
+			iHater := 0;
+		end;
+	end;
+	delay(200);
+end;
+end;
+
+begin
+	script.newThread(@antiHate);
+	delay(-1);
+end.

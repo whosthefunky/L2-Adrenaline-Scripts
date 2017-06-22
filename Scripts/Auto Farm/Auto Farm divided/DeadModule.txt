@@ -1,0 +1,28 @@
+unit DeadModule;
+
+interface
+
+uses SettingsModule;
+
+function isDead: boolean;
+
+implementation
+
+function isDead: boolean;
+begin
+	Result := false;
+    if User.Dead then begin
+        Result := true;
+        Print('Dead. Pressing to village.');
+        Delay(1000);
+        Engine.FaceControl(0,false);
+        Engine.GoHome;
+		Fight_Flag := false;
+        Delay(10000);
+    end;
+    Delay(5000);
+end;
+
+
+BEGIN
+END.

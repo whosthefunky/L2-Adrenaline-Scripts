@@ -1,0 +1,68 @@
+procedure GoToStackatoNest;
+begin
+  Engine.MoveTo (89801, -44647, -2168);
+  Engine.MoveTo (90433, -44047, -2120);
+  Engine.MoveTo (92025, -43282, -2608);
+  Engine.MoveTo (92455, -43833, -2736);
+  Engine.MoveTo (92037, -44691, -2896);
+  Engine.MoveTo (90773, -44792, -3240);
+  Engine.MoveTo (90081, -43594, -3720);
+  Engine.MoveTo (89348, -43093, -3952);
+end;
+
+procedure  TheZeroHour;
+begin
+  // TeleportTo ('swamp of screams');
+  if  User.InRange (70011, -49895, -3246, 500, 200)  then begin
+    Engine.SetTarget ('Kahman');
+    Engine.DlgOpen;
+    Engine.DlgSel ('Quest');
+    Engine.DlgSel (2);
+    Engine.MoveTo (70870, -51329, -3056);
+    Engine.MoveTo (71770, -51673, -3136);
+    Engine.MoveTo (73151, -51664, -3136);
+    Engine.MoveTo (73602, -51840, -3166);
+  end;
+  if  User.InRange (73602, -51840, -3166, 200, 200)  then begin
+  	Engine.LoadZone ('TheZeroHour');
+  end;
+  while  Inventory.byId(7248).Count < 100  then begin
+    Delay (10 * 1000);
+  end;
+  Engine.MoveTo (73602, -51840, -3166);
+  Engine.MoveTo (73151, -51664, -3136);
+  Engine.MoveTo (71770, -51673, -3136);
+  Engine.MoveTo (70870, -51329, -3056);
+  Engine.MoveTo (70011, -49895, -3246);
+  Engine.SetTarget ('Kahman');
+  Engine.DlgOpen;
+  Engine.DlgSel ('Quest');
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.SetTarget ('Pierce');
+  Engine.DlgOpen;
+  Engine.DlgSel ('Quest');
+  Engine.DlgSel (1);
+  // TODO: Go to stackato nest
+  // TODO: talk to the corpse in the entrance
+  // GoHome;
+  // TeleportTo ('swamp of screams');
+  Engine.SetTarget ('Pierce');
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.SetTarget ('Kahman');
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+  Engine.DlgSel (1);
+  Engine.DlgOpen;
+  Engine.DlgSel (1);
+  Engine.DlgSel (3);
+  Engine.DlgSel (1);
+  
+  // TODO: Go to stackato nest
+end;
+
+BEGIN
+  GoToStackatoNest;
+END.

@@ -1,0 +1,114 @@
+unit soulBreakerBool;
+   interface
+    function shouldInterrupt(obj: TL2Char): boolean;
+	function shouldCast(obj: TL2Char; hp: Cardinal; range: Cardinal): boolean;
+	function zshouldSteal(target: TL2Char;var stealDelay: Cardinal): boolean;
+	{procedure zstealThread(var stealDelay: Cardinal);}
+	function isInterrupted(obj: TL2Char): boolean;
+	
+
+	implementation
+			
+			function isInterrupted;
+			begin
+				if (obj.Cast.EndTime = 0) then
+					isInterrupted := true
+				else
+					isInterrupted := false;
+			end;
+			
+			
+			function shouldInterrupt;
+			begin
+				if (obj.Cast.EndTime > 0) then
+				begin
+					if ((obj.Cast.ID = (1254)) or {mass ress}
+					(obj.Cast.ID = (1216)) or {self heal}					
+					(obj.Cast.ID = (1422)) or {day of doom}
+					(obj.Cast.ID = (2049)) or {b res scroll}
+					(obj.Cast.ID = (22104)) or {b res event scroll}
+					(obj.Cast.ID = (2321)) or {b res event scroll}
+					(obj.Cast.ID = (2062)) or {b res scroll}
+					(obj.Cast.ID = (9159)) or {anakim scroll}
+					(obj.Cast.ID = (664)) or {anakim skill}
+					(obj.Cast.ID = (1470)) or {prahnah}
+					(obj.Cast.ID = (528)) or {shield of faith}
+					(obj.Cast.ID = (1505)) or {sublime}
+					(obj.Cast.ID = (1421)) or {raging waves}
+					(obj.Cast.ID = (1420)) or {cyclone}
+					(obj.Cast.ID = (1419)) or {vulcano}
+					(obj.Cast.ID = (1423)) or {gehenna}
+					(obj.Cast.ID = (661)) or {divine healer}
+					(obj.Cast.ID = (762)) or {insane crusher}
+					(obj.Cast.ID = (914)) or {song of purification}
+					(obj.Cast.ID = (3429)) or {life force}
+					(obj.Cast.ID = (3282)) or {maximum clarity}
+					(obj.Cast.ID = (3284)) or {divine protection} 
+					(obj.Cast.ID = (8334)) or {divine lord} 
+					(obj.Cast.ID = (455))) {noise}	
+					then				
+						shouldInterrupt := true
+					else
+						shouldInterrupt := false
+					end
+				else
+				shouldInterrupt := false;
+			end;
+			
+			function shouldCast;
+			begin
+				if 
+				not User.Dead 
+				and (User.HP > hp) 
+				and not obj.Dead {				}
+				and obj.Attackable
+				and (User.DistTo(obj) < range) 
+				then
+					shouldCast := true
+				else
+					shouldCast := false				
+			end;
+			
+			function zshouldSteal;
+			begin
+				if (target.Cast.EndTime > 0) then
+				begin
+					if 
+					(target.Cast.ID = (761)) 
+					then
+						begin
+							stealDelay := target.Cast.EndTime;
+							zshouldSteal := true
+						end
+					else
+						zshouldSteal:= false
+				end
+				else
+					zshouldSteal:= false;
+			end;
+			
+			{procedure stealThread;
+			var
+			i: integer;
+			obj: TL2Live;
+			begin
+			while not User.Dead do
+				begin
+				for i:=0 to Charlist.Count - 1 do
+				begin
+				if shouldSteal(Charlist.Items(i), stealDelay)
+					and shouldCast(Charlist.Items(i), 30, 700)
+				then
+					begin
+					delay(stealDelay);
+					Engine.SetTarget(Charlist.Items(i));
+					Engine.UseSkill(1440);
+					end;
+				end;
+				delay(500);
+				end;
+			end;}
+		
+			
+
+end.

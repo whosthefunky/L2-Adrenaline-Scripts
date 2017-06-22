@@ -1,0 +1,43 @@
+unit BuffModule;
+
+interface
+
+uses SettingsModule, Classes;
+
+function needsBuffs: boolean;
+procedure buffing;
+
+implementation
+
+function needsBuffs: boolean;
+begin
+    Result := false;
+    // check for any buff that you use
+    if not User.Buffs.ByID(1204, Buff) then begin
+        Result := true; 
+        Engine.EnterText('/unstuck');
+    end;
+end;
+
+procedure buffing;
+begin
+    Print('Buffing...');  
+
+    Engine.SetTarget(31613); // NPC ID
+    Engine.MoveToTarget;
+    Delay(500);
+    Engine.DlgOpen;
+    Delay(500);
+    Engine.DlgSel(1);   //Open buffs
+    Delay(800);
+    Engine.DlgSel('Fighter buffs');   //Fighter buffs
+    Delay(400);
+    //Engine.DlgSel(7);   //Shield buff  
+    //Engine.DlgSel(1);
+    Delay(500);
+
+    Print('Buffed.');
+end;
+
+BEGIN
+END.

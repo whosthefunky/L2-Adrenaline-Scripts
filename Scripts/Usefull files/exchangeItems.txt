@@ -1,0 +1,29 @@
+// Exchanges itemCount number of items from the inventory
+function SetCursorPos(x, y : integer): boolean; stdcall; external 'user32.dll';
+function mouse_event(dwFlags, dx, dy, dwData: byte; dwExtraInfo: integer): void; stdcall; external 'user32.dll';
+
+var
+i : integer;
+const
+itemCount = 69; // for testing purposes make this number small
+perActionDelay = 200;
+
+procedure mouseClick(x, y : integer);     
+begin
+  SetCursorPos(x, y);
+  mouse_event($2, 0, 0, 0, 0);
+  delay(perActionDelay);
+  mouse_event($4, 0, 0, 0, 0);
+  delay(perActionDelay);
+end;
+
+begin
+i := 1;
+  while i < itemCount do begin
+    mouseClick(690, 280);
+	  mouseClick(690, 280);
+	  mouseClick(890, 460);
+	  mouseClick(690, 460);
+    i := i + 1;
+  end;
+end.

@@ -1,0 +1,29 @@
+// A-Grade weapon quest
+uses Classes;
+
+begin
+  Delay(500);
+  if User.Level > 61 then begin
+    Engine.MoveTo(11888, -24000, -3670);
+    Engine.SetTarget(32105);
+    Engine.DlgOpen;
+    Delay(500);
+    Engine.DlgSel('Quest');
+    Delay(500);
+    Engine.DlgSel('A Powerful Primeval creature');
+    Delay(500);
+    {  This don't work. Play sound?
+    Engine.DlgSel('What rumors are you talking about?');
+    Delay(500);
+    Engine.DlgSel('Ask who is interested in what.');
+    Delay(500);
+    Engine.DlgSel('like to help them');
+    Delay(500);
+    }
+    Engine.MoveTo(11000, -22896, -3667);
+    Engine.MoveTo(12280, -21220, -3440);
+    Engine.MoveTo(12265, -20576, -3400);
+    Engine.MoveTo(13255, -19478, -3144);
+    Engine.MoveTo(13664, -18752, -3040);
+  end;
+end.

@@ -1,0 +1,310 @@
+﻿unit Quest_SuplyCheck;
+
+interface
+
+uses 
+	SysUtils, Classes, LocationModule, SettingsModule, Functions, NpcFunctions, UserFunctions;
+	
+const
+	//npcs
+	MARCELA = 32173;
+	BENIS = 32170;
+	NIKA = 32167;
+	ERINU = 32164;
+	CASCA = 32139;
+	QUEST_NAME = 'Suply Check';
+	QUEST_ID = 174;
+
+var
+	suplyQuestStatus: integer;
+	
+	
+	suplyCheckStartPath: DimensionArray; //to marcela
+	path1: DimensionArray; //from marcela to benis
+	path2: DimensionArray; //from marcela to Nika	
+	path3: DimensionArray; //from marcela to Erinu	
+	path4: DimensionArray; //from marcela to Casca	
+	
+	procedure ExecuteSuplyCheck;
+	procedure initArrays;
+	function SuplyCheckDone: boolean;
+	
+implementation
+
+procedure ExecuteSuplyCheck;
+var
+	i: integer;
+	questItem: TL2Item;
+begin
+	initArrays;
+	suplyQuestStatus := getState('Quests', QUEST_NAME + ' state', -1);
+	while (Engine.Status = lsOnline) and (suplyQuestStatus <> -1) do
+	begin
+	case suplyQuestStatus of
+		0 :
+		begin
+		if toRightCity(KAMAEL) then
+		begin
+			if not inRange(User, -119576, 48952, 96, 500) then
+				moveToLoc(suplyCheckStartPath);
+				
+			if not startDialog(MARCELA) then
+				continue;
+				
+			Engine.DlgSel(3);
+			delay(500);
+			Engine.DlgSel(1);
+			delay(500);
+			Engine.DlgSel(1); 
+	
+			if (Engine.QuestStatus(QUEST_ID, 1)) then
+			begin
+				suplyQuestStatus := 1;
+				updateState('Quests', QUEST_NAME + ' state', 1);
+			end;	
+		end;
+		end;
+		1 :
+		begin
+		if toRightCity(KAMAEL) then
+		begin
+			
+			moveToLoc(path1);
+	
+			if not startDialog(BENIS) then
+				continue;
+				
+			Engine.DlgSel(4); //5 in hf
+			
+			if (Engine.QuestStatus(QUEST_ID, 2)) then
+			begin
+				suplyQuestStatus := 2;
+				updateState('Quests', QUEST_NAME + ' state', 2);
+			end;	
+		end;	
+		end;
+		2 :
+		begin
+		if toRightCity(KAMAEL) then
+		begin
+			moveToLoc(revertArray(path1));
+			
+			if not startDialog(MARCELA) then
+				continue;	
+
+			Engine.DlgSel(3);
+			delay(500);
+			Engine.DlgSel(1);
+
+			if (Engine.QuestStatus(QUEST_ID, 3)) then
+			begin
+				suplyQuestStatus := 3;
+				updateState('Quests', QUEST_NAME + ' state', 3);
+			end;	
+	
+		end;
+		end;
+		3 :
+		begin
+		if toRightCity(KAMAEL) then
+		begin
+			moveToLoc(path2);
+			
+			
+			if not startDialog(NIKA) then
+				continue;
+	
+			Engine.DlgSel(4); //3 in hf
+			
+			if (Engine.QuestStatus(QUEST_ID, 4)) then
+			begin
+				suplyQuestStatus := 4;
+				updateState('Quests', QUEST_NAME + ' state', 4);
+			end;			
+			
+		end;
+		end;
+		4 : //in HF last path
+		begin
+		if toRightCity(KAMAEL) then
+		begin
+			moveToLoc(revertArray(path2));
+			
+			if not startDialog(MARCELA) then
+				continue;
+				
+			Engine.DlgSel(3);
+			delay(500);
+			Engine.DlgSel(1);
+
+			if not (Engine.QuestStatus(QUEST_ID, 1))  then //questStatue 5 для хф не рабоатет | (Engine.QuestStatus(QUEST_ID, 5))/ 
+			begin
+				suplyQuestStatus := -1;
+				updateState('Quests', QUEST_NAME + ' state', -1); //in HF -1; in GF 5
+			end;
+		end;
+		end;
+		5: 
+		begin
+		if toRightCity(KAMAEL) then
+		begin
+			
+			moveToLoc(path3);
+	
+			if not startDialog(ERINU) then
+				continue;
+				
+			Engine.DlgSel(5);
+			delay(500);
+			Engine.DlgSel(1);
+			
+			if (Engine.QuestStatus(QUEST_ID, 6)) then
+			begin
+				suplyQuestStatus := 6;
+				updateState('Quests', QUEST_NAME + ' state', 6);
+			end;	
+		end;	
+		end;
+		6:
+		begin
+		if toRightCity(KAMAEL) then
+		begin
+			moveToLoc(revertArray(path3));
+			
+			if not startDialog(MARCELA) then
+				continue;
+				
+			Engine.DlgSel(3);
+			delay(500);
+			Engine.DlgSel(1);
+
+			if (Engine.QuestStatus(QUEST_ID, 7))  then 
+			begin
+				suplyQuestStatus := 7;
+				updateState('Quests', QUEST_NAME + ' state', 7);
+			end;
+		end;
+		end;
+		7: 
+		begin
+		if toRightCity(KAMAEL) then
+		begin
+			
+			moveToLoc(path4);
+	
+			if not startDialog(CASCA) then
+				continue;
+				
+			Engine.DlgSel(4);
+			
+			if (Engine.QuestStatus(QUEST_ID, 8)) then
+			begin
+				suplyQuestStatus := 8;
+				updateState('Quests', QUEST_NAME + ' state', 8);
+			end;	
+		end;	
+		end;
+		8:
+		begin
+		if toRightCity(KAMAEL) then
+		begin
+			moveToLoc(revertArray(path4));
+			
+			if not startDialog(MARCELA) then
+				continue;
+				
+			Engine.DlgSel(3);
+			delay(500);
+			Engine.DlgSel(1);
+
+			if not (Engine.QuestStatus(QUEST_ID, 1))  then 
+			begin
+				suplyQuestStatus := -1;
+				updateState('Quests', QUEST_NAME + ' state', -1); 
+				updateState('Current state', 'Should take newbie quest', 'true');
+				if not isMage then
+					equipNewbieItems;
+				moveToLoc(revertArray(suplyCheckStartPath));
+			end;
+		end;
+		end;		
+	//end of case
+	end;
+	delay(300);
+	end;
+end;
+
+procedure initArrays;
+begin
+	SetLength(path1, 9, 3);
+	
+	writeToArray(path1[0], -119464, 48040, 360);
+	writeToArray(path1[1], -119388, 46928, 376);
+	writeToArray(path1[2], -118600, 46369, 368);
+	writeToArray(path1[3], -117764, 46102, 368);
+	writeToArray(path1[4], -116872, 45816, 368);
+	writeToArray(path1[5], -116113, 45244, 516);
+	writeToArray(path1[6], -114824, 45192, 528);
+	writeToArray(path1[7], -114968, 44984, 528);
+	writeToArray(path1[8], -114968, 44728, 528);
+	
+	SetLength(path2, 6, 3);
+	
+	writeToArray(path2[0], -119416, 49096, 56);
+	writeToArray(path2[1], -119432, 48008, 376);
+	writeToArray(path2[2], -119401, 46843, 369);
+	writeToArray(path2[3], -118630, 46820, 368);
+	writeToArray(path2[4], -117256, 47496, 464);
+	writeToArray(path2[5], -117096, 47960, 472);
+
+	SetLength(suplyCheckStartPath, 4, 3);
+	writeToArray(suplyCheckStartPath[0], -119832, 44744, 368);
+	writeToArray(suplyCheckStartPath[1], -119491, 45796, 384);
+	writeToArray(suplyCheckStartPath[2], -119434, 47565, 397);
+	writeToArray(suplyCheckStartPath[3], -119432, 48584, 248);
+  
+	SetLength(path3, 12, 3);
+	
+	writeToArray(path3[0], -119464, 48040, 360);
+	writeToArray(path3[1], -119388, 46928, 376);
+	writeToArray(path3[2], -118600, 46369, 368);
+	writeToArray(path3[3], -117764, 46102, 368);
+	writeToArray(path3[4], -116872, 45816, 368);
+	writeToArray(path3[5], -116113, 45244, 516);
+	writeToArray(path3[6], -114824, 45192, 528);
+	writeToArray(path3[7], -114968, 44984, 528);
+	writeToArray(path3[8], -114968, 44728, 528);
+	writeToArray(path3[9], -115896, 45752, 512);
+	writeToArray(path3[10], -115896, 44136, 512);
+	writeToArray(path3[11], -115880, 43656, 528);
+	
+	
+	SetLength(path4, 16, 3);
+	
+	writeToArray(path4[0], -119464, 48040, 360);
+	writeToArray(path4[1], -119388, 46928, 376);
+	writeToArray(path4[2], -118600, 46369, 368);
+	writeToArray(path4[3], -117764, 46102, 368);
+	writeToArray(path4[4], -116872, 45816, 368);
+	writeToArray(path4[5], -116113, 45244, 516);
+	writeToArray(path4[6], -114824, 45192, 528);
+	writeToArray(path4[7], -114968, 44984, 528);
+	writeToArray(path4[8], -114968, 44728, 528);
+	writeToArray(path4[9],  -115896, 45752, 512);
+	writeToArray(path4[10], -115864, 44504, 512);
+	writeToArray(path4[11], -117128, 44280, 544);
+	writeToArray(path4[12], -117160, 43544, 560);
+	writeToArray(path4[13], -117736, 43480, 560);
+	writeToArray(path4[14], -117736, 42888, 696);
+	writeToArray(path4[15], -118072, 42888, 728);
+
+	
+end; 	
+
+function SuplyCheckDone;
+begin
+	Result := getState('Quests', QUEST_NAME + ' state', -1) = -1;
+end;
+
+begin
+end.

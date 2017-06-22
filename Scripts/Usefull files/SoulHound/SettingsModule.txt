@@ -1,0 +1,86 @@
+unit SettingsModule;
+
+
+interface
+
+uses SysUtils;
+
+type
+  TSettings = packed record
+  private
+    fFile: string;
+  public
+    procedure SetFile(const Name: string);
+    procedure Save(const Section, Key, Data: string); overload;
+    procedure Save(const Section, Key: string; Data: Integer); overload;
+    function  Load(const Section, Key: string; DefData: string  = ''): string; overload;
+    function  Load(const Section, Key: string; DefData: integer = 0) : integer; overload;
+	function  LoadBool(const Section, Key: string; DefData: string = ''): boolean;
+  end;
+
+  	function BoolToStr(const value : boolean): string;
+
+implementation
+
+function GetPrivateProfileIntW(lpAppName, lpKeyName: PChar; nDefault: Integer; lpFileName: PChar): Integer; stdcall; external 'Kernel32.dll';
+function GetPrivateProfileStringW(lpAppName, lpKeyName, lpDefault: PWideChar; lpReturnedString: Pointer; nSize: DWORD; lpFileName: PWideChar): DWORD; stdcall; external 'Kernel32.dll';
+function WritePrivateProfileStringW(lpAppName, lpKeyName, lpString, lpFileName: PChar): Boolean; stdcall; external 'Kernel32.dll';
+
+var
+  buf: array [0..2048] of Byte;
+
+ 
+function BoolToStr;
+begin
+   if value then
+    Result := 'True'
+   else
+    Result := 'False';
+end; 
+ 
+procedure TSettings.SetFile(const Name: string);
+begin
+  fFile := Name;
+end;
+
+procedure TSettings.Save(const Section, Key, Data: string);
+begin
+  WritePrivateProfileStringW(PChar(Section), PChar(Key), PChar(Data), PChar(fFile));
+end;
+
+procedure TSettings.Save(const Section, Key: string; Data: Integer);
+begin
+  Save(Section, Key, IntToStr(Data));
+end;
+
+procedure TSettings.Save(const Section, Key: string; Data: boolean);
+begin
+  Save(Section, Key, BoolToStr(Data));
+end;
+
+function TSettings.Load(const Section, Key: string; DefData: string = ''): string;
+begin
+  GetPrivateProfileStringW(PChar(Section), PChar(Key), PChar(DefData), @buf, 2048, PChar(fFile));
+  Result := PChar(@buf);
+end;
+
+function TSettings.Load(const Section, Key: string; DefData: integer = 0): Integer;
+begin
+  Result := GetPrivateProfileIntW(PChar(Section), PChar(Key), DefData, PChar(fFile));
+end;
+
+function TSettings.LoadBool(const Section, Key: string; DefData: string = ''): boolean;
+var
+	compString: string;
+begin
+  GetPrivateProfileStringW(PChar(Section), PChar(Key), PChar(DefData), @buf, 2048, PChar(fFile));
+  compString := PChar(@buf);
+  if (AnsiCompareText(compString, 'true') = 0) then
+    Result := true
+  else
+    Result := false;
+end;
+
+
+BEGIN
+END.

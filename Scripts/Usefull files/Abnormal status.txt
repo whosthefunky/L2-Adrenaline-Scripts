@@ -1,0 +1,79 @@
+
+function isStunned(obj: TL2Live): boolean;
+begin
+	Result := obj.abnormalid = 64;
+end;
+
+function isTranced(obj: TL2Live): boolean;
+begin
+	Result := obj.abnormalid = 128;
+end;
+
+function isAffraid(obj: TL2Live): boolean;
+begin
+	Result := obj.abnormalid = 16; 
+end;
+
+function isMedused(obj: TL2Live): boolean;
+begin
+	Result := obj.abnormalid = 2048;
+end;
+
+function isAnchored(obj: TL2Live): boolean;
+begin
+	Result := obj.abnormalid = 1024; 
+end;
+
+function isBleeding(obj: TL2Live): boolean;
+begin
+	Result := obj.abnormalid = 1; 
+end;
+
+function isRooted(obj: TL2Live): boolean;
+begin
+	Result := obj.abnormalid = 512;
+end;
+
+function isDeathMark(obj: TL2Live): boolean;
+begin
+	Result := obj.abnormalid = 1073741824;
+end;
+
+function isSilenced(obj: TL2Live): boolean;
+begin
+	Result := obj.abnormalid = 256;
+end;
+
+function isRealTarget(obj: TL2Live): boolean;
+begin
+	Result := obj.abnormalid = 536870912; 
+end;
+
+function isUltimateDefense(obj: TL2Live): boolean;
+begin
+	Result := obj.abnormalid = 134217728;
+end;
+
+function isShadowed(obj: TL2Live): boolean;
+begin
+	Result := obj.abnormalid = 1048576;
+end;
+
+function isInvincible(obj: TL2Live): boolean;
+var
+	buffsTemp: TL2Effect;
+begin
+	Result := obj.Buffs.ByID(1418, buffsTemp) or obj.Buffs.ByID(1427, buffsTemp) or
+		obj.Buffs.ByID(1505, buffsTemp) or obj.Buffs.ByID(3158, buffsTemp) or
+		obj.Buffs.ByID(655, buffsTemp) or obj.Buffs.ByID(5576, buffsTemp) or
+		obj.Buffs.ByID(1540, buffsTemp) or obj.Buffs.ByID(837, buffsTemp);
+end;
+
+function isDisabled(obj: TL2Live): boolean;
+var
+	buffsTemp: TL2Effect;
+begin
+	Result := isStunneed(obj) or isMedused(obj) 
+	or isTranced(obj) or isAnchored(obj) or isAffraid(obj) or
+	obj.Buffs.ByID(1376, buffsTemp);
+end;

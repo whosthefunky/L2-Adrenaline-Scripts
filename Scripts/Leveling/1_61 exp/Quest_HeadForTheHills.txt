@@ -1,0 +1,202 @@
+﻿unit Quest_HeadForTheHills;
+
+interface
+
+uses 
+	SysUtils, Classes, LocationModule, SettingsModule, Functions, NpcFunctions, UserFunctions;
+	
+const
+	//npcs
+	MARCELA = 32173;
+	RAGARA = 32163; //32163 original
+	QUEST_NAME = 'Head for the hills';
+	//items
+	HILLSOFGOLDMONSTERCLAW = 9796;
+
+var
+	QuestStatus: integer;
+	
+	startPath: DimensionArray; //to marcela
+	path1: DimensionArray; //from marcela gk
+	path2: DimensionArray; //from strong hold 1 to farm loc
+	
+	procedure ExecuteHeadForTheHills;
+	procedure initArrays;
+	function HeadForTheHillsDone: boolean;
+	
+implementation
+
+procedure ExecuteHeadForTheHills;
+var
+	i: integer;
+	questItem: TL2Item;
+	npc: TL2Live;
+begin
+	initArrays;
+	QuestStatus := getState('Quests', QUEST_NAME + ' state', -1);
+	while (Engine.Status = lsOnline) and (QuestStatus <> -1) do
+	begin
+	delay(200);
+	case QuestStatus of
+		0 :
+		begin
+		if toRightCity(KAMAEL) then
+		begin
+			if not inRange(User, -119576, 48952, 96, 500) then
+				moveToLoc(startPath);
+				
+			if not startDialog(MARCELA) then
+				continue;
+				
+			Engine.DlgSel(3);
+			delay(500);
+			Engine.DlgSel(2);
+			delay(500);
+			Engine.DlgSel(1); 
+	
+			if (Engine.QuestStatus(281, 1)) then
+			begin
+				QuestStatus := 1;
+				updateState('Quests', QUEST_NAME + ' state', 1);
+			end;	
+		end;
+		end;
+		1 :
+		begin
+		
+		if Inventory.Quest.ByID(HILLSOFGOLDMONSTERCLAW, questItem) then
+		begin
+			QuestStatus := 2;
+			updateState('Quests', QUEST_NAME + ' state', 2);
+			Engine.UseItem(12753);
+			delay(10 * 1000);
+			continue;
+		end;
+		
+		if isRightCity(KAMAEL, false) and (not inRange(User, -124152, 80024, -3496, 2000) or not inRange(User, -122450, 73137, -2864, 3000)) then
+		begin
+			
+			moveToLoc(path1);
+	
+			if not startDialog(RAGARA) then
+				continue;
+				
+			Engine.DlgSel(2);
+			delay(500);
+			Engine.DlgSel(1);
+			
+			delay(3 * 1000);
+			
+		end;
+		
+		if not inRange(User, -124152, 80024, -3496, 2000) then
+		begin
+			
+			if inRange(User, -122450, 73137, -2864, 3000) then
+			begin
+				moveToLoc(path2);
+				continue;
+			end;
+				
+		end;
+		
+		if inRange(User, -124152, 80024, -3496, 2000) then
+		begin
+			while not User.Dead and not Inventory.Quest.ByID(HILLSOFGOLDMONSTERCLAW, questItem) do
+			begin
+				{if findFreeClosestEnemy = nil then
+				begin
+					delay(300);
+					continue;
+				end;}
+				
+				NpcList.ByID(22235, npc);
+				
+				if isMage and (User.MP > 5) and (User.HP > 10) then
+				begin
+					Engine.SetTarget(npc);
+					Engine.UseSkill(1177);
+				end;	
+				
+				if not isMage and (User.HP > 10) then
+				begin
+					Engine.SetTarget(npc);
+					Engine.Attack;
+				end;
+				
+			end;
+		end;
+			
+			
+		end;
+		2 : 
+		begin
+			
+			if toRightCity(KAMAEL) then
+			begin
+				Engine.MoveTo(-119440, 45421, 341);
+				 
+				moveToLoc(startPath);
+				
+				if not startDialog(MARCELA) then
+					continue;
+				
+				Engine.DlgSel(3);
+				delay(500);
+				Engine.DlgSel(2); //in hf 1
+				delay(500);
+				Engine.DlgSel(1); 
+				
+				if (Engine.QuestStatus(281, 1)) then
+				begin
+					QuestStatus := -1;
+					updateState('Quests', QUEST_NAME + ' state', -1);
+					updateState('Current state', 'Should take newbie quest', 'true');
+				end;
+
+				moveToLoc(revertArray(startPath));
+			end;
+		end;
+		
+		
+	//end of case
+	end;
+	delay(300);
+	end;
+end;
+
+procedure initArrays;
+begin
+
+	SetLength(startPath, 4, 3);
+	
+	writeToArray(startPath[0], -119832, 44744, 368);
+	writeToArray(startPath[1], -119491, 45796, 384);
+	writeToArray(startPath[2], -119434, 47565, 397);
+	writeToArray(startPath[3], -119432, 48584, 248);
+	
+	SetLength(path1, 4, 3);
+ 
+	writeToArray(path1[0], -119448, 47992, 376);
+	writeToArray(path1[1], -119392, 46815, 372);
+	writeToArray(path1[2], -118541, 46782, 371);
+	writeToArray(path1[3], -116936, 46568, 368);
+	
+	SetLength(path2, 6, 3);
+	
+	writeToArray(path2[0], -122328, 73544, -2864);
+	writeToArray(path2[1], -122425, 74452, -2953);
+	writeToArray(path2[2], -123099, 76133, -3205);
+	writeToArray(path2[3], -123610, 77145, -3332);
+	writeToArray(path2[4], -124568, 78344, -3488);
+	writeToArray(path2[5], -124648, 79064, -3536);
+ 
+	
+end; 	
+
+function HeadForTheHillsDone;
+begin
+	Result := getState('Quests', QUEST_NAME + ' state', -1) = -1;
+end;
+begin
+end.

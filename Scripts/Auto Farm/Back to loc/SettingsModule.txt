@@ -1,0 +1,171 @@
+unit SettingsModule;
+
+interface
+
+uses SysUtils, Classes;
+
+
+type
+    DimensionArray = array of array of integer;
+  
+	TCity = (DWARVEN = 0, ORC = 1, DARK_ELVEN = 2, ELVEN = 3, KAMAEL = 4,
+	TALKING_ISLAND = 5, HEINE = 6, DION = 7, GIRAN = 8, ADEN = 9, GODDARD = 10,
+	GLUDIO = 11, GLUDIN = 12, SHTUTTGART = 13, RUNE = 14, OREN = 15, HUNTER = 16, NON_CITY = 17);
+	
+	TFarmZone = record
+		range: integer;
+		mili: integer;
+	end;	
+	
+	TCity2 = record
+		Enum: TCity;
+		ID: integer;
+		Name: String;
+		gateKeeperID: integer;
+		supplyManagerID: integer;
+		newbieBufferID: integer;
+		pathToBuffer: DimensionArray;
+		pathToSupply: DimensionArray;
+		GateKeepersString: String;
+	end;
+	
+	TSettings = packed record
+	
+  private
+    fFile: string;
+	
+  public
+    procedure SetFile(const Name: string);
+    procedure Save(const Section, Key, Data: string); overload;
+    procedure Save(const Section, Key: string; Data: Integer); overload;
+    function  Load(const Section, Key: string; DefData: string  = ''): string; overload;
+    function  Load(const Section, Key: string; DefData: integer = 0) : integer; overload;
+	function  LoadBool(const Section, Key: string; DefData: string = ''): boolean;
+  end;
+
+const
+	TCities : array[0..17] of TCity = (DWARVEN, ORC, DARK_ELVEN, ELVEN, KAMAEL,
+	TALKING_ISLAND, HEINE, DION, GIRAN, ADEN, GODDARD,
+	GLUDIO, GLUDIN, SHTUTTGART, RUNE, OREN, HUNTER, NON_CITY);
+	afterDeathEvtDelay = 30;
+	
+	GkDlg  = 'Transparent';
+	CityNames : array[0..16] of string = ('dwarven village','orc village','dark elf village','elf village','kamael village','talking island',
+	'heine','dion','giran','aden','goddard','gludio','gludin','schuttgart','rune','oren','hunter village');
+
+	GateKeepers : array[0..16] of integer = (30540, 30576, 30134, 30146, 32163, 30006, 30899, 30059, 30080, 30848, 31275, 30256, 30320, 31694, 31320, 30177, 30233);
+	GateKeepers1 : array[0..16] of integer = (50124, 50124, 50124, 50124, 50124, 50124, 50124, 50124, 50124, 50124, 50124, 50124, 50124, 50124, 50124, 50124, 50124);
+
+	TPDelay = 3000;
+	
+	GateKeepersStrings   : array[0..16] of string = (
+		'gludio,schuttgart,"dark elf village","talking island","elf village","orc village","kamael village","abandoned coal mines","eastern mining zone","western mining zone","mithril mines w","mithril mines e"', //dwarven
+		'gludio,schuttgart,"dark elf village","dwarven village","talking island","elf village","kamael village","immortal plateau","cave of trials","fozen waterfall"', //orc
+		'gludio,"dwarven village","talking island","orc village","kamael village","dark forest","swampland","spider nest","neutral zone"', //darkelven
+		'gludio,"dwarven village","talking island","orc village","kamael village","elven forest","elven fortress","neutral zone"', //elven
+		'gludio,aden,"talking island","dark elf village","elf village","ofc village","stronghold 1","stronghold 2","stronghold 3","isle of souls harbor"', //kamael
+		'gludin,"dark elf village","dwarven village","elf village","orc village","kamael village","elven ruins","singing waterfall","northen territory","obelisk of victory"', //talking island
+		'giran,oren,dion,aden,goddard,rune,schuttgart,gludio,"giran harbor","field of silence","field of whispers","alligator island","garden of eva","isle of prayer"', //heine
+		'giran,heine,gludio,goddard,rune,schuttgart,aden,oren,"cruma marshland","cruma tower","fortress of resistance","plains of dion","bee hive","tanor canyon"', //dion
+		'oren,heine,dion,goddard,rune,schuttgart,gludio,aden,"giran harbor","hardins private academy","dragon valley","antharas lair","devils isle","breka stronghold"', //giran
+		'goddard,oren,giran,heine,schuttgart,dion,gludio,rune,"kamael village","hunter village","coliseum","forsaken plains","seal of shilen","forest of mirrors","blazing swamp","field of massacre","ancient battleground","silent valley","tower of insolence","giant cave"', //aden
+		'gludio,giran,dion,rune,heine,schuttgart,aden,oren,"varka","ketra","hot springs","wall of argos","monastery of silence","forge of gods"', //goddard
+		'schuttgart,heine,aden,oren,dion,goddard,giran,rune,gludin,"elf village","dark elf village","dwarven village","orc village","kamael village","ruins of agony","ruins of despair","ant nest","windawood manor"', //gludio
+		'gludio,"talking island","elf village","dark elf village","dwarven village","orc village","kamael village","langk lizardman dwellings","windmill hill","fellmere harvesting grounds","forgotten temple","orc barracks","windy hill",wasteland,"red rock ridge"', //gludin
+		'rune,goddard,aden,oren,heine,giran,dion,gludio,"orc village","dwarven village","den of evil","plunderous plains","iceman hat","crypts of disgrace","pavel ruines","mithril mines"', //schuttgart
+		'goddard,gludio,giran,dion,heine,schuttgart,aden,oren,"wild beast pastues","valley of saints","forest of the dead","swamp of screams","monasterty of silence","stakato nest","primeval isle wharf"', //rune
+		'aden,giran,rune,goddard,heine,dion,schuttgart,gludio,"ivory tower","hunter village","hardins private academy","sel mahum west","sel mahum south","sel mahum center","plains of the lizardmen","outlaw forest","sea of spores"', //oren
+		'aden,oren,"hardins private academy","enchanted valley south","enchanted valley north","forest of mirrors","dragon valley","antharas lair","ivory tower"' //hunter
+	);
+	nbArr : array[0..8] of integer = (30598, 30599, 30600, 30601, 30602, 32135, 31076, 31077, 32327);
+	spArr : array[0..16] of integer = (30519, 30561, 30137, 30150, 32167, 30004, 30893, 30063, 30081, 30893, 31263, 30254, 30313, 31952, 31307, 30180, 30301);
+
+
+
+var
+	language: boolean = false;
+	talkingIslandToBuffer: DimensionArray;
+	heineToBuffer: DimensionArray;
+	dionToBuffer: DimensionArray;
+	giranToBuffer: DimensionArray;
+	adenToBuffer: DimensionArray;
+	goddardToBuffer: DimensionArray;
+	gludioToBuffer: DimensionArray;
+	gludinToBuffer: DimensionArray;
+	shtuttgartToBuffer: DimensionArray;
+	runeToBuffer: DimensionArray;
+	orenToBuffer: DimensionArray;
+	kamaelToBuffer: DimensionArray;
+	backToLocCoord: DimensionArray;
+	isTakeBuff: boolean;
+	lowMP: integer;
+	afterDeathEvt: int64;
+	Settings: TSettings;
+
+
+function BoolToStr(const value : boolean): string;
+
+implementation
+
+function GetPrivateProfileIntW(lpAppName, lpKeyName: PChar; nDefault: Integer; lpFileName: PChar): Integer; stdcall; external 'Kernel32.dll';
+function GetPrivateProfileStringW(lpAppName, lpKeyName, lpDefault: PWideChar; lpReturnedString: Pointer; nSize: DWORD; lpFileName: PWideChar): DWORD; stdcall; external 'Kernel32.dll';
+function WritePrivateProfileStringW(lpAppName, lpKeyName, lpString, lpFileName: PChar): Boolean; stdcall; external 'Kernel32.dll';
+
+var
+  buf: array [0..2048] of Byte;
+
+ 
+function BoolToStr;
+begin
+   if value then
+    Result := 'True'
+   else
+    Result := 'False';
+end; 
+ 
+procedure TSettings.SetFile(const Name: string);
+begin
+  fFile := Name;
+end;
+
+procedure TSettings.Save(const Section, Key, Data: string);
+begin
+  WritePrivateProfileStringW(PChar(Section), PChar(Key), PChar(Data), PChar(fFile));
+end;
+
+procedure TSettings.Save(const Section, Key: string; Data: Integer);
+begin
+  Save(Section, Key, IntToStr(Data));
+end;
+
+procedure TSettings.Save(const Section, Key: string; Data: boolean);
+begin
+  Save(Section, Key, BoolToStr(Data));
+end;
+
+function TSettings.Load(const Section, Key: string; DefData: string = ''): string;
+begin
+  GetPrivateProfileStringW(PChar(Section), PChar(Key), PChar(DefData), @buf, 2048, PChar(fFile));
+  Result := PChar(@buf);
+end;
+
+function TSettings.Load(const Section, Key: string; DefData: integer = 0): Integer;
+begin
+  Result := GetPrivateProfileIntW(PChar(Section), PChar(Key), DefData, PChar(fFile));
+end;
+
+function TSettings.LoadBool(const Section, Key: string; DefData: string = ''): boolean;
+var
+	compString: string;
+begin
+  GetPrivateProfileStringW(PChar(Section), PChar(Key), PChar(DefData), @buf, 2048, PChar(fFile));
+  compString := PChar(@buf);
+  if (AnsiCompareText(compString, 'true') = 0) then
+    Result := true
+  else
+    Result := false;
+end;
+
+
+BEGIN
+END.

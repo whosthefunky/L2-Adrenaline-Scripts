@@ -1,0 +1,72 @@
+unit CityModule;
+
+interface
+
+uses SettingsModule;
+
+procedure initBuffPathArrays;
+
+implementation
+
+procedure initBuffPathArrays;
+begin
+	SetLength(talkingIslandToBuffer, 4, 3);
+	SetLength(heineToBuffer, 6, 3);
+	SetLength(dionToBuffer, 2, 3);
+	SetLength(giranToBuffer, 2, 3);
+	SetLength(adenToBuffer, 2, 3);
+	SetLength(goddardToBuffer, 2, 3);
+	SetLength(gludioToBuffer, 2, 3);
+	SetLength(gludinToBuffer, 2, 3);
+	SetLength(shtuttgartToBuffer, 2, 3);
+	SetLength(runeToBuffer, 3, 3);
+	SetLength(orenToBuffer, 2, 3);
+	SetLength(kamaelToBuffer, 2, 3);
+
+	writeToArray(talkingIslandToBuffer[0], -84168, 244568, -3712);
+	writeToArray(talkingIslandToBuffer[1], -84584, 244008, -3712);
+	writeToArray(talkingIslandToBuffer[2], -84104, 243528, -3712);
+	writeToArray(talkingIslandToBuffer[3], -84072, 243288, -3712);
+
+	writeToArray(heineToBuffer[0], 111387,219387,-3544);
+	writeToArray(heineToBuffer[1], 111250,219358,-3516);
+	writeToArray(heineToBuffer[2], 111267,219361,-3516);
+	writeToArray(heineToBuffer[3], 111218,219438,-3532);
+	writeToArray(heineToBuffer[4], 111158,219756,-3673);
+	writeToArray(heineToBuffer[5], 111188,220978,-3544);
+
+	writeToArray(dionToBuffer[0], 15628,142920,-2704);
+	writeToArray(dionToBuffer[1], 16754,142947,-2717);
+
+	writeToArray(giranToBuffer[0], 83405,147953,-3403);
+	writeToArray(giranToBuffer[1], 83261,148847,-3403);
+
+	writeToArray(adenToBuffer[0], 146771,25813,-2011);
+	writeToArray(adenToBuffer[1], 147128,25924,-2011);
+
+	writeToArray(goddardToBuffer[0], 147969,-55264,-2732);
+	writeToArray(goddardToBuffer[1], 148064,-55368,-2732);
+
+	writeToArray(gludioToBuffer[0], -14504,124036,-3124);
+	writeToArray(gludioToBuffer[1], -14728,124023,-3122);
+
+	writeToArray(gludinToBuffer[0], -81073,150110,-3042);
+	writeToArray(gludinToBuffer[1], -81603,150204,-3127);
+
+	writeToArray(shtuttgartToBuffer[0], 87061,-143441,-1290);
+	writeToArray(shtuttgartToBuffer[1], 87015,-143349,-1290);
+
+	writeToArray(runeToBuffer[0], 43827,-47698,-794);
+	writeToArray(runeToBuffer[1], 43606,-47837,-795);
+	writeToArray(runeToBuffer[2], 43530,-47561,-795);
+
+	writeToArray(orenToBuffer[0], 82965,53174,-1494);
+	writeToArray(orenToBuffer[1], 82397,53295,-1494);
+
+	writeToArray(kamaelToBuffer[0], -119384,46840,368);
+	writeToArray(kamaelToBuffer[1], -119608,44888,368);
+end;
+
+
+BEGIN
+END.

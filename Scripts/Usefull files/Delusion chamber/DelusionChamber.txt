@@ -1,0 +1,215 @@
+uses
+  SysUtils, SettingsModule, Classes;
+
+var
+  Settings: TSettings;
+  waitingRoomNpcID: integer = 32659;
+  throwRaid : boolean;
+  findRaid : boolean;
+  isDimensionRift : boolean;
+  effectsArray: array of integer;
+  isAutoAccept: boolean;
+  
+procedure waitingRoomController(npcID: integer);
+var
+  i: integer;
+  obj: TL2Live;
+begin
+  while Engine.Status = lsOnline do
+  begin
+    if NpcList.ById(npcID, obj) then
+      begin
+        delay(1 * 1000);
+        Engine.MoveTo(obj);
+        Engine.SetTarget(obj);
+        Engine.DlgOpen;
+        Engine.DlgSel(1);
+      end;
+    
+    delay(1000);
+  end;
+end;
+
+function getManager: TL2Live;
+var
+  i: integer;
+begin
+  Result := nil;
+  for i:=0 to NpcList.count-1 do
+  begin
+    if ((NpcList.items(i).ID >= 32664) and (NpcList.items(i).ID <= 32701))//Delusion Chamber
+    or ((NpcList.items(i).ID >= 31865) and (NpcList.items(i).ID <= 31918))//Dimension Rift
+    and (User.DistTo(NpcList.items(i)) < 1000)
+    then
+    begin
+      Result := NpcList.items(i);
+      exit;
+    end;
+  end;
+end;
+
+procedure raidRoomController(npcID: integer = -1);
+var
+  i: integer;
+  swapCounter: integer;
+begin
+  swapCounter := 0;
+  while Engine.Status = lsOnline do
+  begin
+    delay(1000);
+
+    if findRaid and (getManager <> nil) and not isContainsRaid then
+    begin
+
+      if (User.DistTo(getManager) > 300) then
+        continue;
+        
+      Engine.SetTarget(getManager);
+      Engine.DlgOpen;
+      if swapCounter = 0 then
+      begin
+        Engine.DlgSel(1);
+        inc(swapCounter);
+      end
+      else
+      begin
+        Engine.DlgSel(2);
+        swapCounter := 0;
+      end;
+      continue;
+    end;
+
+    if isDimensionRift and findRaid and (getManager <> nil) and not isContainsRaid then
+    begin
+      delay(10 * 1000);
+      continue;
+    end;
+
+    if throwRaid and (getManager <> nil) and isContainsRaid then
+    begin
+        Engine.SetTarget(getManager);
+        Engine.DlgOpen;
+        Engine.DlgSel(2);
+    end;
+
+    if not throwRaid and not findRaid and (getManager <> nil) and isContainsRaid then
+    begin
+      while isContainsRaid do
+        delay(1000);
+
+      delay(30 * 1000);
+
+      Engine.SetTarget(getManager);
+      Engine.DlgOpen;
+      Engine.DlgSel(2);
+    end;
+
+  end;
+end;
+
+function isContainsRaid: boolean;
+var
+  i: integer;
+begin
+  
+  for i:=0 to NpcList.count-1 do
+  begin
+    if ((NpcList.items(i).ID >= 25690) and (NpcList.items(i).ID <= 25695))
+    or ((NpcList.items(i).ID >= 25333) and (NpcList.items(i).ID <= 25339))
+    then
+    begin
+      Result := true;
+      exit;
+    end;
+  end;
+  Result := false;
+end;
+
+procedure trimText(text: string; separator: char);
+var
+  sl:TStringList;
+  i: integer;
+begin
+  sl := TStringList.Create;
+  try
+    sl.Delimiter     := separator;
+    sl.DelimitedText := text;
+	
+	SetLength(effectsArray, sl.Count);
+	for i:=0 to sl.count-1 do
+		effectsArray[i] := StrToInt(sl[i]);
+
+  finally
+    sl.Free;
+  end;
+end; 
+
+procedure buffDispel(buffID: integer);
+var
+	Buff: TL2Effect;
+begin
+	if User.Buffs.ByID(buffID, Buff) then
+		begin
+			Engine.Dispel(Buff.Name);
+		end
+	else 
+		exit;
+end;
+
+procedure dispelController(effArr: array of integer);
+var 
+	i: integer;
+begin
+	while Engine.Status = lsOnline do
+	begin
+		for i:=0 to Length(effArr)-1 do
+		begin
+			buffDispel(effArr[i]); 
+		end;
+	delay(500);		
+	end;
+end;
+
+
+//07BD99B5
+//1) Автоматическое снятие эффектов
+
+procedure acceptDialogs;
+begin
+  print('[Thread] Auto accept dialogs activated');
+  while Engine.Status=lsOnline do
+  begin  
+   Engine.ConfirmDialog(true);
+   Delay(3000); 
+  end; 
+end;
+
+procedure loadSettings;
+var
+  i: integer;
+	resStr: String;
+begin
+    Settings.SetFile(Script.Path + User.Name + '_DCsettings.ini');
+    waitingRoomNpcID := Settings.Load('Params', 'Entry npc ID', -1);
+    throwRaid := Settings.LoadBool('Params', 'Throw raid', 'true');
+    findRaid := Settings.LoadBool('Params', 'Find raid', 'false');
+    isDimensionRift := Settings.LoadBool('Params', 'Dimension rift', 'false');
+
+    resStr := Settings.Load('Effects', 'Effect list', '1;2');
+	  isAutoAccept := Settings.LoadBool('Effects', 'AcceptDialogs', 'false');
+	
+	  trimText(resStr, ';');
+	
+end;
+
+begin
+  loadSettings;
+  
+  script.newThread(@raidRoomController);
+  script.newThread(@waitingRoomController(waitingRoomNpcID));
+
+  if isAutoAccept then
+    script.newThread(@acceptDialogs);
+    
+  delay(-1);
+end.

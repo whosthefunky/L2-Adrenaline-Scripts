@@ -1,0 +1,6 @@
+BEGIN
+	talk to Martin Gludin
+	kill monsters based on class
+	talk to three other NPcs
+	go back to Martin
+END.

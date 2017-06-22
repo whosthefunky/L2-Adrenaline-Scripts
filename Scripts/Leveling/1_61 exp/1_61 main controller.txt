@@ -1,0 +1,595 @@
+uses
+	SysUtils, Classes, SettingsModule, LocationModule, PathOfTheElvenOracleQuest,
+	NpcFunctions, Functions, Quest_SuplyCheck, UserFunctions, Quest_HeadForTheHills,
+	Quest_SpiritOfMirrors, Quest_CureForFeverDisease, Quest_OminousNews, Quest_SwordOfSolidarity,
+	Quest_SkirmishWithOrcs;
+
+const
+  SCROLL_TO_KAMAEL_VILLAGE = 9716;
+  KAMAEL_NEWBIE_GUIDE = 32135;
+  
+var
+	buffCheckId: integer; //config
+	Settings: TSettings;
+	effectsArray: array of integer;
+	
+	list: TNpcList;
+
+	iCity : TCity;
+	
+	tmpItem: tl2item;
+	tmpeff: tl2effect;
+	tmpobj: tl2live;
+	tmpint: integer;
+	tmpint1: integer;
+	items : array of cardinal;
+		
+procedure RebuffController;
+var
+	i: integer;
+	obj: TL2Live;
+	buff: TL2Buff;
+begin
+	while Engine.Status = lsOnline do
+	begin
+		if (User.Level < 6) then
+		begin
+			delay(1000);
+			continue;
+		end;
+	
+		if not User.Buffs.ById(buffCheckId, buff) or (User.Buffs.ById(buffCheckId, buff) and (buff.EndTime < 60 * 1000)) then
+		begin
+			if (true{userincity}) then
+			begin
+				Engine.MoveTo(User);
+				Engine.SetTarget(User);
+				Engine.DlgOpen;
+				Engine.DlgSel(1);
+				//BackToExpLoc;
+			end
+		end;
+		delay(1000);
+	end;
+end;	
+
+procedure ExecQuest;
+begin
+  print('Quest not found');
+end;
+       
+
+procedure evt0_1;
+var
+  npc: TL2Live;
+begin
+  if inStartLoc then
+  begin
+    {while User.Level = 1 do
+    begin
+      NpcList.ByID(18342, npc);
+      Engine.SetTarget(npc);
+      while npc.HP > 0 do
+      begin
+      if isMage then
+        Engine.UseSkill(1177)
+      else
+        Engine.Attack;
+      end; 
+    end; }
+    Engine.UseItem(12753); //12753 GF
+    delay(21 * 1000);
+  end;
+
+  if toRightCity(KAMAEL) then
+      begin
+      if not startDialog(KAMAEL_NEWBIE_GUIDE) then //lvl 2
+        print('Cant find newbie master');
+  end;
+end;
+
+procedure evt2_5;
+begin
+  if toRightCity(KAMAEL) then
+  begin
+    
+    if not SuplyCheckDone then
+      ExecuteSuplyCheck;
+   
+    if SuplyCheckDone and getState('Current state', 'Should take newbie quest', false) then
+    begin
+      Engine.MoveTo(-119461, 46968, 386);
+      Engine.MoveTo(-119597, 45485, 372);
+      if getNewbieQuest then
+        updateState('Current state', 'Should take newbie quest', 'false');
+    end;
+ 
+  end;   
+end;
+ 
+procedure evt6_9;
+begin
+  if toRightCity(KAMAEL) then
+  begin
+  
+    if not getState('Etc', 'Is coupon taken', true) then
+      getCoupon; 
+
+    if getState('Etc', 'Is coupon taken', true) and not couponItemTaken(getState('Etc', 'Item through coupon', 10475)) then
+    begin
+      getShadowWeaponFromCoupon(getState('Etc', 'Item through coupon', 10475));
+      equipItem(getState('Etc', 'Item through coupon', 10475));
+    end;
+
+    if shouldRebuff then
+      GetBuff;
+
+    {if shouldRebuySOE(5) > 0 then
+    begin
+      buyEtc([736, shouldRebuySOE(10)]);
+      moveToLoc(revertArray(kamaelToSupply));
+    end;  }
+
+    if not HeadForTheHillsDone then
+      ExecuteHeadForTheHills;
+
+    if HeadForTheHillsDone and getState('Current state', 'Should take newbie quest', false) then
+    begin
+      if getNewbieQuest then
+        updateState('Current state', 'Should take newbie quest', 'false');
+    end;
+    
+  end;      
+end;
+
+procedure evt10_15;
+begin
+  if shouldRebuff then
+      GetBuff;
+
+  {if shouldRebuySOE(5) > 0 then
+      buyEtc([736, shouldRebuySOE(10)]);  }
+      
+  case User.Race of
+    0: //human
+    begin
+      if isMage then
+      begin
+        if not SpiritOfMirrorsDone then
+          ExecuteSpiritOfMirrors;
+
+        if SpiritOfMirrorsDone and getState('Current state', 'Should take newbie quest', false) then
+        begin
+          if getNewbieQuest then
+            updateState('Current state', 'Should take newbie quest', 'false');
+        end;
+      end;
+
+      if not isMage then
+      begin
+        if not SwordOfSolidarityDone then
+          ExecuteSwordOfSolidarity;
+
+        if SwordOfSolidarityDone and getState('Current state', 'Should take newbie quest', false) then
+        begin
+          if getNewbieQuest then
+            updateState('Current state', 'Should take newbie quest', 'false');
+        end;
+      end;
+        
+    end;          
+    1: //elve
+    begin
+        if not SkirmishWithOrcsDone then
+          ExecuteSkirmishWithOrcs;
+
+        if SkirmishWithOrcsDone and getState('Current state', 'Should take newbie quest', false) then
+        begin
+          if getNewbieQuest then
+            updateState('Current state', 'Should take newbie quest', 'false');
+        end;
+        
+    end;
+    2://dark elve
+    begin
+
+        if not false then
+          ExecQuest;
+
+        if true and getState('Current state', 'Should take newbie quest', false) then
+        begin
+          if getNewbieQuest then
+            updateState('Current state', 'Should take newbie quest', 'false');
+        end;
+        
+    end;
+    3://orc
+    begin
+
+        if not true then
+          ExecQuest;
+
+        if true and getState('Current state', 'Should take newbie quest', false) then
+        begin
+          if getNewbieQuest then
+            updateState('Current state', 'Should take newbie quest', 'false');
+        end;
+
+        
+    end;
+    4://dwarf
+    begin
+
+        if not false then
+          ExecQuest;
+
+        if true and getState('Current state', 'Should take newbie quest', false) then
+        begin
+          if getNewbieQuest then
+            updateState('Current state', 'Should take newbie quest', 'false');
+        end;
+        
+    end;
+    5://kamael
+    begin
+
+        if not false then
+          ExecQuest;
+
+        if true and getState('Current state', 'Should take newbie quest', false) then
+        begin
+          if getNewbieQuest then
+            updateState('Current state', 'Should take newbie quest', 'false');
+        end;
+        
+    end;
+  end;
+end;
+
+procedure evt15_17;
+var
+  skillToLearn: array of integer;
+  i: integer;
+  skill: TL2Skill;
+begin
+    if shouldRebuff then
+      GetBuff;
+
+    {if shouldRebuySOE(5) > 0 then
+      buyEtc([736, shouldRebuySOE(10)]);}
+      
+    
+    if (SkillList.ByID(1177, skill) and (skill.level < 3)) then
+    begin
+      if not isRightCity(GLUDIO, false) and isRightCity(TALKING_ISLAND, false) then
+      begin
+      Engine.MoveTo(-83589, 243834, -3740);
+      Engine.MoveTo(-83369, 244417, -3750);
+      Engine.MoveTo(-83682, 244698, -3748);
+      Engine.MoveTo(-83995, 244614, -3743);
+
+      startDialog(30006);
+
+      Engine.DlgSel(2);
+      delay(500);
+      Engine.DlgSel(1);
+      end;
+
+      if toRightCity(GLUDIO) then
+      begin
+      Engine.MoveTo(-12808, 122712, -3104);
+      Engine.MoveTo(-13272, 122664, -3032);
+      Engine.MoveTo(-13272, 122296, -2976);
+      Engine.MoveTo(-13080, 122184, -2968);
+      Engine.MoveTo(-13096, 121752, -2952);
+      Engine.MoveTo(-13464, 121576, -2952);
+
+      startDialog(30293);
+
+      Engine.DlgSel(1);
+     
+      skillToLearn := getArray('Etc', 'Skill learn list', '1;1');
+      for i:=0 to Length(skillToLearn)-1 do
+        learnSkills(skillToLearn[i]);
+
+        delay(500);
+      Engine.MoveTo(-13464, 121576, -2952);
+      Engine.MoveTo(-13096, 121752, -2952);
+      Engine.MoveTo(-13080, 122184, -2968);
+      Engine.MoveTo(-13272, 122296, -2976);
+      Engine.MoveTo(-13272, 122664, -3032);
+      Engine.MoveTo(-12808, 122712, -3104);
+      end;
+    end; 
+    
+    if not cureForFeverDiseaseDone then
+       ExecuteCureForFeverDisease;
+
+    if cureForFeverDiseaseDone and getState('Current state', 'Should take newbie quest', false) then
+    begin
+      if getNewbieQuest then
+        updateState('Current state', 'Should take newbie quest', 'false');
+    end;    
+end;
+
+procedure classTransferPreparation;
+begin
+  if isMage then
+  begin
+    buyArmor([1101, 1, 1104, 1, 44, 1], GIRAN, false);
+  end;
+end;
+
+function reBuy: boolean;
+var
+  items: array of cardinal;
+begin
+  if toRightCity(GIRAN) then
+  begin
+  //to weapon shop
+
+
+  
+  if not startDialog(ifThen(isMage, 30085, 30084)) then  //stanford | graham
+  begin
+    Result := false;
+    exit;
+  end;
+        //11731 - atuba mace | 11730 -  Scallop Jamadhr
+  Engine.DlgSel(1);
+  Engine.DlgSel(1);
+
+  SetLength(items, 1);
+  items[0] := 11731;
+  Engine.NpcTrade(false, items);
+  end;
+end;
+
+function buyEtc(items: array of cardinal): boolean;
+begin
+  GetSupplies;
+
+  Result := Engine.NpcTrade(false, items);
+end;
+
+function buyWeapon(itemID: integer; city: TCity = GIRAN; isCommon: boolean = true): boolean;
+begin
+  if toRightCity(city) then
+  begin
+    moveToLoc(giranToWeaponShop);
+
+    if not startDialog(ifThen(isMage, 30085, 30084)) then
+    begin
+      Result := false;
+      exit;
+    end;
+
+    Engine.DlgSel(1);
+    delay(500);
+    Engine.DlgSel(ifThen(isCommon, 2, 1));
+
+    Result := Engine.NpcTrade(false, [itemID, 1]);
+    
+  end;
+end;
+
+function buyArmor(items: array of cardinal; city: TCity = GIRAN; isCommon: boolean = true): boolean;
+begin
+  if toRightCity(city) then
+  begin
+    moveToLoc(giranToArmorShop);
+
+    if not StartDialog(ifThen(isMage, 30087, 30088)) then
+    begin
+      Result := false;
+      exit;
+    end;
+
+    Engine.DlgSel(1);
+    Engine.DlgSel(ifThen(isCommon, 2, 1));
+
+    Result := Engine.NpcTrade(false, items);
+  end;
+end;
+
+function buyAccessory(items: array of cardinal; city: TCity = GIRAN; isCommon: boolean = true): boolean;
+begin
+  if toRightCity(city) then
+  begin
+    moveToLoc(giranToAccessoryShop);
+
+    if not StartDialog(30091) then //Ellie
+    begin
+      Result := false;
+      exit;
+    end;
+
+    Engine.DlgSel(ifThen(isCommon, 3, 1));
+
+    Result := Engine.NpcTrade(false, items);
+  end;
+end;
+
+function buyEquip(itemType: ITEM_TYPE; npcID: integer; items: array of cardinal; city: TCity = GIRAN; isCommon: boolean = true): boolean;
+begin
+  if toRightCity(city) then
+  begin
+    moveToLoc(ifThen(itemType = WEAPON, giranToWeaponShop,
+    ifThen(itemType = ARMOR, giranToArmorShop, giranToAccessoryShop)));
+
+    if not StartDialog(npcID) then //Ellie
+    begin
+      Result := false;
+      exit;
+    end;
+
+    //для аксессуара будет 3 диалог; для остальногго 1 => 1||2
+    Engine.DlgSel(ifThen(((itemType = WEAPON) or (itemType = ARMOR)), ifThen(isCommon, 2, 1),
+    ifThen(isCommon, 3, 1)));
+
+    Result := Engine.NpcTrade(false, items);
+  end;
+end;
+
+procedure learnSkills(skillId: integer);
+var
+  canLearn: boolean;
+begin
+  canLearn := true;
+  while canLearn do
+  begin
+    canLearn := Engine.LearnSkill(skillId);
+    delay(200);
+  end;
+end;
+
+function defineSpot: boolean;
+begin
+  
+end;
+
+function verifySpotPoints(arr: DimensionArray; enemiesLT: integer = 4; isRangeEnemy: boolean = true): integer;
+var
+  currentIndex: integer;
+  currentEnemyRangeCount: integer;
+  currentEnemyMiliCount: integer;
+  charsOnSpot: array of TFarmZone;
+  i: integer;
+begin
+  currentIndex := 0;
+  currentEnemyRangeCount := 0;
+  currentEnemyMiliCount := 0;
+
+  SetLength(charsOnSpot, Length(arr));
+
+  for i:=0 to Length(arr)-1 do
+  begin
+    MoveTo(arr[i]);
+
+    charsOnSpot[i].mili := countMiliPlayersInZone(arr[i], 3000);
+    charsOnSpot[i].range := countRangePlayersInZone(arr[i], 3000);
+    
+    if (currentEnemyRangeCount < charsOnSpot[i].range) and isRangeEnemy then
+    begin
+      currentEnemyRangeCount := charsOnSpot[i].range;
+      currentIndex := i;
+    end;
+      
+    if (currentEnemyMiliCount < charsOnSpot[i].mili) and not isRangeEnemy then
+    begin
+      currentEnemyMiliCount := charsOnSpot[i].mili;
+      currentIndex := i;
+    end;
+
+    if (currentEnemyRangeCount <= enemiesLT) and isRangeEnemy then
+    begin
+      Result := i;
+      exit;
+    end;
+
+    if (currentEnemyMiliCount <= enemiesLT) and not isRangeEnemy then
+    begin
+      Result := i;
+      exit;
+    end;
+    
+  end;
+
+  Result := i;
+end;
+
+function farmTest: boolean;
+var
+  locArr: DimensionArray;
+begin
+  SetLength(locArr, 3, 3);
+  
+  writeToArray(locArr[0], -46312, 120280, -3376);
+  writeToArray(locArr[1], -50312, 117144, -3152);
+  writeToArray(locArr[2], -50376, 113080, -3568);
+  
+  getBuff;
+  if DoTeleportToLocation('ruins of agony') then
+  begin
+    verifySpotPoints(locArr);
+  end; 
+end;
+     
+//in quests
+//STATE 0 = take quest
+//STATE -1 = quest done
+// Engine.MoveTo(24408, 40984, -3696);
+// Engine.MoveTo(35503, 63031, -3632);
+// Engine.MoveTo(31051, 80092, -3536);
+// Engine.MoveTo(23502, 57625, -3376);
+//
+
+ 
+procedure doTransfer;
+begin
+ 
+  if not PathOfTheElvenOracleDone then
+       ExecuteQuestPathOfTheElvenOracle;
+end;
+
+procedure exp1_18;
+var
+  i: integer;
+  currentLevel: integer;
+  enemyTarget: TL2Live;
+begin
+  while Engine.Status = lsOnline do
+  begin
+    case User.Level of
+      0..1 : evt0_1;
+      2..7 : evt2_5;
+      8..12 : evt6_9;
+      13..15 : evt10_15;
+      16..20 : evt15_17;
+      21..88 : doTransfer;
+
+      //case end;
+    end;
+
+  delay(100);
+  end;
+end;
+
+function shouldRebuySOE(soeCount: integer): integer;
+var
+  item: TL2Item;
+begin
+  Result := 0;
+  if not Inventory.User.ByID(736, item) then
+  begin
+    Result := soeCount;
+    exit;
+  end;
+  if (Inventory.User.ByID(736, item) and (item.Count < soeCount)) then
+    Result := soeCount - item.Count;
+end;
+ 
+procedure deathEvt;
+begin
+  while Engine.Status = lsOnline do
+  begin
+    if User.Dead then
+      Engine.GoHome;
+    delay(300);
+  end;
+end;
+
+begin
+    initBuffPathArrays; // It doesn't work without this
+  //ExecuteSwordOfSolidarity;
+ // doTeleport(CityNames[getCityToLocationGK('varka')]);
+   //ExecuteSkirmishWithOrcs;
+  {   script.newthread(@deathEvt);
+  exp1_18;   }
+  DoTeleport('talking island');
+
+  //classTransferPreparation;  
+  //toRightCity(TCity[getCityToLocationGK('vark')]);
+  //buyEquip(WEAPON, 30085, [11731, 1]);
+end.
+	

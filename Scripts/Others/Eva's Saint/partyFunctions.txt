@@ -1,0 +1,494 @@
+unit partyFunctions;
+   interface
+			
+		uses
+			Classes, SysUtils, commonFunctions;
+			
+		const
+			wcEffectsCount = 11;
+			eeEffectsCount = 1;
+			seEffectsCount = 1;
+			tankEffectsCount = 1;
+			olEffectsCount = 1;
+			healEffectsCount = 2;
+			herbEffectsCount = 6;
+			
+			wcEffects: array[0..(wcEffectsCount - 1)] of integer = (1007, 1519, 1518, 1309, 1252, 1251, 1308, 1253, 1310, 1390, 1229);
+			eeEffects: array[0..(eeEffectsCount - 1)] of integer = (1073);
+			seEffects: array[0..(seEffectsCount - 1)] of integer = (-1);
+			tankEffects: array[0..(tankEffectsCount - 1)] of integer = (982);
+			olEffects: array[0..(olEffectsCount - 1)] of integer = (-1);
+			healEffects: array[0..(healEffectsCount - 1)] of integer = (1401, 1218);
+			herbEffects: array[0..(herbEffectsCount - 1)] of integer = (2282, 2284, 2514, 2246, 2280, 2512{, 2513}); //atk speed, critical atk, critical atk pwr, pwr, pwr, doubt   
+			
+			healPercent = 70;
+			awaitTime = 5 * 1000;
+		
+		var
+			dispelList: TStringList;
+			
+		//etc
+		function isRechargeable(actor: TL2Char; mpVal: integer; dist: integer): boolean;
+		procedure dispelWrapper(functor: TCharFunctor);
+		//buff
+		function pClarityF(actor: TL2Char): boolean;
+		function pMentalF(actor: TL2Char): boolean;
+		function pResistShockF(actor: TL2Char): boolean;
+		function pWildMagicF(actor: TL2Char): boolean;
+		function pSpiritF(actor: TL2Char): boolean;
+		function pConcentrationF(actor: TL2Char): boolean;
+		function pNobleF(actor: TL2Char): boolean;
+		//rech
+		function pBardRechF(actor: TL2Live): boolean;
+		function pMageRechF(actor: TL2Live): boolean;
+		function pCardiRechF(actor: TL2Live): boolean;
+		function pWarriorRechF(actor: TL2Live): boolean;
+		//heal
+		function pShouldHealF(actor: TL2Live): boolean;
+		//acting
+		function pWCBuffF(actor: TL2Live): boolean;
+		function pTankBuffF(actor: TL2Live): boolean;
+		function pIsHealingF(actor: TL2Live): boolean;
+		//enemy
+		function eAffraidF(actor: TL2Live): boolean;
+		function eNotAffraidF(actor: TL2Live): boolean;
+		//threads
+		procedure rechargeProc;		
+		procedure rebufProc;		
+		procedure healProc;		
+		procedure herbDispelProc;
+		procedure wcDispelProc;
+		procedure tankDispelProc;
+		procedure startDispel;
+		
+		
+	implementation
+		
+		//etc
+		function isRechargeable(actor: TL2Char; mpVal: integer; dist: integer): boolean;
+		begin
+		Result := not (actor.ClassID = 30)
+			and not (actor.ClassID = 43)
+			and not (actor.ClassID = 105)
+			and not (actor.ClassID = 112)
+			and not actor.Dead
+			and (User.DistTo(actor) < dist)
+			and (actor.mp < mpVal)
+			and not isMedused(actor)
+			and not isInvincible(actor);
+		end;
+				
+		procedure dispelWrapper(functor: TCharFunctor);
+		var
+			castID: integer;
+		begin
+			while Engine.Status = lsOnline do
+			begin
+				delay(50);
+			
+				if not turnOn then
+					continue;
+				
+				if Assigned(GetPartyMember(functor, false)) then
+				begin
+					castID := GetPartyMember(functor, false).cast.id;
+					delay(GetPartyMember(functor, false).cast.endTime + 200);
+					buffDispel(castID);
+				end;
+				
+			end;
+		end;
+		
+		//rebuff
+		function pClarityF(actor: TL2Char): boolean;
+		begin
+			Result := fBuffable(actor) and not fHasClarity(actor) and fClarityClass(actor);
+		end;
+		
+		function pMentalF(actor: TL2Char): boolean;
+		begin
+			Result := fBuffable(actor) and not fHasMentalShield(actor);
+		end;
+		
+		function pResistShockF(actor: TL2Char): boolean;
+		begin
+			Result := fBuffable(actor) and not fHasResistShock(actor) and (fBuffSlotsLeft(actor) > 0);
+		end;
+		
+		function pWildMagicF(actor: TL2Char): boolean;
+		begin
+			Result := fBuffable(actor) and not fHasWildMagic(actor) and fWildMagicClass(actor) and (fBuffSlotsLeft(actor) > 0);
+		end;
+		
+		function pSpiritF(actor: TL2Char): boolean;
+		begin
+			Result := fBuffable(actor) and not fHasSpirit(actor) and (fBuffSlotsLeft(actor) > 0);
+		end;
+		
+		function pConcentrationF(actor: TL2Char): boolean;
+		begin
+			Result := fBuffable(actor) and not fHasConcentration(actor) and (fBuffSlotsLeft(actor) > 0) and fConcentrationClass(actor);
+		end;
+		
+		function pNobleF(actor: TL2Char): boolean;
+		begin
+			Result := fBuffable(actor) and not fHasNoble(actor);
+		end;
+		
+		//recharge
+		function pBardRechF(actor: TL2Live): boolean;
+		begin
+			Result := isBard(liveToChar(actor)) and isRechargeable(liveToChar(actor), 40, 400);
+		end;
+		
+		function pMageRechF(actor: TL2Live): boolean;
+		begin
+			Result := isMage(liveToChar(actor)) and isRechargeable(liveToChar(actor), 70, 400);
+		end;
+		
+		function pCardiRechF(actor: TL2Live): boolean;
+		begin
+			Result := isHealer(liveToChar(actor)) and isRechargeable(liveToChar(actor), 70, 500);
+		end;
+		
+		function pWarriorRechF(actor: TL2Live): boolean;
+		begin
+			Result := isWarrior(liveToChar(actor)) and isRechargeable(liveToChar(actor), 30, 400);
+		end;
+		
+		//heal
+		function pShouldHealF(actor: TL2Live): boolean;
+		begin
+			Result := fHealable(actor)
+				and (actor.HP < ifThen(isSealOfLimit(actor), 20, healPercent))
+				and (actor.HP > 5);
+		end;
+
+		//acting 
+		function pWCBuffF(actor: TL2Live): boolean;
+		begin
+			Result := isEnchanter(TL2Char(actor)) and (actor.cast.EndTime > 0) and isContains(wcEffects, wcEffectsCount, actor.cast.id) and
+				not User.Dead and (User.DistTo(actor) < 800) and not isMedused(User);
+		end;
+		
+		function pTankBuffF(actor: TL2Live): boolean;
+		begin
+			Result := isKnight(TL2Char(actor)) and (actor.cast.EndTime > 0) and isContains(tankEffects, tankEffectsCount, actor.cast.id) and
+				not User.Dead and (User.DistTo(actor) < 800) and not isMedused(User);
+		end;
+		
+		function pIsHealingF(actor: TL2Live): boolean;
+		begin
+			Result := isHealer(TL2Char(actor)) and (actor.Cast.EndTime > 0)
+				and pShouldHealF(actor.target)
+				and ((isContains(healEffects, healEffectsCount, actor.cast.ID)
+				and (actor.target = getPartyMember(pShouldHealF, false)))
+				or (actor.Cast.ID = 1402));
+		end;
+		
+		//enemy
+		function eAffraidF(actor: TL2Live): boolean;
+		begin
+			Result := not isFriend(actor) and not isAllyMember(actor) and
+				(isAffraid(actor) or (actor.abnormalID = 272 {affraid + silence})
+				and not (actor.abnormalID = 134217744) {affraid + ud}
+				and not (actor.abnormalID = 1048592) {affraid + shadow}
+				and not (actor.abnormalID = 528) {affraid + root}
+				); 
+		end;
+
+		function eNotAffraidF(actor: TL2Live): boolean;
+		begin
+			Result := not isAffraid(actor) and not (actor.abnormalID = 272);
+		end;
+
+		//threads
+		procedure rechargeProc;
+		begin
+			while Engine.Status = lsOnline do
+			begin
+				delay(50);
+			
+				if (party.chars.count = 0) then
+				begin
+					delay(10000);
+					continue;
+				end;
+			
+				if (skillCoolTime(1013) > 950) then
+				begin
+					delay(skillCoolTime(1013) - 850); 
+					continue;
+				end;
+			
+				if isCasting(User) or not turnOn or isActing then
+					continue;
+					
+				if Assigned(getPartyMember(pBardRechF)) and fShouldCast(User, 60, 10) then
+				begin
+					doCast(getPartyMember(pBardRechF), $73);
+					continue;
+				end;
+			
+				if Assigned(getPartyMember(pCardiRechF)) and fShouldCast(User, 60, 10) then
+				begin
+					doCast(getPartyMember(pCardiRechF), $73);
+					continue;
+				end;
+				
+				if Assigned(getPartyMember(pMageRechF)) and fShouldCast(User, 60, 10) then
+				begin
+					doCast(getPartyMember(pMageRechF), $73);
+					continue;
+				end;
+				
+				if Assigned(getPartyMember(pWarriorRechF)) and fShouldCast(User, 60, 10) then
+				begin
+					doCast(getPartyMember(pWarriorRechF), $73);
+					continue;
+				end;
+					
+			end;
+		end;
+
+		procedure rebufProc;
+		begin
+		while Engine.Status = lsOnline do
+		begin
+			delay(250);
+			
+			if isCasting(User) or not turnOn or isActing then
+				continue;
+			
+			if (Assigned(getPartyMember(pClarityF, true)) and fManaCheck(10) and (itemCount(3031) > 4)) then
+			begin
+				doCast(getPartyMember(pClarityF, true), $45);
+				delay(200);
+				continue;
+			end;
+			
+			if (Assigned(getPartyMember(pMentalF, true)) and fManaCheck(10)) then
+			begin
+				doCast(getPartyMember(pMentalF, true), $57);
+				delay(200);
+				continue;
+			end;
+			
+			if (Assigned(getPartyMember(pResistShockF, true)) and fManaCheck(10)) then
+			begin
+				doCast(getPartyMember(pResistShockF, true), $51);
+				continue;
+			end;
+			
+			if (Assigned(getPartyMember(pWildMagicF, true)) and fManaCheck(10)) then
+			begin
+				doCast(getPartyMember(pWildMagicF, true), $53);
+				delay(200);
+				continue;
+			end;
+			
+			if (Assigned(getPartyMember(pConcentrationF, true)) and fManaCheck(10)) then
+			begin
+				doCast(getPartyMember(pConcentrationF, true), $44);
+				delay(200);
+				continue;
+			end;
+			
+			if (Assigned(getPartyMember(pSpiritF, true)) and fManaCheck(10)) then
+			begin
+				doCast(getPartyMember(pSpiritF, true), $47);
+				delay(200);
+				continue;
+			end;
+			
+			if (Assigned(getPartyMember(pNobleF, true)) and fManaCheck(5) and (itemCount(3031) > 5)) then
+			begin
+				doCast(getPartyMember(pNobleF, true), $76);
+				delay(200);
+				continue;
+			end;
+			
+			end;
+		end;
+		
+		procedure healProc;
+		begin
+		while Engine.Status = lsOnline do
+		begin
+			delay(50);
+
+			if (skillCoolTime(1401) > 1000) or isCasting(User) or not turnOn then
+				continue;
+
+			if (partyCount(pIsHealingF) = 0) and Assigned(getPartyMember(pShouldHealF, true)) and fShouldCast(User, 60, 10) and (itemCount(3031) > 0)  then
+				doCast(getPartyMember(pShouldHealF, true), $70);
+			
+		end;
+		end;
+	
+		procedure herbDispelProc;
+		begin
+			while Engine.Status = lsOnline do
+			begin
+				delay(50);
+			
+				if not turnOn then
+					continue;
+				
+				if isContains(herbEffects, herbEffectsCount, User.Cast.ID) then
+				begin
+					buffDispel(User.Cast.ID);
+				end;
+				
+			end;
+		end;
+		
+		procedure wcDispelProc;
+		var
+			castID: integer;
+			castEndTime: Cardinal;
+			actor: TL2Live;
+			isInterrupt: boolean;
+			startWaitTime: cardinal;
+		begin
+			while Engine.Status = lsOnline do
+			begin
+				delay(50);
+			
+				if not turnOn then
+					continue;
+				
+				if not Assigned(getPartyMember(pWCBuffF, false)) then
+					continue;
+
+				actor := getPartyMember(pWCBuffF, false);
+				castID := actor.cast.ID;
+				castEndTime := actor.cast.EndTime;
+				isInterrupt := false;
+				
+				while (not (isInterrupted(actor, castEndTime) or (actor.Cast.EndTime = 0) or actor.Dead or (actor.Cast.ID <> castID))) do
+				begin
+					if ((actor.Cast.ID = castID) and (isInterrupted(actor, castEndTime) or actor.Dead)) then
+						isInterrupt := true;
+					delay(50);
+				end;
+				
+				if isInterrupt then
+					continue;
+					
+				startWaitTime := GetTickCount + awaitTime;
+				
+				while not (effectTime(User, castID) > 0) and (startTime > GetTickCount) do
+					delay(100);
+					
+				buffDispel(castID);
+				
+			end;
+		end;
+		
+		procedure tankDispelProc;
+		var
+			castID: integer;
+			castEndTime: Cardinal;
+			actor: TL2Live;
+			isInterrupt: boolean;
+			startWaitTime: cardinal;
+		begin
+			while Engine.Status = lsOnline do
+			begin
+				delay(50);
+				
+				if not turnOn then
+					continue;
+					
+				if not Assigned(getPartyMember(pTankBuffF, false)) then
+					continue;
+
+				actor := getPartyMember(pTankBuffF, false);
+				castID := actor.cast.ID;
+				castEndTime := actor.cast.EndTime;
+				isInterrupt := false;
+				
+				while (not (isInterrupted(actor, castEndTime) or (actor.Cast.EndTime = 0) or actor.Dead or (actor.Cast.ID <> castID))) do
+				begin
+					if ((actor.Cast.ID = castID) and (isInterrupted(actor, castEndTime) or actor.Dead)) then
+						isInterrupt := true;
+					delay(50);
+				end;
+				
+				if isInterrupt then
+					continue;
+					
+				startWaitTime := GetTickCount + awaitTime;
+				
+				while not (effectTime(User, castID) > 0) and (startTime > GetTickCount) do
+					delay(100);
+					
+				buffDispel(castID);
+				
+			end;
+		end;
+		
+		function pEEBuffF(actor: TL2Live): boolean;
+		begin
+			Result := (actor.cast.EndTime > 0) and isContains(eeEffects, eeEffectsCount, actor.cast.id) and
+				not User.Dead and (User.DistTo(actor) < 800) and not isMedused(User);
+		end;
+	
+		procedure eeDispelProc;
+		const
+			awaitTime = 5 * 1000;
+		var
+			castID: integer;
+			castEndTime: Cardinal;
+			actor: TL2Live;
+			isInterrupt: boolean;
+			startWaitTime: cardinal;
+		begin
+			while Engine.Status = lsOnline do
+			begin
+				delay(50);
+			
+				if not turnOn then
+					continue;
+				
+				if not Assigned(getPartyMember(pEEBuffF, true)) then
+					continue;
+
+				actor := getPartyMember(pEEBuffF, true);
+				castID := actor.cast.ID;
+				castEndTime := actor.cast.EndTime;
+				isInterrupt := false;
+				
+				while (not (isInterrupted(actor, castEndTime) or (actor.Cast.EndTime = 0) or actor.Dead or (actor.Cast.ID <> castID))) do
+				begin
+					if ((actor.Cast.ID = castID) and (isInterrupted(actor, castEndTime) or actor.Dead)) then
+						isInterrupt := true;
+					delay(50);
+				end;
+				
+				if isInterrupt then
+					continue;
+					
+				startWaitTime := GetTickCount + awaitTime;
+				
+				while not (effectTime(User, castID) > 0) and (startTime > GetTickCount) do
+					delay(100);
+					
+				buffDispel(castID);
+				
+			end;
+		end;
+		
+		procedure startDispel;
+		begin
+			script.newThread(@herbDispelProc);
+			script.newThread(@wcDispelProc);
+			script.newThread(@tankDispelProc);
+			script.newThread(@eeDispelProc);
+		end;
+		
+		
+		
+		
+end.

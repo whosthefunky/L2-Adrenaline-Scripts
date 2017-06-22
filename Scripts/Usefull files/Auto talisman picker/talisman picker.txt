@@ -1,0 +1,95 @@
+uses
+  SysUtils, Classes;
+
+procedure takeTalisman;
+var
+  itemTemp: tl2item;
+begin
+Inventory.user.ByID(9912, itemTemp);
+  while (itemTemp.count > 9) do
+  begin
+    delay(800);
+    Engine.DlgOpen;
+    delay(500);
+    Engine.DlgSel(6);
+    delay(500);
+    Engine.DlgSel(1);  
+    delay(800);
+  end;
+end;
+
+procedure dellItem(iname: integer);
+var
+  itemTemp: tl2item;
+begin
+    if Inventory.user.ByID(iname, itemTemp) and (itemTemp.count >= 1) then
+      Engine.DestroyItem(itemTemp.Name, itemTemp.count);     
+end;
+
+procedure delltalik;
+var
+  i: integer;
+  itemTemp: tl2item;
+begin
+  Inventory.user.ByID(9912, itemTemp);
+  while (itemTemp.count > 9) do
+  begin
+    dellItem(9914);
+    dellItem(9956);
+    dellItem(9957);
+    dellItem(9961);
+    dellItem(9928);
+    dellItem(9964);
+    dellItem(10519);
+    dellItem(10539);
+    dellItem(9958);
+    dellItem(10423);
+    dellItem(9943);
+    dellItem(9965);
+    dellItem(9926);
+    dellItem(9957);
+    for i:=10418 to 10422 do
+    begin
+      dellItem(i);
+      delay(20);
+    end;
+    for i:=10533 to 10542 do
+    begin
+      dellItem(i);
+      delay(20);
+    end;
+    for i:=9920 to 9931 do   //9919 - refl. talik
+    begin
+      dellItem(i);
+      delay(20);
+    end;
+    for i:=9933 to 9939 do
+    begin
+      dellItem(i);
+      delay(20);
+    end;
+    for i:=9945 to 9954 do
+    begin
+      if (i = 9952) then
+        continue;
+      dellItem(i);
+      delay(20);
+    end;
+  delay(100);
+  end;
+end;
+
+procedure foo;
+begin
+  Engine.DlgOpen;
+    delay(300);
+    Engine.DlgSel(6);
+    delay(300);
+    Engine.DlgSel(1);  
+end;
+
+begin
+  script.NewThread(@takeTalisman);
+  script.NewThread(@delltalik);
+  //delay(-1);
+end.

@@ -1,0 +1,486 @@
+uses
+  SysUtils, SettingsModule, Classes;
+
+type
+    TBaseFunctor = function(actor: TL2Live; skillId: integer = -1): boolean;
+    IntArr = array of integer;
+    
+var
+	Settings: TSettings;
+	//config
+	//isAutoAccept: boolean;
+	throwNames: array of string;
+	skillsArray: array of integer;
+	
+	mageEff: IntArr;
+	warrEff: IntArr;
+	rogueEff: IntArr;
+	petEff: IntArr;
+	
+	endTime: integer;
+	remoteNickname: string;
+	remoteControl: TL2Control;
+	remoteUser: TL2User;
+	isConcentrationCheck: boolean;
+	isShadowCheck: boolean;
+	shadowEndTime: integer;
+
+function getArray(param: string): array of integer;
+var
+	sl:TStringList;
+	i: integer;
+	resStr: string;
+begin
+	sl := TStringList.Create;
+	Settings.SetFile(Script.Path + User.Name + '_SDsettings.ini');
+	resStr := Settings.Load('Skills', param, '0;0');
+  try
+    sl.Delimiter     := ';';
+    sl.DelimitedText := resStr;
+    SetLength(Result, sl.Count);
+    for i:=0 to sl.count-1 do
+		  Result[i] := StrToInt(sl[i]);
+
+  finally
+    sl.Free;
+  end;
+end;
+
+function getStringArray: array of string;
+var
+	sl:TStringList;
+	i: integer;
+	resStr: string;
+begin
+	sl := TStringList.Create;
+	Settings.SetFile(Script.Path + User.Name + '_SDsettings.ini');
+	resStr := Settings.Load('Skills', 'Throw names', ';');
+  try
+    sl.Delimiter     := ';';
+    sl.DelimitedText := resStr;
+    SetLength(Result, sl.Count);
+    for i:=0 to sl.count-1 do
+		  Result[i] := (sl[i]);
+
+  finally
+    sl.Free;
+  end;
+end;
+
+procedure doCast(skillId: integer; remoteNick: string);
+var
+  skill: TL2Skill;
+begin
+  if SkillList.ByID(skillId, skill) then
+  begin
+    if fManaCheck(5, User) then
+      Engine.UseSkill(skillId);
+    exit;
+  end;
+
+  if Length(remoteNick) < 1 then
+  begin
+    print('wrong nickname');
+    exit;
+  end;
+  remoteControl := GetControl(remoteNick);
+  if (Assigned(remoteControl)) then
+  begin
+    remoteUser := remoteControl.GetUser;
+
+    if fManaCheck(5, remoteUser) then
+      remoteControl.UseSkill(skillId);
+  end;
+end;
+
+function shouldRedance(obj: TL2Live; arr: array of integer; endtime: integer): boolean;
+var
+  i: integer;
+  eff: TL2Buff;
+begin
+  for i:=0 to Length(arr)-1 do
+  begin
+    if not obj.Buffs.ByID(arr[i], eff) or (obj.Buffs.ByID(arr[i], eff) and (eff.EndTime < endTime * 1000)) then
+    begin
+      Result := true;
+      exit;
+    end;
+  end;
+  Result := false;
+end;
+
+function countEffects(obj: TL2Live; arr: array of integer): integer;
+var
+  i: integer;
+  eff: TL2Buff;
+begin
+  Result := 0;
+  for i:=0 to Length(arr)-1 do
+  begin
+    if not obj.Buffs.ByID(arr[i], eff) or (obj.Buffs.ByID(arr[i], eff) and (eff.EndTime < endTime)) then
+      inc(result);
+  end;
+end;
+
+function partyCount(functor: TBaseFunctor; tNames: array of string; withMe: boolean = false): integer;
+var
+	i: integer;
+	perlimResult: integer;
+begin
+	perlimResult := 0;
+	
+	if Party.Chars.Count < 1 then
+	begin
+	  Result := 0;
+	  exit;
+	end;
+	
+	for i:=0 to Party.Chars.Count-1 do
+	begin
+		if fBuffable(Party.Chars.Items(i)) and (functor(Party.Chars.Items(i))) and not isContains(tNames, Party.Chars.Items(i).Name) then
+			perlimResult := perlimResult + 1;
+	end;
+	if (withMe) then
+	begin
+		if functor(User) then
+			perlimResult := perlimResult + 1;
+	end;
+	Result := perlimResult;
+end;
+
+function partyPetCount(functor: TBaseFunctor; tNames: array of string; withMe: boolean = false): integer;
+var
+	i: integer;
+	perlimResult: integer;
+begin
+	perlimResult := 0;
+	
+	if Party.Pets.Count < 1 then
+	begin
+	  Result := 0;
+	  exit;
+	end;
+	
+	for i:=0 to Party.Pets.Count-1 do
+	begin
+		if fBuffable(Party.Pets.Items(i)) and (functor(Party.Pets.Items(i))) and not isContains(tNames, Party.Chars.Items(i).Title) then
+			perlimResult := perlimResult + 1;
+	end;
+
+	Result := perlimResult;
+end;
+
+function partyCount2(tNames: array of string; arr: IntArr): integer;
+var
+	i: integer;
+	perlimResult: integer;
+begin
+	perlimResult := 0;
+	
+	if Party.Chars.Count < 1 then
+	begin
+	  Result := 0;
+	  exit;
+	end;
+	
+	for i:=0 to Party.Chars.Count-1 do
+	begin
+		if fBuffable(Party.Chars.Items(i)) and (shouldRedance(Party.Chars.Items(i), arr, EndTime)) and not isContains(tNames, Party.Chars.Items(i).Name) then
+			perlimResult := perlimResult + 1;
+	end;
+
+	Result := perlimResult;
+end;
+
+function countPartyWithoutEffects: IntArr;
+var
+  i: integer;
+  res: integer;
+  partyStatus: array of integer;
+begin
+  SetLength(partyStatus, Party.Chars.Count);
+  for i:=0 to Party.Chars.Count-1 do
+  begin
+    if not isContains(throwNames, Party.Chars.Items(i).Name) and fBuffable(Party.Chars.Items(i)) then
+      partyStatus[i] := countEffects(Party.Chars.Items(i), skillsArray)
+    else
+      partyStatus[i] := 0;
+  end;
+  Result := partyStatus;
+end;
+
+function absWithoutEffects: integer;
+var
+  arr: array of integer;
+  i: integer;
+  res: integer;
+begin
+  arr := countPartyWithoutEffects;
+  res := 0;
+  for i:=0 to Length(arr)-1 do
+  begin
+    res := res + arr[i];  
+  end;
+
+  Result := Trunc(res / Length(arr));
+end;
+
+//functors
+function fBuffable(actor: TL2Live): boolean;
+var
+	effect: tl2effect;
+begin
+  Result := (not actor.Dead) and (User.DistTo(actor) < 900) and not actor.Buffs.ByID(1422, effect);
+  {and not isMedused(actor)} 
+end;
+
+function updateConcentration(actor: TL2Char; skillId: integer = -1): boolean;
+var
+  eff: TL2Buff;
+begin
+  Result := isHealer(actor) and not actor.Buffs.ByID(276, eff)
+      or (actor.Buffs.ByID(276, eff) and (eff.EndTime <= endTime * 1000)); 
+end;
+
+function withoutEff(actor: TL2Char; skillId: integer = -1): boolean;
+var
+  eff: TL2Buff;
+begin
+  Result := not actor.Buffs.ByID(skillId, eff)
+      or (actor.Buffs.ByID(skillId, eff) and (eff.EndTime <= endTime * 1000));
+end;
+
+function isHealer(obj: TL2Char): boolean;
+begin
+  Result := (obj.ClassID = 97) or (obj.ClassID = 105) or (obj.ClassID = 112);
+end;
+
+function updateWarrior(actor: TL2Char; skillId: integer = -1): boolean;
+begin
+  Result := isWarrior(actor) and shouldRedance(actor, warrEff, endTime);  
+end;
+
+function updateMage(actor: TL2Char; skillID: integer = -1): boolean;
+begin
+  Result := isMage(actor) and shouldRedance(actor, mageEff, endTime);
+end;
+
+function updateRogue(actor: TL2Char; skillID: integer = -1): boolean;
+begin
+  Result := (isArcher(actor) or isRoque(actor)) and shouldRedance(actor, rogueEff, endTime);
+end;
+
+function updatePet(actor: TL2Pet; skillId: integer = -1): boolean;
+begin
+	Result := shouldRedance(actor, petEff, endTime);
+end;
+
+function updateShadow(actor: TL2Live; skillId: integer = -1): boolean;
+var
+  eff: TL2Effect;
+begin
+  Result := not actor.Buffs.ByID(366, eff)
+      or (actor.Buffs.ByID(366, eff) and (eff.EndTime <= shadowEndTime * 1000));
+end;
+
+
+function isWarrior(obj: TL2Char): boolean;
+begin
+	Result := ((obj.ClassID = 88) {duelist} 
+	or (obj.ClassID = 89) {deadnought}
+	or (obj.ClassID = 113) {titan}
+	or (obj.ClassID = 114) {grand khautari}
+	or (obj.ClassID = 117) {forutne seeker}
+	or (obj.ClassID = 118) {maestro}
+	or (obj.ClassID = 131)); {doombringer}
+end;
+
+function isArcher(obj: TL2Char): boolean;
+begin
+	Result := ((obj.ClassID = 92) {sagittarius} 
+	or (obj.ClassID = 102) {moonlight sentinel}
+	or (obj.ClassID = 109) {ghost sentinel}
+	or (obj.ClassID = 134)); {trickster}
+end;
+
+function isRoque(obj: TL2Char): boolean;
+begin
+	Result := ((obj.ClassID = 101) {wind rider} 
+	or (obj.ClassID = 108) {ghost hunter}
+	or (obj.ClassID = 93)); {adventurer}
+end;
+
+function isMage(obj: TL2Char): boolean;
+begin
+  Result := ((obj.ClassID = 94) {archmage}
+	or (obj.ClassID = 95) {soultaker}
+	or (obj.ClassID = 103) {mystic muse}
+	or (obj.ClassID = 110) {storm screamer}
+	or (obj.ClassID = 133) {female soul hound}
+	or (obj.ClassID = 132)); {male soul hound}
+end;
+
+function fManaCheck(manaPerCount: integer; obj: TL2Live): boolean;
+var
+	effect: tl2effect;
+begin
+  Result := (obj.Buffs.ByID(1533, effect) or obj.Buffs.ByID(1532, effect)
+  or obj.Buffs.ByID(3282, effect) or (obj.MP > manaPerCount));
+end;
+
+//etc
+
+function isContains(arr: array of string; val: string): boolean;
+var
+  i: integer;
+begin  
+  if Length(arr) < 1 then
+  begin
+    Result := false;
+    exit;
+  end;
+
+  for i:=0 to Length(arr)-1 do
+  begin
+    if (AnsiSameText(arr[i], val)) then
+    begin
+      Result := true;
+      exit;
+    end;
+  end;
+  Result := false;
+end;
+
+procedure loadSettings;
+begin
+    skillsArray := getArray('Skill list');
+    throwNames := getStringArray;
+
+    mageEff := getArray('Mage list');
+    warrEff := getArray('Warrior list');
+    rogueEff := getArray('Rogue list');
+    petEff := getArray('Pet list');
+
+    Settings.SetFile(Script.Path + User.Name + '_SDsettings.ini');
+    remoteNickname := Settings.Load('Skills', 'Remote dancer', 'NickName');
+    endTime := Settings.Load('Skills', 'EndTime', 10);
+    isConcentrationCheck := Settings.LoadBool('Skills', 'Concentration Check', 'true');
+    isShadowCheck := Settings.LoadBool('Skills', 'Shadow Check', 'false');
+    shadowEndTime := Settings.Load('Skills', 'Shadow EndTime', 30);
+end;
+
+procedure mainController(iSkillList: IntArr; remoteNick: string);
+var
+  eff: TL2Buff;
+  skill: TL2Skill;
+  i: integer;
+  currArr: IntArr;
+  arr1: IntArr;
+  arr2: IntArr;
+begin
+
+  if (Length(iSkillList) > 2) then
+  begin
+    SetLength(currArr, Length(iSkillList));
+    SetLength(arr1, 2);
+    SetLength(arr2, Length(iSkillList)-2);
+
+    currArr := iSkillList;
+
+    for i:=0 to length(arr1)-1 do
+      arr1[i] := currArr[i];
+
+    for i:=0 to length(currArr)-2 do
+      arr2[i] := currArr[i + 2]; 
+    
+  end
+  else
+  begin
+      SetLength(currArr, Length(iSkillList));
+      SetLength(arr1, Length(currArr));
+      SetLength(arr2, 0);
+      currArr := iSkillList;
+      for i:=0 to length(arr1)-1 do
+        arr1[i] := currArr[i];
+  end;
+  
+    
+  while Engine.Status = lsOnline do
+  begin
+    delay(50);
+    
+    if isConcentrationCheck and (partyCount(updateConcentration, throwNames, false) > 0) then
+      doCast(276, remoteNick);
+
+    if isShadowCheck and ((partyCount(updateShadow, throwNames, true) > 0)
+      or (partyPetCount(updateShadow, throwNames, true) > 0)) then
+      doCast(366, remoteNick);  
+
+    if (partyCount2(throwNames, arr1) > 0) then
+    begin
+      for i:=0 to Length(arr1)-1 do
+      begin
+        doCast(arr1[i], remoteNick);
+        delay(200);
+      end;
+    end;
+	
+	if (partyPetCount(updatePet, throwNames, false) > 0) then
+	begin
+	  for i:=0 to Length(petEff)-1 do
+      begin
+        doCast(petEff[i], remoteNick);
+        delay(200);
+      end;
+	end;
+    
+    if (partyCount(updateWarrior, throwNames, false) > 0) then
+    begin
+      for i:=0 to Length(warrEff)-1 do
+      begin
+        doCast(warrEff[i], remoteNick);
+        delay(200);
+      end;
+    end;
+
+    if (partyCount(updateMage, throwNames, false) > 0) then
+    begin
+      for i:=0 to Length(mageEff)-1 do
+      begin
+        doCast(mageEff[i], remoteNick);
+        delay(200);
+      end;
+    end;
+
+    if (partyCount(updateRogue, throwNames, false) > 0) then
+    begin
+      for i:=0 to Length(rogueEff)-1 do
+      begin
+        doCast(rogueEff[i], remoteNick);
+        delay(200);
+      end;
+    end;
+
+    if Length(arr2) = 0 then
+      continue;
+    
+    if (partyCount2(throwNames, arr2) > 0) then
+    begin
+      for i:=0 to Length(arr2)-1 do
+      begin
+        doCast(arr2[i], remoteNick);
+        delay(200);
+      end;
+    end;
+
+
+  end;
+end;
+
+begin
+  
+    loadSettings;
+    
+    script.newThread(@mainController(skillsArray, remoteNickname));
+      
+end.

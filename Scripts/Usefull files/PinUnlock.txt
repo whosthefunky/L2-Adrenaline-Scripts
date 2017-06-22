@@ -1,0 +1,8 @@
+uses classes;
+var
+pin: Integer;
+begin
+  //pin := 290100;
+  //Engine.BypassToServer('custom_pin_unlock ' + IntToStr(pin));
+  Engine.BypassToServer('custom_pin_unlock 290100');
+end.

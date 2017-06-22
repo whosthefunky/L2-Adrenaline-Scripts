@@ -1,0 +1,181 @@
+uses
+  SysUtils, Classes, SettingsModule;
+
+function SetCursorPos(x, y : integer): boolean; stdcall; external 'user32.dll';
+function mouse_event(dwFlags, dx, dy, dwData: byte; dwExtraInfo: integer): void; stdcall; external 'user32.dll';
+
+const
+	enchantOperationDelay = 3000; // 3000 ms
+	perActionDelay = 200; // 200 ms
+	insertedLifeStoneDelay = 500; // 500 ms
+	mouseEventDelay = 300; // 200 ms
+	configPath = 'EnchantConfig.ini';
+
+var
+  
+//objectName : array (x_coord, y_coord);
+  
+  setWeapon : array [0..1] of integer = (100, 82); // weapon insert holder coord
+  invWeapon : array [0..1] of integer = (100, 82); // weapon at inventory
+  submitBtn : array [0..1] of integer = (100, 82);
+  
+  weaponID: integer;
+  scrollID: integer;
+  enchantLevel: integer;
+  exitItemId: integer;
+
+  isTest: string;
+  
+  MySet: TSettings;
+
+//winapi
+procedure mouseClick(point: array of integer; _delay : integer = mouseEventDelay); //base mouse delay
+begin
+  SetCursorPos(point[0], point[1]);
+  mouse_event($2, 0, 0, 0, 0);
+  delay(_delay);
+  mouse_event($4, 0, 0, 0, 0);
+end;
+
+procedure moveFromTo(start: array of integer; finish: array of integer); //если isCustomCheckTime, в таком случае выставляем кастомную задержку(возможность просмотра лса);
+begin
+	SetCursorPos(start[0], start[1]);
+	delay(perActionDelay);
+	mouse_event($2, 0, 0, 0, 0);
+	delay(perActionDelay);	
+	SetCursorPos(finish[0], finish[1]);
+	delay(perActionDelay);
+	mouse_event($4, 0, 0, 0, 0);
+	delay(perActionDelay);	
+end;
+
+
+//etc
+function itemCount(ID: integer): integer;
+var
+ tmpItem: TL2Item;
+begin
+	Result := 0;
+	if (Inventory.User.ByID(Id, tmpItem)) then
+		Result := tmpItem.Count;	
+end;
+   
+function getItemById(id: integer): TL2Item;
+var
+	tmpItem: TL2Item;
+	i: integer;
+begin
+	Result := nil;
+	if Inventory.User.ByID(id, tmpItem) then
+		Result := tmpItem;
+end;
+
+function isEnchanted(id: integer; enchantLevel: integer): boolean;
+begin
+	Result := true;
+	if (Assigned(getItemById(id))) then
+		Result := getItemById(id).EnchantLevel = enchantLevel;
+end;
+
+function isEnoughItems: boolean;
+begin
+	Result := (itemCount(weaponID) > 0) and (itemCount(scrollID) > 0);
+	if not Result then
+	  Engine.MSG('[Script stop]', 'Not enough items', 255);
+end;
+
+//augmentation bools
+function shouldExit(itemId: integer): boolean;
+var
+  item: TL2Item;
+begin
+  if Inventory.User.ById(itemId, item) then
+  begin
+    Result := (User.Target = nil) or item.Equipped;
+    if (Result) then
+      Engine.MSG('[Script stop]', 'No target or exit item is equipped', 255);
+    exit;
+  end;
+  if User.Target = nil then
+    Engine.MSG('[Script stop]', 'Character target is empty', 255);  
+  Result := (User.Target = nil);
+end;
+
+procedure loadConfig; //выгрузка из конфига в массив
+begin
+	MySet.SetFile(Script.Path + configPath);
+
+	weaponID := MySet.Load('Params', 'Weapon ID', 0);
+	scrollID := MySet.Load('Params', 'Scroll ID', 0);
+	enchantLevel := MySet.Load('Params', 'Enchant level', 0);
+	exitItemId := MySet.Load('Params', 'Exit itemId', 14164);
+	isTest := MySet.Load('Params', 'Cursor test', 'false');
+
+	//coordinates
+	setWeapon[0] := MySet.Load('Coordinates', 'Set weapon slot X', 175);
+	setWeapon[1] := MySet.Load('Coordinates', 'Set weapon slot Y', 175);
+  
+	invWeapon[0] := MySet.Load('Coordinates', 'Inventory weapon X', 250);
+	invWeapon[1] := MySet.Load('Coordinates', 'Inventory weapon Y', 361);
+	
+	submitBtn[1] := MySet.Load('Coordinates', 'Submit button X', 90);
+	submitBtn[1] := MySet.Load('Coordinates', 'Submit button Y', 250);
+
+	Engine.MSG('[Settings]', 'Weapon ID: ' + IntToStr(weaponID), 8388736);
+	Engine.MSG('[Settings]', 'Scroll ID: ' + IntToStr(scrollID), 8388736);
+	Engine.MSG('[Settings]', 'Enchant level: ' + IntToStr(enchantLevel), 8388736);
+	Engine.MSG('[Settings]', 'Exit itemId: ' + IntToStr(exitItemId), 8388736);
+	Engine.MSG('[Settings]', 'Cursor test: ' + isTest, 8388736);
+	Engine.MSG('[Settings]', 'Config loaded', 8388736);
+	
+	
+end;
+
+//threads
+procedure doEnchant;
+begin
+	//select weapon & move to holder
+	moveFromTo(invWeapon, setWeapon);
+	delay(perActionDelay);
+	// submit | double click
+	mouseClick(submitBtn);
+	delay(enchantOperationDelay);  
+end;
+
+procedure setLifeStone; //main thread
+begin
+	while Engine.Status = lsOnline do
+	begin
+	
+	if isEnchanted(weaponID, enchantLevel) or shouldExit(exitItemId) or not isEnoughItems then
+		exit;
+
+  Engine.UseItem(scrollID);
+  delay(500);
+	doEnchant;
+	
+	delay(200);
+	end;
+end;
+
+procedure cursorVerifier;
+begin
+  SetCursorPos(setWeapon[0], setWeapon[1]);
+  delay(1000);
+  SetCursorPos(invWeapon[0], invWeapon[1]);
+  delay(1000);
+  SetCursorPos(submitBtn[0], submitBtn[1]);
+  delay(1000);
+end;
+
+
+begin
+  loadConfig;
+  
+  if (AnsiSameText(isTest, 'true')) then
+    cursorVerifier
+  else   
+    setLifeStone;   
+
+end.
+

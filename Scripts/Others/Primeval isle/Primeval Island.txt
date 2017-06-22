@@ -1,0 +1,1206 @@
+uses
+  SysUtils, SettingsModule, Classes;
+
+type
+   TNpc = record
+    obj: TL2Live;
+    objId: Cardinal;
+   end;
+
+   TNpcList = class
+    public
+      TNpcArray: array of TNpc;
+      function isContains(obj: TL2Live): boolean;
+      function add(obj: TL2Live): boolean;
+      function remove(_index: integer): boolean;
+      function getLength: integer;
+      function revalidate: integer;
+      procedure sort;
+      procedure clear;
+   end;
+
+   DimensionArray = array of array of integer;
+   
+const
+   isleRange = 15000;
+   isleX = 18040;
+   isleY = -14808;
+   isleZ = -3040;
+   npcCount = 3;
+   checkRange = 4000;
+   diffZ = 70;
+   waitCastTime = 4000;
+   minionSearchRange = 500;
+   tyrannosaurAgroRange = 600;
+   tyrannosaurFindRange = 3000;
+   cannotSeeTargetMsgId = 181;
+
+var
+   MySet: TSettings;
+   //config
+   bunchCount: integer = 3;
+   isDebug: boolean = false;
+   skillId: integer = 1175;
+   farmSkillId: integer = 1175;
+   summonRange: integer = 800;
+   effectCheckId: integer;
+   effectCheckTime: cardinal;
+   //zone
+   zoneCenter: array[0..3] of integer;
+   zoneRadius: integer = 3000;
+   backToLocCoord: DimensionArray;
+
+   //regen
+   mpValue: integer;
+   mpValue2: integer;
+   coordToRegenZone: DimensionArray;
+   coordToFarmZone: DimensionArray;
+   
+   //bool for thread checkers
+   shouldCheckSkillCast: cardinal = 0;
+   cannotSeeTarget: boolean = false;
+   shouldRecall: boolean = false;
+   shouldRestore: boolean = false;
+   shouldRebuf: boolean = false;
+ 
+   //npc arrays
+   minionHolder: TNpcList;
+   leaderHolder: TNpcList;
+   tyrHolder: TNpcList;
+
+   //etc
+   inCombatTimer: int64;
+   shouldRestart: boolean;
+   
+   cycleCounter: integer = 0;
+ 
+//math func
+function distanceBetween(x1, y1, z1, x2, y2, z2: int64): extended;
+begin
+	 Result := sqrt(((x2 - x1)*(x2 - x1)) + ((y2 - y1)*(y2 - y1)) + ((z2 - z1)*(z2 - z1)));
+end;
+
+function inRange(obj: TL2Spawn; x1, y1, z1: integer; range: integer): boolean;
+begin
+  Result := (distanceBetween(obj.X, obj.Y, obj.Z, x1, y1, z1) < range); 
+end;
+
+function equalDoubles(n1: double; n2: double; precision: double): boolean;
+begin
+  Result := (Abs(n1 - n2) <= precision);
+end;
+
+function lineCircleIntersection(x0: double; y0: double; //cycle centre
+                                x1: double; y1: double; //start of line          
+                                x2: double; y2: double; //end of line
+                                r: double = tyrannosaurAgroRange): integer;
+var
+  q, k, l, z, p, s, A, B, C, D: double;
+begin
+  q := x0 * x0 + y0 * y0 - r*r;
+  k := -2.0 * x0;
+  l := -2.0 * y0;
+
+  z := x1 * y2 - x2 * y1;    //D
+  p := y1 - y2;
+  s := x1 - x2;
+
+  if (equalDoubles(s, 0.0, 0.001)) then
+    s := 0.001;
+
+  A := s * s + p * p;
+  B := s * s * k + 2.0 * z * p + s * l * p;
+  C := q * s * s + z * z + s * l * z;
+  D := B * B - 4.0 * A * C;
+
+  if (D < 0.0) then
+  begin
+    Result := 0;
+    exit;
+  end
+  else if (D < 0.001) then
+  begin
+    Result := 1;
+    exit;
+  end;
+
+  Result := 2;
+end;
+
+function isIntersect(objX, objY, x, y, range: double): boolean;
+begin
+  Result := (lineCircleIntersection(objX, objY, user.X, user.Y, x, y, range) <> 0); 
+end;
+
+//TNpcList funcs
+procedure TNpcList.sort;
+var
+  i, j: integer;
+  tmpObj: TNpc;
+begin
+  if (Length(self.TNpcArray) <= 1) then
+	exit;
+	
+  for i:=Length(self.TNpcArray)-1 downto 0 do
+  begin
+	  for j:=0 to i-1 do
+	  begin
+		  if (User.DistTo(self.TNpcArray[j].obj) > User.DistTo(self.TNpcArray[j+1].obj)) then
+		  	begin
+		  	    tmpObj := self.TNpcArray[j];
+		  	    self.TNpcArray[j] := self.TNpcArray[j+1];
+		  			self.TNpcArray[j+1] := tmpObj;
+
+				end;
+	  end;
+	end;
+end;
+
+procedure TNpcList.clear;
+begin
+  SetLength(self.TNpcArray, 0);
+end;
+
+function TNpcList.isContains(obj: TL2Live): boolean;
+var
+  i: integer;
+begin
+  if Length(self.TNpcArray) <= 1 then
+  begin
+    Result := false;
+    exit;
+  end;
+
+  for i:=0 to Length(self.TNpcArray)-1 do
+  begin
+    if (self.TNpcArray[i].objId = obj.OID) then
+    begin
+      Result := true;
+      exit;
+    end;
+  end;
+  Result := false;
+end;
+
+function TNpcList.add(obj: TL2Live): boolean;
+var
+	i: integer;
+begin
+  SetLength(self.TNpcArray, Length(self.TNpcArray) + 1);
+  self.TNpcArray[Length(self.TNpcArray)-1].obj := nil;
+	for i:=0 to Length(self.TNpcArray)-1 do
+	begin
+		if (self.TNpcArray[i].obj = nil) then
+		begin
+			self.TNpcArray[i].obj := obj;
+			self.TNpcArray[i].objId := obj.OID;
+			Result := true;
+			exit;
+		end;
+	end;
+	SetLength(self.TNpcArray, Length(self.TNpcArray) - 1);
+	Result := false;
+end;
+
+function TNpcList.remove(_index: integer): boolean;
+var
+  i: integer;
+  previousLength: integer;
+  resultArray: array of TNpc;
+begin
+  if (Length(self.TNpcArray) <= 1) then
+  begin
+    Result := false;
+    exit;
+  end;  
+
+  previousLength := Length(self.TNpcArray);
+  SetLength(resultArray, previousLength - 1);
+
+  for i:=0 to Length(self.TNpcArray)-1 do
+  begin
+    if (i = _index) then
+    begin
+      if (i > 0) and (i < previousLength - 1) then
+      begin
+        Move(self.TNpcArray[0], resultArray[0], i);
+        Move(self.TNpcArray[i + 1], resultArray[i], previousLength - i - 1);
+        Move(resultArray[0], self.TNpcArray[0], previousLength - 1);
+        SetLength(self.TNpcArray, Length(self.TNpcArray) - 1);
+        Result := true;
+        exit;
+      end;
+      if (i = 0) then
+      begin
+        Move(self.TNpcArray[1], resultArray[0], previousLength - 1);
+        Move(resultArray[0], self.TNpcArray[0], previousLength - 1);
+        SetLength(self.TNpcArray, Length(self.TNpcArray) - 1);
+        Result := true;
+        exit;
+      end;
+      if (i = (previousLength - 1)) then
+      begin
+        Move(self.TNpcArray[0], self.TNpcArray[0], previousLength - 1);
+        SetLength(self.TNpcArray, Length(self.TNpcArray) - 1);
+        Result := true;
+        exit;
+      end;
+    end;
+  end;
+  Result := false;
+end;
+
+function TNpcList.getLength: integer;
+begin
+  Result := Length(self.TNpcArray);
+end;
+
+function TNpcList.revalidate: integer;
+var
+  i, j: integer;
+  prelimResult: integer;
+  isValid: boolean;
+begin
+  prelimResult := 0;
+  for i:=0 to Length(self.TNpcArray)-1 do
+    begin
+      isValid := false;
+      for j:=0 to NpcList.count-1 do
+      begin
+        if self.TNpcArray[i].objId = NpcList.items(j).OID then
+        begin
+          isValid := true;
+          break;
+        end;
+      end;
+
+      if not isValid then
+      begin
+        self.remove(i);
+        inc(prelimResult);
+        continue;
+      end;
+  end;
+  Result := prelimResult;
+end;
+
+//npc funcs
+function getBush(obj: TL2Live; var resObj: TL2Live; range: integer = 200): boolean;
+var
+  i: integer;
+begin
+  for i:=0 to NpcList.count-1 do
+  begin
+    if ((NpcList.items(i).ID = 18345) or (NpcList.items(i).ID = 18346))
+    and (Obj.DistTo(NpcList.items(i)) < range) then
+    begin
+      resObj := NpcList.items(i);
+      Result := true;
+      exit;
+    end;  
+  end;
+  Result := false;
+end;
+
+function countNpcs(range: integer = 500): integer;
+var
+  i, prelimResult: integer;
+begin
+  prelimResult := 0;
+  for i:=0 to Npclist.count-1 do
+  begin
+    if (User.DistTo(npclist.items(i)) < range) and not npclist.items(i).dead
+    and (isValidNpcCombat(npclist.items(i))) then
+      inc(prelimResult);
+  end;
+  Result := prelimResult;
+end;
+
+function getClosestNpc: TL2Live;
+var
+  i: integer;
+begin
+  if NpcList.Count = 0 then
+    exit;
+
+  for i:=0 to NpcList.count-1 do
+  begin
+    if not Npclist.items(i).dead and isValidNpcCombat(Npclist.items(i)) then
+    begin
+      result := npclist.items(i);
+      break;
+    end;
+  end;
+    
+  for i:=0 to NpcList.count-1 do
+  begin
+    if (User.DistTo(Result) > User.DistTo(NpcList.items(i)))
+    and not NpcList.items(i).Dead and isValidNpcCombat(Npclist.items(i)) then
+      Result := NpcList.items(i);
+  end;
+end;
+
+function countCloseNpcs(obj: TL2Live; isRewrite: boolean = true): integer;
+var
+  prelimResult: integer;
+  i: integer;
+begin
+  prelimResult := 0;
+  for i:=0 to NpcList.count-1 do
+  begin
+    if (NpcList.items(i).DistTo(obj) < minionSearchRange) and isValidNpc(NpcList.items(i)) then
+    begin
+      inc(prelimResult);
+      if isRewrite then
+        minionHolder.add(NpcList.items(i));
+    end;
+  end;
+  result := prelimResult;
+end;
+
+function isValidNpc(obj: TL2Live): boolean;
+begin
+  if (obj.Attackable and not obj.Dead
+  and not (obj.ID = 18344)//AncientEgg
+  and not (obj.ID = 18345)//sprigant
+  and not (obj.ID = 18346)//sprigant
+  and not (obj.ID = 22215)//Tyrr
+  and not (obj.ID = 22216)//Tyrr
+  and not (obj.ID = 22217)//Tyrr
+  and not obj.InCombat
+  and inRange(obj, zoneCenter[0], zoneCenter[1], zoneCenter[2], zoneRadius)
+  )
+  then
+      Result := true
+  else
+      Result := false;
+end;
+
+function isValidNpcCombat(obj: TL2Live): boolean;
+begin
+  if (obj.Attackable and not obj.Dead
+  and not (obj.ID = 18344)//AncientEgg
+  //and not (obj.ID = 18345)//sprigant
+  //and not (obj.ID = 18346)//sprigant
+  and not (obj.ID = 22215)//Tyrr
+  and not (obj.ID = 22216)//Tyrr
+  and not (obj.ID = 22217)//Tyrr
+  and inRange(obj, zoneCenter[0], zoneCenter[1], zoneCenter[2], zoneRadius)
+  )
+  then
+      Result := true
+  else
+    Result := false;
+end;
+
+procedure findNpcs;
+var
+  i: integer;
+  closeNpcCount: integer;
+begin
+  leaderHolder.clear;
+  minionHolder.clear;
+  for i:=0 to NpcList.count-1 do
+  begin
+  if (User.DistTo(NpcList.items(i)) < checkRange)
+  and (Abs(User.Z - NpcList.items(i).Z) < diffZ) then
+   begin
+
+   if not leaderHolder.isContains(NpcList.items(i))
+      and not minionHolder.isContains(NpcList.items(i))
+      and isValidNpc(NpcList.items(i)) then
+    begin
+      
+      closeNpcCount := countCloseNpcs(NpcList.items(i), false);
+      
+        if closeNpcCount > npcCount then
+        begin
+          
+          countCloseNpcs(NpcList.items(i), true);
+
+          leaderHolder.add(NpcList.items(i));
+          
+        end;
+    end;
+    
+   end; //close IF range check
+   
+  end; // close cycle
+  
+  print('Мобов найдено: ' + IntToStr(minionHolder.getLength));
+  print('Лидеров группы: ' + IntToStr(leaderHolder.getLength));
+  
+  if isDebug then
+  begin
+    print('Мобов найдено: ' + IntToStr(minionHolder.getLength));
+    print('Лидеров группы: ' + IntToStr(leaderHolder.getLength));
+  end;
+
+end;
+
+procedure updateTyrannousaurs(range: integer = tyrannosaurFindRange; isRewrite: boolean = true);
+var
+  i: integer;
+  prelimResult: integer;
+begin
+  prelimResult := 0;
+    
+  tyrHolder.revalidate;
+    
+  for i:=0 to NpcList.count-1 do
+  begin
+    if ((NpcList.items(i).id = 22215)
+    or (NpcList.items(i).id = 22216) or (NpcList.items(i).id = 22217))
+    and (User.DistTo(NpcList.items(i)) < range) and not NpcList.items(i).Dead
+    and not tyrHolder.isContains(NpcList.items(i)) and (NpcList.items(i) <> nil) then
+    begin
+       
+      if isDebug then
+        print('NpcId: ' + IntToStr(NpcList.items(i).Id) + '; NpcName: ' + NpcList.items(i).Name + '; x: ' + IntToStr(npclist.items(i).x) + '; y: ' + IntToStr(npclist.items(i).y));
+
+      if isRewrite then
+        tyrHolder.add(NpcList.items(i));
+      
+    end;
+  end;
+  tyrHolder.revalidate;
+end;
+
+//Char params
+function canMoveTo(objX, objY: integer): boolean;
+var
+  i: integer;
+  agroRange: integer;
+begin
+  updateTyrannousaurs;
+  if (tyrHolder.getLength > 0) then
+  begin
+    for i:=0 to tyrHolder.getLength-1 do
+    begin
+      agroRange := tyrannosaurAgroRange;
+        
+      if (tyrHolder.TNpcArray[i].obj.ID = 22217) then
+        agroRange := tyrannosaurAgroRange * 2;
+
+      if isIntersect(tyrHolder.TNpcArray[i].obj.X, tyrHolder.TNpcArray[i].obj.Y, objX, objY, agroRange) then
+      begin
+        Result := false;
+        exit;
+      end;
+    end;
+  end;
+  
+  Result := true;
+end;
+
+function isStunned(obj: TL2Live): boolean;
+var
+  i: integer;
+begin
+  for i:=0 to obj.buffs.count-1 do
+  begin
+    if (Pos('Stun', obj.buffs.items(i).name) <> 0) then
+    begin
+      Result := true;
+      exit;
+    end;
+  end;
+  Result := false;
+end;
+
+function shouldCast: boolean;
+begin
+  Result := (User.MP > 40) and (User.HP > 50) and not isStunned(User);
+end;
+
+//Char funcs
+procedure attackMobs;
+var
+  tidalWaveReuse: cardinal;
+  castCounter: integer;
+begin
+  tidalWaveReuse := 0;
+  castCounter := 0;
+
+  while (countNpcs(200) >= 1) do
+  begin
+
+    if User.Dead then
+      exit;
+    
+    if (GetTickCount > tidalWaveReuse) and (petlist.count > 0) and not isStunned(petlist.items(0)) and (countNpcs(300) > 1) then
+    begin
+      Engine.SetTarget(getClosestNpc);
+      Engine.UseAction(1035);
+      delay(200);
+      if (petlist.items(0).cast.endtime > 0) and (petlist.items(0).cast.id = 5139) then
+      begin
+        if (shouldCast and (castCounter mod 3 = 0)) then
+          Engine.UseSkill(farmSkillId);
+
+        tidalWaveReuse := GetTickCount + 6 * 1000 + 300;
+        delay(petlist.items(0).cast.endtime + 20);
+      end;
+      Engine.UseAction(22);
+      inc(castCounter);
+      delay(1000);
+    end
+    else
+    begin
+      Engine.SetTarget(getClosestNpc);
+      Engine.UseAction(22);
+      if (shouldCast and (castCounter mod 3 = 0)) then
+        Engine.UseSkill(farmSkillId);
+
+      inc(castCounter);
+      
+      delay(1000);
+    end;
+  end;
+end;
+
+procedure huntMobs;
+var
+  i: integer;
+  counter: integer;
+begin
+  counter := 0;
+  
+  findNpcs;
+  
+  if isDebug then
+	  print('Cycle count: ' + inttostr(cycleCounter));
+	
+  inc(cycleCounter);
+
+  leaderHolder.sort;
+
+  leaderHolder.revalidate;
+
+  for i:=0 to leaderHolder.getLength-1 do
+  begin  
+  
+    if User.dead then
+      exit;
+         
+    if not canMoveTo(leaderHolder.TNpcArray[i].obj.x, leaderHolder.TNpcArray[i].obj.y)
+       or (leaderHolder.TNpcArray[i].obj = nil) then
+      begin
+        leaderHolder.remove(i); 
+        continue;
+      end;
+
+    Engine.SetTarget(leaderHolder.TNpcArray[i].obj);
+
+    shouldCheckSkillCast := GetTickCount + waitCastTime;
+
+    while (shouldCheckSkillCast > GetTickCount) do
+    begin
+
+        if cannotSeeTarget then
+        begin
+          leaderHolder.remove(i);
+          break;
+        end;
+          
+        if Engine.UseSkill(skillId) then
+          begin
+            inc(counter);
+            shouldCheckSkillCast := GetTickCount - 1;
+          end;
+      delay(200);
+    end;
+
+    cannotSeeTarget := false;
+      
+    if (counter >= bunchCount) then
+      exit;
+
+		leaderHolder.sort;
+  end;
+ 
+end;
+
+procedure pickUpManaHerbs;
+const
+  herbOfMana = 8603;
+  majorHerbOfMana = 8604;    
+  superiorHerbOfMana = 8605;
+  herbOfRecovery = 8614; 
+var
+  i, j: integer;
+  countHerbs: integer;
+begin
+  countHerbs := 0;
+  for i:=0 to droplist.count-1 do
+  begin
+    if (droplist.items(i).isMy and (User.DistTo(droplist.items(i)) < 600)
+    and inRange(droplist.items(i), zoneCenter[0], zoneCenter[1], zoneCenter[2], zoneRadius)
+    and canMoveTo(droplist.items(i).x, droplist.items(i).y)) then
+    begin
+
+      if ((User.MP < 90) and ((droplist.items(i).id = herbOfMana)
+      or (droplist.items(i).id = majorHerbOfMana)
+      or (droplist.items(i).id = superiorHerbOfMana)
+      or (droplist.items(i).id = herbOfRecovery))) then
+        inc(countHerbs);
+      
+    end;
+  end;
+  
+  for j:=0 to countHerbs do
+  begin
+    for i:=0 to droplist.count-1 do
+    begin
+      if (droplist.items(i).isMy and (User.DistTo(droplist.items(i)) < 600)
+      and inRange(droplist.items(i), zoneCenter[0], zoneCenter[1], zoneCenter[2], zoneRadius)
+      and canMoveTo(droplist.items(i).x, droplist.items(i).y)) then
+      begin
+
+        if ((User.MP < 90) and ((droplist.items(i).id = herbOfMana)
+        or (droplist.items(i).id = majorHerbOfMana)
+        or (droplist.items(i).id = superiorHerbOfMana)
+        or (droplist.items(i).id = herbOfRecovery))) then
+        begin
+          Engine.MoveTo(droplist.items(i));
+          Engine.PickUp(droplist.items(i));
+          delay(300);
+        end;  
+        end;
+      end;
+    end;
+    
+end;
+
+procedure pickUpLifeHerbs;
+const
+  herbOfLife = 8600;
+  majorHerbOfLife = 8601;  
+  superiorHerbOfLife = 8602;
+  herbOfRecovery = 8614; 
+var
+  i, j: integer;
+  countHerbs: integer;
+begin
+  countHerbs := 0;
+  for i:=0 to droplist.count-1 do
+  begin
+    if (droplist.items(i).isMy and (User.DistTo(droplist.items(i)) < 600)
+    and inRange(droplist.items(i), zoneCenter[0], zoneCenter[1], zoneCenter[2], zoneRadius)
+    and canMoveTo(droplist.items(i).x, droplist.items(i).y)) then
+    begin
+
+      if ((User.MP < 90) and ((droplist.items(i).id = herbOfLife)
+      or (droplist.items(i).id = herbOfLife)
+      or (droplist.items(i).id = majorHerbOfLife)
+      or (droplist.items(i).id = herbOfRecovery))) then
+        inc(countHerbs);
+      
+    end;
+  end;
+  
+  for j:=0 to countHerbs do
+  begin
+  for i:=0 to droplist.count-1 do
+  begin
+    if (droplist.items(i).isMy and (User.DistTo(droplist.items(i)) < 600)
+    and inRange(droplist.items(i), zoneCenter[0], zoneCenter[1], zoneCenter[2], zoneRadius)
+    and canMoveTo(droplist.items(i).x, droplist.items(i).y)) then
+    begin
+      if ((User.HP < 80) and ((droplist.items(i).id = herbOfLife)
+      or (droplist.items(i).id = majorHerbOfLife)
+      or (droplist.items(i).id = superiorHerbOfLife)
+      or (droplist.items(i).id = herbOfRecovery))) then
+      begin
+        Engine.MoveTo(droplist.items(i));
+        Engine.PickUp(droplist.items(i));
+        delay(300);
+      end;  
+    end;
+  end;
+  end;
+    
+end;
+
+procedure afterDeathEvt;
+var
+  i: integer;
+begin
+    Engine.GoHome;
+    delay(1000);
+    while shouldRestore do
+    begin
+      delay(100);
+    end;
+
+    moveToLocWithCheck(backToLocCoord);
+end;
+
+procedure killBush;
+var
+  bush: TL2Live;
+begin
+  if getBush(User, bush) or ((petlist.count>0)
+    and getBush(petlist.items(0), bush)) then
+  begin
+    while not bush.dead or user.dead do
+      begin
+      if (user.target <> bush) then
+         Engine.SetTarget(bush);
+         
+         Engine.UseSkill(farmSkillId);
+         delay(user.cast.endtime + 100);
+      end;
+    end;
+end;
+
+procedure moveToLocWithCheck(coordHolder: DimensionArray; mobsCheckRange: integer = 200; mobsCountToAttack: integer = 4);
+var                                                                 
+  i: integer;
+  _index: integer;
+begin
+  _index := 0;
+  _index := getClosestLoc(coordHolder);
+  try
+  if (inRange(User, isleX, isleY, isleZ, isleRange)) then
+    begin
+      delay(1000);
+      if (Length(coordHolder) > 0) then
+      begin
+        for i:=_index to Length(coordHolder)-1 do
+        begin
+          if not canMoveTo(coordHolder[i, 0], coordHolder[i, 1]) then
+          begin
+            continue;
+            print('Tyrannosaur on my way..');
+          end; 
+          Engine.MoveTo(coordHolder[i, 0], coordHolder[i, 1], coordHolder[i, 2]);
+
+          if (countNpcs(400) > 5) then
+            delay(2000)
+          else
+            delay(300);
+            
+          if (countNpcs(120) > mobsCountToAttack) then
+            attackMobs;
+            
+        end;  
+      end;
+    end
+    else
+      print('Oh, I am not on isle');
+  except
+    print('Exception in back function');
+  end;    
+end;
+
+function getClosestLoc(arr: DimensionArray): integer;
+var
+  i: integer;
+  prelimResult: integer;
+  prelimLength: integer;
+begin
+  prelimResult:= 0;
+  prelimLength:= High(integer);
+  for i:=0 to Length(arr)-1 do
+  begin
+    if (Trunc(distanceBetween(User.X, User.Y, User.Z,
+                  arr[i, 0], arr[i, 1], arr[i, 2])) < prelimLength) then
+       begin
+        prelimLength := Trunc(distanceBetween(User.X, User.Y, User.Z,
+                  arr[i, 0], arr[i, 1], arr[i, 2]));
+        prelimResult := i;          
+       end;
+  end;
+  Result := prelimResult;
+end;
+
+//Char threads
+procedure canCastCheck;
+var
+prm1, prm2: pointer;
+Action : TL2Action;
+begin
+	while Engine.Status = lsOnline do
+	begin
+	    if (shouldCheckSkillCast > GetTickCount) then
+	    begin
+	    Action := Engine.WaitAction([laSysMsg], prm1, prm2);
+	    if Action = laSysMsg then
+	    begin
+	      if (Cardinal(prm1) = cannotSeeTargetMsgId) and not cannotSeeTarget then
+	        cannotSeeTarget := true;
+	    end;
+	  end;
+	  delay(200);
+	end;
+end;
+
+procedure summonHeal;
+begin
+  print('[Thread] Summon heal thread started');
+  while Engine.Status = lsOnline do
+  begin
+    if (petlist.count > 0) and (Petlist.items(0).HP < 70) and not isStunned(User)
+        and (User.MP > 5) and (User.HP > 15) then
+      Engine.UseSkill(1127);
+      
+    delay(1000);
+  end;
+end;
+
+procedure restoreCheck;
+var
+  buff: TL2Buff;
+begin
+  print('[Checker] Thread started');
+  while Engine.Status = lsOnline do
+  begin 
+    shouldRestore := (User.MP < mpValue) or (inRange(User,
+      coordToRegenZone[Length(coordToRegenZone)-1, 0],
+      coordToRegenZone[Length(coordToRegenZone)-1, 1],
+      coordToRegenZone[Length(coordToRegenZone)-1, 2],
+      50) and (User.MP < mpValue2));
+
+    shouldRecall := (petlist.count > 0) and (petlist.items(0).MP < 30);
+
+    shouldRebuf := (not User.Buffs.ByID(effectCheckId, buff) or (buff.EndTime < effectCheckTime));
+    
+    delay(500);
+  end;
+end;
+
+procedure summonRangeProtect;
+var
+  previousTarget: TL2Live;
+begin
+  print('[Thread] Summon range check started');
+  while Engine.Status = lsOnline do
+  begin
+    if (petlist.count > 0) and (User.distTo(petlist.items(0)) > summonRange) then
+    begin
+      if User.Target <> nil then
+        previousTarget := User.Target;
+        
+      Engine.SetTarget(User);
+      Engine.UseAction(53);
+      Engine.UseAction(21);
+      Engine.SetTarget(previousTarget);
+      delay(3 * 1000);
+    end;
+    delay(500);
+  end;
+end;  
+
+procedure herbsController;
+begin
+  print('[Thread] Herbs controller started');
+  while Engine.Status = lsOnline do
+  begin
+    if (User.HP < 80) then
+      pickUpLifeHerbs;
+
+    if (User.MP < 95) or ((petlist.count>0) and (petlist.items(0).mp < 95)) then
+      pickUpManaHerbs;
+      
+  delay(500);
+  end;
+end;
+
+procedure tpContoller;
+var
+  buff: TL2Buff;
+begin
+  while Engine.Status = lsOnline do
+  begin
+    if not User.Dead and not User.Buffs.ById(1262, buff) then
+      Engine.UseSkill(1262);
+      
+    delay(1000);
+  end;
+end;
+
+//etc
+procedure trimCoordinates(text: string; separator: char; var resultArray: array of integer);
+var
+  sl:TStringList;
+begin
+  sl := TStringList.Create;
+  try
+    sl.Delimiter     := separator;
+    sl.DelimitedText := text;
+    resultArray[0] := StrToInt(sl[0]);
+    resultArray[1] := StrToInt(sl[1]);
+    resultArray[2] := StrToInt(sl[2]);
+  finally
+    sl.Free;
+  end;
+end;
+
+function ifThen(val: boolean; sTrue: string; sFalse: string): string;
+begin
+  if val then
+    Result := sTrue
+  else
+    Result := sFalse;
+end;
+
+procedure loadSettings;
+var
+  i: integer;
+  skill, farmSkill: TL2Skill;
+  maybeBuff: TL2Buff;
+  prelimString, userLoc: string;
+  backPointsCount, toRegenPointsCount: integer;
+begin
+   MySet.SetFile(Script.Path + 'primevalIslandConfig.ini');
+
+   isDebug := MySet.Load('Params', 'Дебаг', false);  
+   bunchCount := MySet.Load('Params', 'Количество париков', 3);
+   skillId := MySet.Load('Params', 'Skill id', 1177);
+   farmSkillId := MySet.Load('Params', 'Farm skill id', 1177);
+   summonRange := MySet.Load('Params', 'Summon back range', 800);
+   zoneRadius := MySet.Load('Params', 'Zone radius', 3000);
+   effectCheckId := MySet.Load('Params', 'Buff ID', 1078);
+   effectCheckTime := MySet.Load('Params', 'Buff endtime', 120 * 1000);
+
+   userLoc := MySet.Load('Params', 'Zone center', '0;0;0');
+   if (Pos(userLoc, '0;0;0') <> 0) then
+   begin 
+    zoneCenter[0] := User.X;
+    zoneCenter[1] := User.Y;
+    zoneCenter[2] := User.Z;
+   end
+   else
+    trimCoordinates(userLoc, ';', zoneCenter);
+
+   backPointsCount := MySet.Load('Back to loc info', 'Points count', 8);
+   if (backPointsCount > 0) then
+   begin
+    SetLength(backToLocCoord, backPointsCount, 3);
+    for i:=0 to backPointsCount-1 do
+    begin
+      prelimString := MySet.Load('Back to loc info', 'Point ' + inttostr(i+1), '0;0;0');
+      trimCoordinates(prelimString, ';', backToLocCoord[i]);
+    end;
+   end;
+
+   toRegenPointsCount := MySet.Load('Regen loc info', 'Points count', 4);
+   if (toRegenPointsCount > 0) then
+   begin
+    SetLength(coordToRegenZone, toRegenPointsCount, 3);
+    for i:=0 to toRegenPointsCount-1 do
+    begin
+      prelimString := MySet.Load('Regen loc info', 'Point ' + inttostr(i+1), '0;0;0');
+      trimCoordinates(prelimString, ';', coordToRegenZone[i]);
+    end;
+   end;
+
+   SetLength(coordToFarmZone, Length(coordToRegenZone), 3);
+   for i:=0 to Length(coordToFarmZone)-1 do
+   begin
+      coordToFarmZone[i, 0] := coordToRegenZone[Length(coordToRegenZone)-1 - i, 0];
+      coordToFarmZone[i, 1] := coordToRegenZone[Length(coordToRegenZone)-1 - i, 1];
+      coordToFarmZone[i, 2] := coordToRegenZone[Length(coordToRegenZone)-1 - i, 2];
+   end;
+   
+   mpValue := MySet.Load('Regen loc info', 'MP value', 10);
+   mpValue2 := MySet.Load('Regen loc info', 'MP End Value', 70);
+   
+   if not SkillList.ByID(skillId, skill) then
+      skillId := 1177;
+
+   if not SkillList.ByID(farmSkillId, farmSkill) then
+      farmSkillId := 1177;
+
+
+      
+   //print('[Etc]: Config path: ' + Script.Path + 'primevalIslandConfig.ini');
+   //print('[Etc]: Дебаг: ' + BoolToStr(isDebug));
+   print('[Farm]: Количество париков для сбора: ' + IntToStr(bunchCount));
+   print('[Farm]: Скилл для сбора мобов: ' + ifThen((skill<>nil), skill.Name, 'Wind Strike'));
+   print('[Farm]: Скилл для фарма мобов: ' + ifThen((farmSkill<>nil), farmSkill.Name, 'Wind Strike'));
+   //print('[Farm]: Рейндж возврата суммона: ' + IntToStr(summonRange));
+   print('[Farm]: Эффект для проверки ребафа: '
+                    + IfThen(User.Buffs.ById(effectCheckId, maybeBuff), maybeBuff.Name, IntToStr(effectCheckId)));
+   print('[Zone]: Центр фарм зоны: x: ' + IntToStr(zoneCenter[0]) +
+                  '; y: ' + IntToStr(zoneCenter[1]) + '; z: ' + IntToStr(zoneCenter[2]));
+   print('[Zone]: Радиус фарм зоны: ' + IntToStr(zoneRadius));
+   print('[Death evt]: Количество точек для возврата: ' + IntToStr(Length(backToLocCoord)));
+   print('[Regen evt]: Количество точек к зоне регена: ' + IntToStr(Length(coordToRegenZone)));
+   print('[Regen evt]: % MP, при котором чар пойдет на регена: ' + IntToStr(mpValue));
+                                                                                                   
+
+end;
+
+procedure mainProc;
+begin
+  print('[Thread] Main script thread started');  
+  while Engine.Status = lsOnline do
+  begin
+    if (User.Dead) then
+      script.newThread(@afterDeathEvt);
+
+    if (shouldRebuf) then
+    begin
+      if User.InCombat then
+      begin
+        if (countNpcs(100) > 0) then
+          attackMobs
+        else
+          killBush;
+        delay(300);  
+      end;      
+      delay(300);   
+    end;
+
+    if shouldRestart then
+    begin
+      Engine.UseItem(736);
+      script.newThread(@afterDeathEvt);
+    end;
+
+    if (shouldRestore) and not shouldRebuf and not ShouldRecall
+    and not inRange(User,
+      coordToRegenZone[Length(coordToRegenZone)-1, 0],
+      coordToRegenZone[Length(coordToRegenZone)-1, 1],
+      coordToRegenZone[Length(coordToRegenZone)-1, 2],
+      50) and not inRange(User, 10888, -24088, -3632, 2000)
+    then
+    begin
+      if (User.InCombat) then
+      begin
+        if (countNpcs(100) > 0) then
+          attackMobs
+        else
+          moveToLocWithCheck(coordToRegenZone);
+        delay(300);    
+      end
+      else
+        moveToLocWithCheck(coordToRegenZone);
+        
+      delay(300);
+    end;
+
+    if (shouldRestore) and (inRange(User,
+      coordToRegenZone[Length(coordToRegenZone)-1, 0],
+      coordToRegenZone[Length(coordToRegenZone)-1, 1],
+      coordToRegenZone[Length(coordToRegenZone)-1, 2],
+      50) or inRange(User, 10888, -24088, -3632, 1500)) and (countNpcs(100) = 0) then
+	  begin
+		Engine.FaceControl(3, false);
+		
+		if (petlist.count > 0) and not ((petlist.items(0).ID >= 14295) and (petlist.items(0).ID <= 14342)) then
+			Engine.UseAction(52);
+
+		delay(1000);
+    while (User.MP < 1) and not User.Dead do
+    begin
+      if not User.Sitting then
+        Engine.Sit;
+      delay(500);
+    end;
+
+    if User.Sitting then
+      Engine.Stand;
+		
+		if (petlist.count = 0) then
+			Engine.UseSkill(1226);
+			
+		Engine.FaceControl(3, true);
+		
+		if not User.sitting and (petlist.count > 0) then
+			Engine.Sit;
+			
+		while ((User.MP < mpValue2) and ((petlist.items(0).ID >= 14295) and (petlist.items(0).ID <= 14342)))
+		and not User.Dead do
+		begin
+			Engine.UseAction(45);
+			if (petlist.items(0).cast.endtime > 0) then
+				delay(8 * 1000)
+			else 
+				delay (1000);
+			delay(200);	
+		end;
+	  end;
+      
+    if not (shouldRestore) then
+	begin
+		if User.Sitting then
+			Engine.Stand;
+			
+		if (petlist.count > 0) and (not ((petlist.items(0).ID >= 14886) and (petlist.items(0).ID <= 14900)) or (Petlist.items(0).ID = 14837)) then
+			Engine.UseAction(52);	
+	end; 
+
+    if not (shouldRestore) and not shouldRebuf and not ShouldRecall
+      and inRange(User,
+      coordToRegenZone[Length(coordToRegenZone)-1, 0],
+      coordToRegenZone[Length(coordToRegenZone)-1, 1],
+      coordToRegenZone[Length(coordToRegenZone)-1, 2],
+      50) then
+    begin
+      moveToLocWithCheck(coordToFarmZone);  
+    end;
+    
+    
+    if (shouldRecall) then
+    begin
+      if User.InCombat then
+      begin
+        if (countNpcs(100) > 0) then
+          attackMobs
+        else
+          killBush;
+        delay(300);
+      end
+      else
+        Engine.UseAction(52);
+        
+      delay(300);
+    end;
+    
+    if (countNpcs < 3) and not shouldRecall and not shouldRebuf and not shouldRestore then
+    begin
+      huntMobs;
+      delay(300);
+      attackMobs;
+    end
+    else if (countNpcs > 3) and not shouldRecall and not shouldRebuf and not shouldRestore then
+      attackMobs;
+
+      
+    delay(300);
+  end;
+end;
+
+procedure isCombatStatus;
+begin
+  inCombatTimer := GetTickCount + 5 * 60 * 1000;
+  while Engine.Status = lsOnline do
+  begin
+    if User.inCombat then
+      inCombatTimer := GetTickCount;
+
+    shouldRestart := ((inCombatTimer + 5 * 60 * 1000) < GetTickCount);
+      
+  delay(500);
+  end;
+end;
+
+begin
+    minionHolder := TNpcList.Create;
+    leaderHolder := TNpcList.Create;
+    tyrHolder := TNpcList.Create;
+
+    loadSettings;
+    script.newThread(@isCombatStatus);
+    script.newThread(@canCastCheck);
+    script.newThread(@restoreCheck);
+    script.newThread(@summonHeal);
+    script.newThread(@summonRangeProtect);
+    script.newThread(@herbsController);
+    script.newThread(@tpContoller);
+    script.newThread(@mainProc);
+    delay(-1);
+end.

@@ -1,0 +1,157 @@
+unit TNpcListModule;
+
+interface
+
+uses SysUtils, Classes;
+
+type
+   TNpc = record
+    obj: TL2Live;
+    objId: Cardinal;
+   end;
+
+   TNpcList = class
+    public
+      TNpcArray: array of TNpc;
+      function isContains(obj: TL2Live): boolean;
+      function add(obj: TL2Live): boolean;
+      function remove(_index: integer): boolean;
+      function getLength: integer;
+      procedure sort;
+      procedure clear;
+   end;
+   
+
+implementation
+
+//TNpcList funcs
+procedure TNpcList.sort;
+var
+  i, j: integer;
+  tempObj: TL2Live;
+  tempObjId: Cardinal;
+begin
+  if (Length(self.TNpcArray) <= 1) then
+	exit;
+	
+  for i:=0 to Length(self.TNpcArray)-1 do
+  begin
+	  for j:=Length(self.TNpcArray)-1 to 0 do
+	  begin
+		  if (User.DistTo(self.TNpcArray[j].obj) > User.DistTo(self.TNpcArray[j-1].obj)) then
+		  	begin
+		  		tempObj := self.TNpcArray[j].obj;
+		  		self.TNpcArray[j].obj := self.TNpcArray[j-1].obj;
+		  		self.TNpcArray[j-1].obj := tempObj;
+
+		  		tempObjId := self.TNpcArray[j].objId;
+		  		self.TNpcArray[j].objId := self.TNpcArray[j-1].objId;
+		  		self.TNpcArray[j-1].objId := tempObjId;
+			end;
+	  end;
+	end;
+end;
+
+procedure TNpcList.clear;
+begin
+  SetLength(self.TNpcArray, 0);
+end;
+
+function TNpcList.isContains(obj: TL2Live): boolean;
+var
+  i: integer;
+begin
+  if Length(self.TNpcArray) <= 1 then
+  begin
+    Result := false;
+    exit;
+  end;
+
+  for i:=0 to Length(self.TNpcArray)-1 do
+  begin
+    if (self.TNpcArray[i].objId = obj.OID) then
+    begin
+      Result := true;
+      exit;
+    end;
+  end;
+  Result := false;
+end;
+
+function TNpcList.add(obj: TL2Live): boolean;
+var
+	i: integer;
+begin
+  SetLength(self.TNpcArray, Length(self.TNpcArray) + 1);
+  self.TNpcArray[Length(self.TNpcArray)-1].obj := nil;
+	for i:=0 to Length(self.TNpcArray)-1 do
+	begin
+		if (self.TNpcArray[i].obj = nil) then
+		begin
+			self.TNpcArray[i].obj := obj;
+			self.TNpcArray[i].objId := obj.OID;
+			Result := true;
+			exit;
+		end;
+	end;
+	SetLength(self.TNpcArray, Length(self.TNpcArray) - 1);
+	Result := false;
+end;
+
+function TNpcList.remove(_index: integer): boolean;
+var
+  i: integer;
+  previousLength: integer;
+  resultArray: array of TNpc;
+begin
+  if (Length(self.TNpcArray) <= 1) then
+  begin
+    Result := false;
+    exit;
+  end;  
+
+  previousLength := Length(self.TNpcArray);
+  SetLength(resultArray, previousLength - 1);
+
+  for i:=0 to Length(self.TNpcArray)-1 do
+  begin
+    if (i = _index) then
+    begin
+      if (i > 0) and (i < previousLength - 1) then
+      begin
+        Move(self.TNpcArray[0], resultArray[0], i);
+        Move(self.TNpcArray[i + 1], resultArray[i], previousLength - i - 1);
+        Move(resultArray[0], self.TNpcArray[0], previousLength - 1);
+        SetLength(self.TNpcArray, Length(self.TNpcArray) - 1);
+        Result := true;
+        exit;
+      end;
+      if (i = 0) then
+      begin
+        Move(self.TNpcArray[1], resultArray[0], previousLength - 1);
+        Move(resultArray[0], self.TNpcArray[0], previousLength - 1);
+        SetLength(self.TNpcArray, Length(self.TNpcArray) - 1);
+        Result := true;
+        exit;
+      end;
+      if (i = (previousLength - 1)) then
+      begin
+        Move(self.TNpcArray[0], self.TNpcArray[0], previousLength - 1);
+        SetLength(self.TNpcArray, Length(self.TNpcArray) - 1);
+        Result := true;
+        exit;
+      end;
+    end;
+  end;
+  Result := false;
+end;
+
+function TNpcList.getLength: integer;
+begin
+  Result := Length(self.TNpcArray);
+end;
+
+
+ 
+BEGIN
+END.

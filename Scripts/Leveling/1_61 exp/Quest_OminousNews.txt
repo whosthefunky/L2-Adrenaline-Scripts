@@ -1,0 +1,132 @@
+﻿unit Quest_OminousNews;
+
+interface
+
+uses 
+	SysUtils, Classes, LocationModule, SettingsModule, Functions, NpcFunctions, UserFunctions, Quest_WalkOfFate;
+	
+const
+	//npcs
+	QUEST_NAME = 'Ominous news';
+	QUEST_ID = 122;
+	
+	MOIRA = 31979;
+	KARUDA = 32017;
+	
+	BILIA = 50124; //averia |50124 ; orig | 31964
+
+var
+	QuestStatus: integer;
+	
+	startPath: DimensionArray; //to start npc
+	path1: DimensionArray; 
+	path2: DimensionArray; 
+	path3: DimensionArray; 
+	
+	procedure ExecuteOminousNews;
+	procedure initArrays;
+	function ominousNewsDone: boolean;
+	
+implementation
+
+procedure ExecuteOminousNews;
+var
+	i: integer;
+	questItem: TL2Item;
+	npc: TL2Npc;
+begin
+	initArrays;
+	QuestStatus := getState('Quests', QUEST_NAME + ' state', -1);
+	while (Engine.Status = lsOnline) and (QuestStatus <> -1) do
+	begin		
+	delay(200);
+	case QuestStatus of
+		0 :
+		begin
+		if toRightCity(SHTUTTGART) then
+		begin
+			
+			moveToLoc(startPath); 
+			
+			if not startDialog(MOIRA) then
+				continue;
+				
+			Engine.DlgSel(2);
+			Engine.DlgSel(1);
+			Engine.DlgSel(1);
+	
+			if (Engine.QuestStatus(QUEST_ID, 1)) then
+			begin
+				QuestStatus := 1;
+				updateState('Quests', QUEST_NAME + ' state', 1);
+			end;	
+		end;
+		
+		end;
+		1 :
+		begin
+			if inRange(User, 90168, -143244, -1504, 500) then
+				moveToLoc(revertArray(startPath));
+					
+			if not walkOfFateDone then
+				ExecuteWalkOfFate;
+			
+			if not inRange(User, 47736, -115768, -3728, 1500) and toRightCity(SHTUTTGART) then
+			begin
+				
+					
+				if not startDialog(BILIA) then
+					continue;
+					
+				Engine.DlgSel(1);	
+				Engine.DlgSel(14);
+				
+				delay(4 * 1000);
+					
+			end;
+			
+			if not startDialog(KARUDA) then
+				continue;
+				
+				Engine.DlgSel(1);
+				Engine.DlgSel(1);
+				Engine.DlgSel(1);
+			
+			if not Engine.QuestStatus(QUEST_ID, 1) then
+			begin
+				QuestStatus := -1;
+				updateState('Quests', QUEST_NAME + ' state', -1);	
+			end;
+		end;
+		
+		
+	//end of case
+	end;
+	delay(300);
+	end;
+end;
+
+procedure initArrays;
+begin
+
+	SetLength(startPath, 7, 3);        
+  
+	writeToArray(startPath[0], 86984, -143128, -1280);
+	writeToArray(startPath[1], 87815, -142695, -1321);
+	writeToArray(startPath[2], 88312, -142552, -1328);
+	writeToArray(startPath[3], 88904, -142248, -1328);
+	writeToArray(startPath[4], 89752, -141768, -1520);
+	writeToArray(startPath[5], 90616, -143160, -1520);
+	writeToArray(startPath[6], 90168, -143224, -1504);
+	
+
+	
+end; 	
+
+function ominousNewsDone;
+begin
+	Result := getState('Quests', QUEST_NAME + ' state', -1) = -1;
+end;
+
+begin
+end.

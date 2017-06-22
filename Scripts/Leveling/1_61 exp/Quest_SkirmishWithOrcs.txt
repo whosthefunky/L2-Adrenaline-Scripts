@@ -1,0 +1,623 @@
+﻿unit Quest_SkirmishWithOrcs;
+
+interface
+
+uses 
+	SysUtils, Classes, LocationModule, SettingsModule, Functions, NpcFunctions, UserFunctions;
+	
+const
+	//NPC
+	KENDELL = 30218;
+	//QuestItem
+	KENDELLS_1ST_ORDER = 1836;
+	KENDELLS_2ST_ORDER = 1837;
+	KENDELLS_3ST_ORDER = 1838;
+	KENDELLS_4ST_ORDER = 1839;
+	KENDELLS_5ST_ORDER = 1840;
+	KENDELLS_6ST_ORDER = 1841;
+	KENDELLS_7ST_ORDER = 1842;
+	KENDELLS_8ST_ORDER = 1843;
+	KABOO_CHIEFS_1_STTORQUE = 1844;
+	KABOO_CHIEFS_2_STTORQUE = 1845;
+	RED_SUNSET_SWORD = 981;
+	RED_SUNSET_STAFF = 754;
+	//NPC
+	KABOO_CHIEF_UOPH = 27059;
+	KABOO_CHIEF_KRACHA = 27060;
+	KABOO_CHIEF_BATOH = 27061;
+	KABOO_CHIEF_TANUKIA = 27062;
+	KABOO_CHIEF_TUREL = 27064;
+	KABOO_CHIEF_ROKO = 27065;
+	KABOO_CHIEF_KAMUT = 27067;
+	KABOO_CHIEF_MURTIKA = 27068;
+	//etc
+	QUEST_ID = 105;
+	QUEST_NAME = 'Skrimish with orcs';
+
+var
+	QuestStatus: integer;
+	
+	startPath: DimensionArray; //
+	path1: DimensionArray; //
+	path2: DimensionArray; //
+	path3: DimensionArray; //
+	path4: DimensionArray; //
+	path5: DimensionArray; //
+	path6: DimensionArray; //
+	path7: DimensionArray; //
+	path8: DimensionArray; //
+	
+	procedure ExecuteSkirmishWithOrcs;
+	procedure initArrays;
+	function SkirmishWithOrcsDone: boolean;
+	
+implementation
+
+procedure ExecuteSkirmishWithOrcs;
+var
+	i: integer;
+	questItem: TL2Item;
+	npc: TL2Live;
+begin
+	initArrays;
+	QuestStatus := getState('Quests', QUEST_NAME + ' state', -1);
+	while (Engine.Status = lsOnline) and (QuestStatus <> -1) do
+	begin
+	delay(200);
+	case QuestStatus of
+		0 :
+		begin
+		if toRightCity(ELVEN) then
+		begin
+		delay(3000);
+		
+			moveToLoc(startPath);
+			
+			if not startDialog(KENDELL) then
+				continue;
+	
+			Engine.DlgSel(3); //in hf 2
+			Delay(500);
+			Engine.DlgSel(1);
+			Delay(500);
+			Engine.DlgSel(1); 
+	
+			if (Engine.QuestStatus(QUEST_ID, 1)) then
+			begin
+				QuestStatus := 1;
+				updateState('Quests', QUEST_NAME + ' state', 1);
+			end;	
+		end;
+		end;
+		1 :
+		begin
+			if Inventory.Quest.ByID(KENDELLS_1ST_ORDER, questItem) then //uoph
+			begin
+				if toRightCity(ELVEN) and not inRange(User, 24408, 40984, -3696, 3000) then
+				begin
+						
+					moveToLoc(path1);
+					
+					if not inRange(User, 24408, 40984, -3696, 3000) then
+						continue;
+						
+					while not Inventory.Quest.ByID(KABOO_CHIEFS_1_STTORQUE, questItem) and not User.Dead do
+					begin
+						NpcList.ByID(KABOO_CHIEF_UOPH, npc);
+				
+						if isMage and (User.MP > 5) and (User.HP > 10) then
+						begin
+							Engine.SetTarget(npc);
+							Engine.UseSkill(1177);
+						end;	
+						
+						if not isMage and (User.HP > 10) then
+						begin
+							Engine.SetTarget(npc);
+							Engine.Attack;
+						end;
+					end;
+					
+					if Inventory.Quest.ByID(KABOO_CHIEFS_1_STTORQUE, questItem) then
+					begin
+						QuestStatus := 2;
+						updateState('Quests', QUEST_NAME + ' state', 2);
+					end;
+					//
+				end;
+			end else if Inventory.Quest.ByID(KENDELLS_2ST_ORDER, questItem) then //kracha
+			begin
+				if toRightCity(ELVEN) and not inRange(User, 35496, 63032, -3632, 3000) then
+				begin
+						
+					moveToLoc(path2);
+					
+					if not inRange(User, 35496, 63032, -3632, 3000) then
+						continue;
+						
+					while not Inventory.Quest.ByID(KABOO_CHIEFS_1_STTORQUE, questItem) and not User.Dead do
+					begin
+						NpcList.ByID(KABOO_CHIEF_KRACHA, npc);
+				
+						if isMage and (User.MP > 5) and (User.HP > 10) then
+						begin
+							Engine.SetTarget(npc);
+							Engine.UseSkill(1177);
+						end;	
+						
+						if not isMage and (User.HP > 10) then
+						begin
+							Engine.SetTarget(npc);
+							Engine.Attack;
+						end;
+					end;
+					
+					if Inventory.Quest.ByID(KABOO_CHIEFS_1_STTORQUE, questItem) then
+					begin
+						QuestStatus := 2;
+						updateState('Quests', QUEST_NAME + ' state', 2);
+					end;
+					//
+				end;
+			end else if Inventory.Quest.ByID(KENDELLS_3ST_ORDER, questItem) then //batoh
+			begin
+				if toRightCity(ELVEN) and not inRange(User, 31000, 80216, -3536, 3000) then
+				begin
+					
+					DoTeleportToLocation('elven fortress');
+					
+					moveToLoc(path3);
+					
+					if not inRange(User, 31000, 80216, -3536, 3000) then
+						continue;
+						
+					while not Inventory.Quest.ByID(KABOO_CHIEFS_1_STTORQUE, questItem) and not User.Dead do
+					begin
+						NpcList.ByID(KABOO_CHIEF_BATOH, npc);
+				
+						if isMage and (User.MP > 5) and (User.HP > 10) then
+						begin
+							Engine.SetTarget(npc);
+							Engine.UseSkill(1177);
+						end;	
+						
+						if not isMage and (User.HP > 10) then
+						begin
+							Engine.SetTarget(npc);
+							Engine.Attack;
+						end;
+					end;
+					
+					if Inventory.Quest.ByID(KABOO_CHIEFS_1_STTORQUE, questItem) then
+					begin
+						QuestStatus := 2;
+						updateState('Quests', QUEST_NAME + ' state', 2);
+					end;
+					//
+				end;
+			end else if Inventory.Quest.ByID(KENDELLS_4ST_ORDER, questItem) then //tanukia
+			begin
+				if toRightCity(ELVEN) and not inRange(User, 23224, 57000, -3360, 3000) then
+				begin
+						
+					moveToLoc(path4);
+					
+					if not inRange(User, 23224, 57000, -3360, 3000) then
+						continue;
+						
+					while not Inventory.Quest.ByID(KABOO_CHIEFS_1_STTORQUE, questItem) and not User.Dead do
+					begin
+						NpcList.ByID(KABOO_CHIEF_TANUKIA, npc);
+				
+						if isMage and (User.MP > 5) and (User.HP > 10) then
+						begin
+							Engine.SetTarget(npc);
+							Engine.UseSkill(1177);
+						end;	
+						
+						if not isMage and (User.HP > 10) then
+						begin
+							Engine.SetTarget(npc);
+							Engine.Attack;
+						end;
+					end;
+					
+					if Inventory.Quest.ByID(KABOO_CHIEFS_1_STTORQUE, questItem) then
+					begin
+						QuestStatus := 2;
+						updateState('Quests', QUEST_NAME + ' state', 2);
+					end;
+					//
+				end;
+			end; 
+
+		end;
+		2 : 
+		begin
+			if toRightCity(ELVEN) then
+			begin
+			
+				delay(3000);
+			
+				Engine.MoveTo(46033, 49770, -3086);
+				
+				moveToLoc(startPath);
+				
+				if not startDialog(KENDELL) then
+					continue;
+				
+				Engine.DlgSel(3); //in hf 2
+				delay(500);
+				Engine.DlgSel(1); 
+				
+				if (Engine.QuestStatus(QUEST_ID, 3)) then
+				begin
+					QuestStatus := 3;
+					updateState('Quests', QUEST_NAME + ' state', 3);
+					updateState('Current state', 'Should take newbie quest', 'true');
+				end;
+			end;
+		end;
+		3 :
+		begin
+			if Inventory.Quest.ByID(KENDELLS_5ST_ORDER, questItem) then //turel
+			begin
+				if toRightCity(ELVEN) and not inRange(User, 41402, 70484, -3376, 3000) then
+				begin
+						
+					moveToLoc(path5);
+					
+					if not inRange(User, 41402, 70484, -3376, 3000) then
+						continue;
+						
+					while not Inventory.Quest.ByID(KABOO_CHIEFS_2_STTORQUE, questItem) and not User.Dead do
+					begin
+						NpcList.ByID(KABOO_CHIEF_TUREL, npc);
+				
+						if isMage and (User.MP > 5) and (User.HP > 10) then
+						begin
+							Engine.SetTarget(npc);
+							Engine.UseSkill(1177);
+						end;	
+						
+						if not isMage and (User.HP > 10) then
+						begin
+							Engine.SetTarget(npc);
+							Engine.Attack;
+						end;
+					end;
+					
+					if Inventory.Quest.ByID(KABOO_CHIEFS_2_STTORQUE, questItem) then
+					begin
+						QuestStatus := 4;
+						updateState('Quests', QUEST_NAME + ' state', 4);
+					end;
+					//
+				end;
+			end else if Inventory.Quest.ByID(KENDELLS_6ST_ORDER, questItem) then //roko
+			begin
+				if toRightCity(ELVEN) and not inRange(User, 37223, 82496, -3600, 3000) then
+				begin
+						
+					moveToLoc(path6);
+					
+					if not inRange(User, 37223, 82496, -3600, 3000) then
+						continue;
+						
+					while not Inventory.Quest.ByID(KABOO_CHIEFS_2_STTORQUE, questItem) and not User.Dead do
+					begin
+						NpcList.ByID(KABOO_CHIEF_ROKO, npc);
+				
+						if isMage and (User.MP > 5) and (User.HP > 10) then
+						begin
+							Engine.SetTarget(npc);
+							Engine.UseSkill(1177);
+						end;	
+						
+						if not isMage and (User.HP > 10) then
+						begin
+							Engine.SetTarget(npc);
+							Engine.Attack;
+						end;
+					end;
+					
+					if Inventory.Quest.ByID(KABOO_CHIEFS_2_STTORQUE, questItem) then
+					begin
+						QuestStatus := 4;
+						updateState('Quests', QUEST_NAME + ' state', 4);
+					end;
+					//
+				end;
+			end else if Inventory.Quest.ByID(KENDELLS_7ST_ORDER, questItem) then //kamut
+			begin
+				if toRightCity(ELVEN) and not inRange(User, 47201, 90218, -3520, 3000) then
+				begin
+						
+					moveToLoc(path7);
+					
+					if not inRange(User, 47201, 90218, -3520, 3000) then
+						continue;
+						
+					while not Inventory.Quest.ByID(KABOO_CHIEFS_2_STTORQUE, questItem) and not User.Dead do
+					begin
+						NpcList.ByID(KABOO_CHIEF_KAMUT, npc);
+				
+						if isMage and (User.MP > 5) and (User.HP > 10) then
+						begin
+							Engine.SetTarget(npc);
+							Engine.UseSkill(1177);
+						end;	
+						
+						if not isMage and (User.HP > 10) then
+						begin
+							Engine.SetTarget(npc);
+							Engine.Attack;
+						end;
+					end;
+					
+					if Inventory.Quest.ByID(KABOO_CHIEFS_2_STTORQUE, questItem) then
+					begin
+						QuestStatus := 4;
+						updateState('Quests', QUEST_NAME + ' state', 4);
+					end;
+					//
+				end;
+			end else if Inventory.Quest.ByID(KENDELLS_8ST_ORDER, questItem) then //murtika
+			begin
+				if toRightCity(ELVEN) and not inRange(User, 57594, 78673, -3552, 3000) then
+				begin
+						
+					moveToLoc(path8);
+					
+					if not inRange(User, 57594, 78673, -3552, 3000) then
+						continue;
+						
+					while not Inventory.Quest.ByID(KABOO_CHIEFS_2_STTORQUE, questItem) and not User.Dead do
+					begin
+						NpcList.ByID(KABOO_CHIEF_MURTIKA, npc);
+				
+						if isMage and (User.MP > 5) and (User.HP > 10) then
+						begin
+							Engine.SetTarget(npc);
+							Engine.UseSkill(1177);
+						end;	
+						
+						if not isMage and (User.HP > 10) then
+						begin
+							Engine.SetTarget(npc);
+							Engine.Attack;
+						end;
+					end;
+					
+					if Inventory.Quest.ByID(KABOO_CHIEFS_2_STTORQUE, questItem) then
+					begin
+						QuestStatus := 4;
+						updateState('Quests', QUEST_NAME + ' state', 4);
+					end;
+					//
+				end;
+			end; 
+		end;
+		4 :
+		begin
+		if toRightCity(ELVEN) then
+		begin
+			delay(3000);
+			
+			Engine.MoveTo(46033, 49770, -3086);
+			
+			moveToLoc(startPath);
+			
+			if not startDialog(KENDELL) then
+				continue;
+				
+			Engine.DlgSel(3); //in hf 2
+			delay(500);
+			Engine.DlgSel(1); 
+			delay(500);
+			Engine.DlgSel(1); 
+	
+			if not (Engine.QuestStatus(QUEST_ID, 1)) then
+			begin
+				QuestStatus := -1;
+				updateState('Quests', QUEST_NAME + ' state', -1);
+				updateState('Current state', 'Should take newbie quest', 'true');
+			end;	
+		end;	
+		end;
+		
+	//end of case
+	end;
+	delay(300);
+	end;
+end;
+
+procedure initArrays;
+begin
+
+	SetLength(startPath, 3, 3);
+	writeToArray(startPath[0], 45674, 50048, -3045);
+	writeToArray(startPath[1], 47075, 50772, -2988);
+	writeToArray(startPath[2], 47400, 51496, -2976);
+
+	
+	SetLength(path1, 16, 3);
+
+	writeToArray(path1[0], 45224, 49832, -3048);
+	writeToArray(path1[1], 43512, 50424, -2976);
+	writeToArray(path1[2], 43384, 50936, -2976);
+	writeToArray(path1[3], 42283, 51676, -2986);
+	writeToArray(path1[4], 40632, 52712, -3216);
+	writeToArray(path1[5], 39544, 52472, -3376);
+	writeToArray(path1[6], 38020, 51377, -3408);
+	writeToArray(path1[7], 36551, 50321, -3440);
+	writeToArray(path1[8], 34549, 49173, -3489);
+	writeToArray(path1[9], 32434, 48497, -3601);
+	writeToArray(path1[10], 30085, 47656, -3301);
+	writeToArray(path1[11], 28231, 46557, -2837);
+	writeToArray(path1[12], 26673, 45337, -3039);
+	writeToArray(path1[13], 25707, 44111, -3470);
+	writeToArray(path1[14], 24692, 42173, -3656);
+	writeToArray(path1[15], 24428, 41141, -3695);
+	
+	SetLength(path2, 14, 3);
+	
+	writeToArray(path2[0], 47096, 50856, -2976);
+	writeToArray(path2[1], 46534, 50367, -3040);
+	writeToArray(path2[2], 45720, 50008, -3040);
+	writeToArray(path2[3], 44472, 50040, -3040);
+	writeToArray(path2[4], 43310, 50755, -2976);
+	writeToArray(path2[5], 42152, 51768, -2992);
+	writeToArray(path2[6], 41091, 52539, -3148);
+	writeToArray(path2[7], 40504, 52952, -3264);
+	writeToArray(path2[8], 39934, 54359, -3336);
+	writeToArray(path2[9], 39214, 56933, -3554);
+	writeToArray(path2[10], 38740, 59104, -3597);
+	writeToArray(path2[11], 37387, 60929, -3600);
+	writeToArray(path2[12], 35432, 62072, -3664);
+	writeToArray(path2[13], 35400, 62600, -3632);
+	
+	SetLength(path3, 5, 3);
+
+	writeToArray(path3[0], 28904, 74952, -3760);
+	writeToArray(path3[1], 28970, 75532, -3765);
+	writeToArray(path3[2], 29126, 76884, -3781);
+	writeToArray(path3[3], 30088, 77848, -3584);
+	writeToArray(path3[4], 30776, 79960, -3536);
+	
+	SetLength(path4, 20, 3);
+	
+	writeToArray(path4[0],  46344, 49976, -3040);
+	writeToArray(path4[1],  45257, 48988, -3043);
+	writeToArray(path4[2],  44038, 50158, -3013);
+	writeToArray(path4[3],  43364, 50589, -2976);
+	writeToArray(path4[4],  42600, 51459, -2986);
+	writeToArray(path4[5],  40858, 52695, -3180);
+	writeToArray(path4[6],  39894, 53354, -3368);
+	writeToArray(path4[7],  38511, 53832, -3518);
+	writeToArray(path4[8],  36994, 53840, -3587);
+	writeToArray(path4[9],  35899, 53764, -3552);
+	writeToArray(path4[10], 34431, 53086, -3615);
+	writeToArray(path4[11], 31976, 51960, -3712);
+	writeToArray(path4[12], 30408, 51744, -3700);
+	writeToArray(path4[13], 29201, 51887, -3668);
+	writeToArray(path4[14], 27944, 53064, -3520);
+	writeToArray(path4[15], 27080, 53528, -3456);
+	writeToArray(path4[16], 25319, 53977, -3483);
+	writeToArray(path4[17], 23048, 54472, -3600);
+	writeToArray(path4[18], 22854, 55429, -3509);
+	writeToArray(path4[19], 22968, 56712, -3360);
+	
+	SetLength(path5, 19, 3);
+	
+	writeToArray(path5[0], 46584, 50328, -3040);
+	writeToArray(path5[1], 45352, 49037, -3034);
+	writeToArray(path5[2], 43448, 50408, -2976);
+	writeToArray(path5[3], 43199, 51064, -2977);
+	writeToArray(path5[4], 42102, 51820, -3024);
+	writeToArray(path5[5], 40924, 52649, -3168);
+	writeToArray(path5[6], 40198, 53225, -3313);
+	writeToArray(path5[7], 40337, 54667, -3382);
+	writeToArray(path5[8], 40876, 56472, -3629);
+	writeToArray(path5[9], 41001, 59055, -3575);
+	writeToArray(path5[10], 41097, 61050, -3533);
+	writeToArray(path5[11], 40598, 62660, -3541);
+	writeToArray(path5[12], 40008, 63608, -3600);
+	writeToArray(path5[13], 40495, 65314, -3625);
+	writeToArray(path5[14], 40680, 66424, -3680);
+	writeToArray(path5[15], 40838, 67347, -3587);
+	writeToArray(path5[16], 40988, 68225, -3499);
+	writeToArray(path5[17], 41090, 68818, -3440);
+	writeToArray(path5[18], 41304, 70040, -3344);
+	
+	SetLength(path6, 21, 3);
+	
+	writeToArray(path6[0], 46280, 49968, -3040);
+	writeToArray(path6[1], 45492, 48997, -3040);
+	writeToArray(path6[2], 44759, 49446, -3040);
+	writeToArray(path6[3], 43496, 50424, -2976);
+	writeToArray(path6[4], 43140, 51092, -2982);
+	writeToArray(path6[5], 41687, 52082, -3035);
+	writeToArray(path6[6], 40382, 53018, -3268);
+	writeToArray(path6[7], 39569, 54574, -3406);
+	writeToArray(path6[8], 38840, 56280, -3600);
+	writeToArray(path6[9], 38247, 58559, -3564);
+	writeToArray(path6[10], 37640, 61055, -3551);
+	writeToArray(path6[11], 37018, 64633, -3523);
+	writeToArray(path6[12], 36790, 65935, -3520);
+	writeToArray(path6[13], 36525, 67677, -3694);
+	writeToArray(path6[14], 37259, 69805, -3629);
+	writeToArray(path6[15], 37488, 71781, -3584);
+	writeToArray(path6[16], 37681, 73698, -3554);
+	writeToArray(path6[17], 37633, 74843, -3570);
+	writeToArray(path6[18], 37499, 77565, -3616);
+	writeToArray(path6[19], 37354, 80107, -3638);
+	writeToArray(path6[20], 37432, 82376, -3600);
+	
+	SetLength(path7, 28, 3);
+	
+	writeToArray(path7[0], 46609, 49985, -3037);
+	writeToArray(path7[1], 47208, 51320, -2976);
+	writeToArray(path7[2], 48625, 52766, -3075);
+	writeToArray(path7[3], 49576, 53752, -3248);
+	writeToArray(path7[4], 49946, 55256, -3418);
+	writeToArray(path7[5], 50309, 56565, -3543);
+	writeToArray(path7[6], 51836, 57885, -3582);
+	writeToArray(path7[7], 52903, 58835, -3541);
+	writeToArray(path7[8], 54017, 60360, -3398);
+	writeToArray(path7[9], 54455, 61436, -3480);
+	writeToArray(path7[10], 54776, 62616, -3568);
+	writeToArray(path7[11], 54794, 63058, -3554);
+	writeToArray(path7[12], 54647, 64738, -3506);
+	writeToArray(path7[13], 53688, 66441, -3505);
+	writeToArray(path7[14], 52825, 68915, -3345);
+	writeToArray(path7[15], 52462, 70651, -3441);
+	writeToArray(path7[16], 52421, 71052, -3447);
+	writeToArray(path7[17], 52928, 72604, -3446);
+	writeToArray(path7[18], 53713, 73883, -3452);
+	writeToArray(path7[19], 54704, 75312, -3565);
+	writeToArray(path7[20], 55405, 76903, -3511);
+	writeToArray(path7[21], 56444, 80637, -3625);
+	writeToArray(path7[22], 55824, 83806, -3591);
+	writeToArray(path7[23], 55194, 85316, -3586);
+	writeToArray(path7[24], 54384, 87352, -3573);
+	writeToArray(path7[25], 53066, 89262, -3546);
+	writeToArray(path7[26], 49871, 89734, -3513);
+	writeToArray(path7[27], 47368, 90104, -3488);
+	
+	SetLength(path8, 22, 3);
+	
+	writeToArray(path8[0], 46609, 49985, -3037);
+	writeToArray(path8[1], 47208, 51320, -2976);
+	writeToArray(path8[2], 48625, 52766, -3075);
+	writeToArray(path8[3], 49576, 53752, -3248);
+	writeToArray(path8[4], 49946, 55256, -3418);
+	writeToArray(path8[5], 50309, 56565, -3543);
+	writeToArray(path8[6], 51836, 57885, -3582);
+	writeToArray(path8[7], 52903, 58835, -3541);
+	writeToArray(path8[8], 54017, 60360, -3398);
+	writeToArray(path8[9], 54455, 61436, -3480);
+	writeToArray(path8[10], 54776, 62616, -3568);
+	writeToArray(path8[11], 54794, 63058, -3554);
+	writeToArray(path8[12], 54647, 64738, -3506);
+	writeToArray(path8[13], 53688, 66441, -3505);
+	writeToArray(path8[14], 52825, 68915, -3345);
+	writeToArray(path8[15], 52462, 70651, -3441);
+	writeToArray(path8[16], 52421, 71052, -3447);
+	writeToArray(path8[17], 52928, 72604, -3446);
+	writeToArray(path8[18], 53713, 73883, -3452);
+	writeToArray(path8[19], 54704, 75312, -3565);
+	writeToArray(path8[20], 55818, 77320, -3565);
+	writeToArray(path8[21], 56728, 78824, -3536);
+
+
+ 
+	
+end; 	
+
+function SkirmishWithOrcsDone;
+begin
+	Result := getState('Quests', QUEST_NAME + ' state', -1) = -1;
+end;
+begin
+end.

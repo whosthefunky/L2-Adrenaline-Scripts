@@ -1,0 +1,138 @@
+uses
+  Classes, SysUtils;
+  
+const
+	charname = 'replace';
+
+function skillCoolTime(ID: integer): integer;
+var
+	skill: TL2Skill;
+begin
+	if Skilllist.byID(id, skill) then
+		Result := skill.Endtime
+	else  
+		Result := -1;	
+end;
+
+procedure follow;
+var
+  tchar: tl2char;
+begin
+ while true do
+ begin
+ delay(500);
+  charlist.byname(charname, tchar);
+  if (user.DistTo(tchar) > 200) then
+    Engine.MoveTo(tchar, -100);
+  end;
+end;
+
+procedure rebuff;
+var
+  tchar: tl2char;
+  eff: tl2buff;
+begin
+  while true do
+  begin
+    delay(50);
+
+    if (petlist.count = 0) and not user.dead then
+    begin
+      Engine.UseSkill(1332);
+      delay(400);
+      delay(user.cast.endtime);
+    end;
+
+    if (User.PVP) and not User.inCombat then
+    begin
+      Engine.Restart;
+      delay(1000);
+      Engine.GameStart(0);
+    end;   
+    
+    if (party.chars.count = 0) then
+      continue;
+
+    if party.chars.byname(charname, tchar) and (User.DistTo(tchar) < 900) then
+    begin
+      if ((tchar.buffs.byid(4703, eff)) or tchar.buffs.byid(4702, eff))
+             and (eff.endtime > 40 * 1000) then
+        continue;
+    
+      if (tchar.buffs.byid(1073, eff)) then
+        Engine.UseAction(1010)
+      else
+        Engine.UseAction(1011);
+
+        delay(1000);
+        delay(petlist.items(0).cast.endtime + 200);
+
+        if (User.PVP) and not User.inCombat and not tchar.buffs.byid(1043, eff) then
+        begin
+          Engine.Restart;
+          delay(1000);
+          Engine.GameStart(0);
+          continue;
+        end;   
+      
+        if ((tchar.buffs.byid(4703, eff)) or tchar.buffs.byid(4702, eff)) and (eff.endtime > 40 * 1000)
+         and not tchar.buffs.byid(1043, eff) then 
+          Engine.LeaveParty; 
+    end;
+   
+    
+    
+  end;
+end;
+
+procedure summon;
+var
+  obj: TL2Live;
+  delayTime: Cardinal;
+  objName: string;
+begin
+  while true do
+  begin
+  delay(500);
+
+  if user.dead then
+    continue;
+
+  if ChatMessage.Unread and (integer(ChatMessage.ChatType) = 2) and AnsiSameText(ChatMessage.text, 'sum') then
+	begin
+
+	  if (skillCoolTime(1403) > 0) then
+	  begin
+	    Engine.Say('Soz, summon in cd. Try in ' + IntToStr(Trunc(skillCoolTime(1403) / 1000)) + ' secs', 2, ChatMessage.Sender);
+	    continue;
+	  end;    
+	
+	  objName := ChatMessage.Sender;
+	
+	  Engine.InviteParty(objName);
+
+	  delay(3000);
+
+	  if Party.Chars.ByName(objName, obj) then
+	  begin
+	    Engine.SetTarget(obj);
+	    Engine.UseSkill(1403);
+
+	    delayTime := GetTickCount + 7000;
+	    
+	    while (User.DistTo(obj) > 500) and (GetTickCount < delayTime) do
+	      delay(500);
+    
+	    Engine.LeaveParty;
+	  end;
+	  
+  end;
+  
+  end;
+end;
+
+begin
+  script.newThread(@summon);
+  script.newthread(@follow);
+  script.newThread(@rebuff);
+end.

@@ -1,0 +1,139 @@
+﻿unit Quest_WalkOfFate;
+
+interface
+
+uses 
+	SysUtils, Classes, LocationModule, SettingsModule, Functions, NpcFunctions, UserFunctions;
+	
+const
+	//npcs
+	QUEST_NAME = 'Walk of fate';
+	QUEST_ID = 112;
+
+	KARUDA = 32017;
+	LIVINA = 30572;
+	
+	TAMIL = 50124; //averia |50124 ; orig | 30576
+	BILIA = 50124; //averia |50124 ; orig | 31964
+
+var
+	QuestStatus: integer;
+	
+	startPath: DimensionArray; //to start npc
+	path1: DimensionArray; 
+	path2: DimensionArray; 
+	path3: DimensionArray; 
+	
+	procedure ExecuteWalkOfFate;
+	procedure initArrays;
+	function walkOfFateDone: boolean;
+	
+implementation
+
+procedure ExecuteWalkOfFate;
+var
+	i: integer;
+	questItem: TL2Item;
+	npc: TL2Npc;
+begin
+	initArrays;
+	QuestStatus := getState('Quests', QUEST_NAME + ' state', -1);
+	while (Engine.Status = lsOnline) and (QuestStatus <> -1) do
+	begin		
+	delay(200);
+	case QuestStatus of
+		0 :
+		begin
+			
+		if toRightCity(ORC) then
+		begin
+			print('executed..');
+			moveToLoc(startPath); 
+			
+			if not startDialog(LIVINA) then
+				continue;
+				
+			Engine.DlgSel(3);
+			Engine.DlgSel(1);
+			Engine.DlgSel(1);
+	
+			if (Engine.QuestStatus(QUEST_ID, 1)) then
+			begin
+				QuestStatus := 1;
+				updateState('Quests', QUEST_NAME + ' state', 1);
+			end;	
+		end;
+		end;
+		1 :
+		begin
+			if not inRange(User, 47736, -115768, -3728, 1500) and isRightCity(ORC, false) then
+			begin
+
+				if inRange(User, -45928, -112600, -184, 700) then
+					moveToLoc(revertArray(startPath));
+					
+				if not startDialog(TAMIL) then
+					continue;
+					
+				Engine.DlgSel(1);	
+				Engine.DlgSel(2);
+				
+				delay(4 * 1000);
+				continue;
+					
+			end;
+			
+			if not inRange(User, 47736, -115768, -3728, 1500) and toRightCity(SHTUTTGART) then
+			begin
+				
+				if not startDialog(BILIA) then
+					continue;
+					
+				Engine.DlgSel(1);
+				Engine.DlgSel(14);
+				
+				delay(4 * 1000);
+				
+			end;
+			
+			if not startDialog(KARUDA) then
+				continue;
+				
+				Engine.DlgSel(1);
+				Engine.DlgSel(1);
+				Engine.DlgSel(1);
+			
+			if not Engine.QuestStatus(QUEST_ID, 1) then
+			begin
+				QuestStatus := -1;
+				updateState('Quests', QUEST_NAME + ' state', -1);	
+			end;
+		end;
+		
+		
+	//end of case
+	end;
+	delay(300);
+	end;
+end;
+
+procedure initArrays;
+begin
+
+	SetLength(startPath, 5, 3);        
+  
+	writeToArray(startPath[0], -44872, -112840, -224);
+	writeToArray(startPath[1], -45432, -113512, -224);
+	writeToArray(startPath[2], -46248, -113608, -184);
+	writeToArray(startPath[3], -46376, -112776, -184);
+	writeToArray(startPath[4], -45976, -112584, -184);
+	
+end; 	
+
+function walkOfFateDone;
+begin
+	Result := getState('Quests', QUEST_NAME + ' state', -1) = -1;
+end;
+
+begin
+end.

@@ -1,0 +1,281 @@
+uses
+  SysUtils, Classes,SettingsModule;
+
+function SetCursorPos(x, y : integer): boolean; stdcall; external 'user32.dll';
+function mouse_event(dwFlags, dx, dy, dwData: byte; dwExtraInfo: integer): void; stdcall; external 'user32.dll';
+
+const
+	augmentOperationDelay = 3000; // 3000 ms
+	perActionDelay = 200; // 200 ms
+	insertedLifeStoneDelay = 500; // 500 ms
+	mouseEventDelay = 300; // 200 ms
+	configPath = 'AugmentationConfig.ini';
+
+var
+  
+//objectName : array (x_coord, y_coord);
+  
+  setWeapon : array [0..1] of integer = (100, 82); // weapon insert holder coord
+  setStone : array [0..1] of integer = (174, 82); // life stone insert holder coord
+  setGem : array [0..1] of integer = (132, 116); // gem insert holder coord
+  submitBtn : array [0..1] of integer = (89, 256); // submit insert btn coord
+  setWeaponRemove : array [0..1] of integer = (410, 120); // weapon remove holder coord
+  submitBtnRemove : array [0..1] of integer = (367, 258); // submit remove btn coord
+  weaponInv : array [0..1] of integer = (783, 341); // weapon invenorty coord
+  stoneInv : array [0..1] of integer = (824, 341); // stone invenorty coord 
+  gemInv : array [0..1] of integer = (865, 341); // gem  invenorty coord
+  
+  weaponID: integer;
+  gemID: integer;
+  lsID: integer;
+  optionIdArr: array of integer;
+  exitItemId: integer;
+
+  isTest: string;
+  
+  MySet: TSettings;
+
+//winapi
+procedure mouseClick(point: array of integer; _delay : integer = mouseEventDelay); //base mouse delay
+begin
+  SetCursorPos(point[0], point[1]);
+  mouse_event($2, 0, 0, 0, 0);
+  delay(_delay);
+  mouse_event($4, 0, 0, 0, 0);
+end;
+
+procedure moveFromTo(start: array of integer; finish: array of integer); //если isCustomCheckTime, в таком случае выставляем кастомную задержку(возможность просмотра лса);
+begin
+	SetCursorPos(start[0], start[1]);
+	delay(perActionDelay);
+	mouse_event($2, 0, 0, 0, 0);
+	delay(perActionDelay);	
+	SetCursorPos(finish[0], finish[1]);
+	delay(perActionDelay);
+	mouse_event($4, 0, 0, 0, 0);
+	delay(perActionDelay);	
+end;
+
+procedure splitOptions(text: string; separator: char);
+var
+  sl:TStringList;
+  i: integer;
+begin
+  sl := TStringList.Create;
+  try
+    sl.Delimiter     := separator;
+    sl.DelimitedText := text;
+	
+	SetLength(optionIdArr, sl.Count);
+	for i:=0 to sl.count-1 do
+		optionIdArr[i] := StrToInt(sl[i]);
+
+  finally
+    sl.Free;
+  end;
+end;
+
+//etc
+function isAugmented(id: integer): boolean;
+begin
+  Result := (getItemById(id).augmentID <> 0);
+end;
+
+function itemCount(ID: integer): integer;
+var
+ tmpItem: TL2Item;
+begin
+	Result := 0;
+	if (Inventory.User.ByID(Id, tmpItem)) then
+		Result := tmpItem.Count;	
+end;
+   
+function getItemById(id: integer): TL2Item;
+var
+	tmpItem: TL2Item;
+	i: integer;
+begin
+	Result := nil;
+	if Inventory.User.ByID(id, tmpItem) then
+		Result := tmpItem;
+end;
+
+//augmentation bools
+function checkOptions: boolean;
+var
+  sTemp: TL2Skill;
+  i: integer;
+  firstOption, secondOption: Cardinal;
+  augID: Cardinal;
+begin
+	Result := false;
+	
+	augID := getItemById(weaponID).augmentID;
+
+	firstOption := augID shr 16;
+	secondOption := augID mod 65536;
+
+	Engine.MSG('[Options]', 'First: ' + IntToStr(firstOption), 8421376);
+	Engine.MSG('[Options]', 'Second: ' + IntToStr(secondOption), 8421376);
+	
+	for i:=0 to Length(optionIdArr)-1 do
+	begin
+		if (optionIdArr[i] = firstOption) or (optionIdArr[i] = secondOption) then
+		begin
+		    Result := true;
+		    break;
+		end;
+	end;
+end;
+
+//etc && config
+function isEnoughItems: boolean;
+begin
+	Result := (itemCount(weaponID) > 0) and (itemCount(gemID) > 47)
+	    and (itemCount(lsID) > 0) and (itemCount(57) > 1000000);
+	if not Result then
+	  Engine.MSG('[Script stop]', 'Not enough items', 255);
+end;
+
+function shouldExit(itemId: integer): boolean;
+var
+  item: TL2Item;
+begin
+  if Inventory.User.ById(itemId, item) then
+  begin
+    Result := (User.Target = nil) or item.Equipped;
+    if (Result) then
+      Engine.MSG('[Script stop]', 'No target or exit item is equipped', 255);
+    exit;
+  end;
+  Result := (User.Target = nil);
+end;
+
+procedure loadConfig; //выгрузка из конфига в массив
+begin
+	MySet.SetFile(Script.Path + configPath);
+
+	weaponID := MySet.Load('Params', 'Weapon ID', 0);
+	gemID := MySet.Load('Params', 'Gem ID', 0);
+	lsID := MySet.Load('Params', 'LS ID', 0);
+	exitItemId := MySet.Load('Params', 'Exit itemId', 14164);
+	isTest := MySet.Load('Params', 'Cursor test', 'false');
+
+	//coordinates
+	setWeapon[0] := MySet.Load('Coordinates', 'Set weapon slot X', 100);
+  setWeapon[1] := MySet.Load('Coordinates', 'Set weapon slot Y', 82);
+  
+  setStone[0] := MySet.Load('Coordinates', 'Set stone slot X', 174);
+  setStone[1] := MySet.Load('Coordinates', 'Set stone slot Y', 82);
+
+  setGem[0] := MySet.Load('Coordinates', 'Set gem slot X', 132);
+  setGem[1] := MySet.Load('Coordinates', 'Set gem slot Y', 116);
+
+  submitBtn[0] := MySet.Load('Coordinates', 'Insert submit btn X', 89);
+  submitBtn[1] := MySet.Load('Coordinates', 'Insert submit btn Y', 256);
+
+  setWeaponRemove[0] := MySet.Load('Coordinates', 'Weapon remove slot X', 410);
+  setWeaponRemove[1] := MySet.Load('Coordinates', 'Weapon remove slot Y', 120);
+
+  submitBtnRemove[0] := MySet.Load('Coordinates', 'Remove submit btn X', 367);
+  submitBtnRemove[1] := MySet.Load('Coordinates', 'Remove submit btn Y', 258);
+
+  weaponInv[0] := MySet.Load('Coordinates', 'Inventory weapon X', 783);
+  weaponInv[1] := MySet.Load('Coordinates', 'Inventory weapon Y', 341);
+
+  stoneInv[0] := MySet.Load('Coordinates', 'Inventory stone X', 824);
+  stoneInv[1] := MySet.Load('Coordinates', 'Inventory stone Y', 341);
+
+  gemInv[0] := MySet.Load('Coordinates', 'Inventory gem X', 865);
+  gemInv[1] := MySet.Load('Coordinates', 'Inventory gem Y', 341);
+
+	splitOptions(MySet.Load('Params', 'Options', '-1;-1'), ';');
+
+	Engine.MSG('[Settings]', 'Options loaded: ' + IntToStr(Length(optionIdArr)), 8388736);
+	Engine.MSG('[Settings]', 'Options list: ' + MySet.Load('Params', 'Options', '-1;-1'), 8388736);
+	Engine.MSG('[Settings]', 'Exit itemId: ' + IntToStr(exitItemId), 8388736);
+	Engine.MSG('[Settings]', 'Cursor test: ' + isTest, 8388736);
+	Engine.MSG('[Settings]', 'Config loaded', 8388736);
+	
+end;
+
+//threads
+procedure insertLifeStone;
+begin
+	//select weapon & move to holder
+	moveFromTo(weaponInv, setWeapon);
+	// select stone & move to holder	
+	moveFromTo(stoneInv, setStone);
+	// select gem & move to holder
+	moveFromTo(gemInv, setGem);
+	// submit | double click
+	mouseClick(submitBtn);
+	delay(augmentOperationDelay);
+	mouseClick(submitBtn);
+	// delay before next iteration
+	delay(perActionDelay);	
+end;
+
+procedure removeLifeStone;
+begin
+	// select weapon & move to remove holder
+	moveFromTo(weaponInv, setWeaponRemove); //1 секунда на просмотр лса
+	// submit remove | double click
+	mouseClick(submitBtnRemove);
+	// delay
+	delay(augmentOperationDelay);
+	// etc
+	mouseClick(submitBtnRemove);
+	// delay before next iteration
+	delay(perActionDelay);
+end;
+
+procedure setLifeStone; //main thread
+begin
+	while Engine.Status = lsOnline do
+	begin
+	
+	if checkOptions or shouldExit(exitItemId) or not isEnoughItems then
+		exit;
+   
+	if isAugmented(weaponID) then
+	  removeLifeStone
+	else
+	  insertLifeStone;
+		
+	delay(200);
+	end;
+end;
+
+procedure cursorVerifier;
+begin
+  SetCursorPos(setWeapon[0], setWeapon[1]);
+  delay(1000);
+  SetCursorPos(setStone[0], setStone[1]);
+  delay(1000);
+  SetCursorPos(setGem[0], setGem[1]);
+  delay(1000);
+  SetCursorPos(submitBtn[0], submitBtn[1]);
+  delay(1000);
+  SetCursorPos(setWeaponRemove[0], setWeaponRemove[1]);
+  delay(1000);
+  SetCursorPos(submitBtnRemove[0], submitBtnRemove[1]);
+  delay(1000);
+  SetCursorPos(weaponInv[0], weaponInv[1]);
+  delay(1000);
+  SetCursorPos(stoneInv[0], stoneInv[1]);
+  delay(1000);
+  SetCursorPos(gemInv[0], gemInv[1]);
+end;
+
+
+begin
+  loadConfig;
+  
+  if (AnsiSameText(isTest, 'true')) then
+    cursorVerifier
+  else   
+    setLifeStone;   
+
+end.
+

@@ -1,0 +1,243 @@
+unit items;
+   interface
+		
+		uses
+			commonFunctions;
+		
+		var
+			isSiegeZone: boolean;
+			
+		procedure BottlesThread;
+		procedure BottlesAcumen;
+		procedure BottlesWindWalk;
+		procedure BottlesWarriorQHP;
+		procedure BottlesWarriorQHPLimit;
+		procedure BottlesGCP;
+		procedure BottlesGCPLimit;
+		procedure BottlesSiege;
+		procedure siegeZoneStatus;
+		procedure manaPotion;
+		procedure manaPotionLimit;
+		
+		implementation
+			
+			procedure BottlesThread;
+			begin
+				script.NewThread(@BottlesAcumen);
+				script.NewThread(@BottlesWindWalk);
+				script.NewThread(@BottlesWarriorQHP);
+				script.NewThread(@BottlesWarriorQHPLimit);
+				script.NewThread(@BottlesGCP);
+				script.NewThread(@BottlesGCPLimit);
+				script.NewThread(@BottlesSiege);
+				//script.NewThread(@siegeZoneStatus);
+				script.NewThread(@manaPotion);
+				script.NewThread(@manaPotionLimit);
+				
+			end;
+			
+			procedure BottlesAcumen;
+			var
+				tempEffect: TL2Effect;
+			begin
+				while Engine.Status = lsOnline do
+				begin
+					if
+					(User.HP > 1) and not User.Dead and not isMedused(User)
+					and not User.Buffs.ByID(1004, tempEffect)
+					and not User.Buffs.ByID(1002, tempEffect)
+					and not User.Buffs.ByID(1085, tempEffect)
+					and not User.Buffs.ByID(2169, tempEffect)
+					and not User.Buffs.ByID(8609, tempEffect)
+					and not User.Buffs.ByID(2283, tempEffect)
+					and not User.Buffs.ByID(1422, tempEffect) {day of doom}
+					then
+						begin Engine.UseItem(6036); end;
+				delay(1000);
+				end;
+			end;
+			
+			procedure BottlesWindWalk;
+			var
+				tempEffect: TL2Effect;
+			begin
+				while Engine.Status = lsOnline do
+				begin
+					if
+					(User.HP > 1) and not User.Dead and not isMedused(User)
+					and not User.Buffs.ByID(2285, tempEffect)
+					and not User.Buffs.ByID(1204, tempEffect)
+					and not User.Buffs.ByID(1504, tempEffect)
+					and not User.Buffs.ByID(1535, tempEffect)
+					and not User.Buffs.ByID(1282, tempEffect)
+					and not User.Buffs.ByID(1422, tempEffect) {day of doom}
+					and not User.Buffs.ByID(1359, tempEffect)
+					and not User.Buffs.ByID(2034, tempEffect)
+					and not User.Buffs.ByID(1361, tempEffect) {mass block ww}
+					then
+						begin Engine.UseItem(1374); end;
+				delay(1000);		
+				end;		
+			end;
+			
+			procedure BottlesWarriorQHP;
+			var
+				tempEffect: TL2Effect;
+				item: tl2item;
+			begin
+				while Engine.Status = lsOnline do
+				begin
+				Inventory.User.ByID(13750, item);
+					if (item.Count > 0) then
+						begin
+							if
+							(User.HP < 30) and not User.Dead and not isMedused(User)
+							and not User.Buffs.ByID(1509, tempEffect)  {seal of limit}
+							and not User.Buffs.ByID(5602, tempEffect)
+							and not User.Buffs.ByID(5576, tempEffect)
+							and not User.Buffs.ByID(837, tempEffect)
+							and not User.Buffs.ByID(1418, tempEffect)   {celestial}
+							then
+							begin Engine.UseItem(13750); end;
+						end;
+				delay(50);
+				end;
+			end;
+			
+			procedure BottlesWarriorQHPLimit;
+			var
+				tempEffect: TL2Effect;
+				item: tl2item;
+			begin
+				while Engine.Status = lsOnline do
+				begin
+					Inventory.User.ByID(13750, item);
+					if (item.Count > 0) then
+						begin
+						if
+						(User.HP < 10) and not User.Dead and not isMedused(User)
+						and User.Buffs.ByID(1509, tempEffect)  {seal of limit}
+						and not User.Buffs.ByID(5602, tempEffect)
+						and not User.Buffs.ByID(5576, tempEffect)
+						and not User.Buffs.ByID(837, tempEffect)
+						and not User.Buffs.ByID(1418, tempEffect)   {celestial}
+						then
+						begin Engine.UseItem(13750); end;
+					end;
+				delay(50);
+				end;
+			end;
+			
+			procedure BottlesGCP;
+			var
+				tempEffect: TL2Effect;
+			begin
+				while Engine.Status = lsOnline do
+				begin
+				if
+				(User.CP < 99) and not User.Dead and not isMedused(User)
+				and not User.Buffs.ByID(1509, tempEffect)  {seal of limit}
+				and not isInvincible(User)
+				then
+				begin Engine.UseItem(5591); Engine.UseItem(5592); end;
+				delay(100);
+				end;
+			end;
+			
+			procedure BottlesGCPLimit;
+			var
+				tempEffect: TL2Effect;
+			begin
+				while Engine.Status = lsOnline do
+				begin
+					if
+					(User.CP < 28) and not User.Dead and not isMedused(User)
+					and User.Buffs.ByID(1509, tempEffect)  {seal of limit}
+					and not User.Buffs.ByID(5592, tempEffect)
+					and not User.Buffs.ByID(5576, tempEffect)
+					and not User.Buffs.ByID(1418, tempEffect)   {celestial}
+					then
+					begin Engine.UseItem(5591); Engine.UseItem(5592); end;
+				delay(100);
+				end;
+			end;
+			
+			procedure BottlesSiege;
+			var
+				instantHastePotion: TL2Effect;
+				item: tl2item;
+			begin
+				while Engine.Status = lsOnline do
+				begin
+					Inventory.User.ByID(10157, item);
+					if (item.Count > 0) then
+						begin
+							if not User.Dead and not isMedused(User)
+							and ((User.Buffs.ByID(2398, instantHastePotion) 
+							and (instantHastePotion.EndTime < 1000)) or not (User.Buffs.ByID(2398, instantHastePotion)))
+							and (isSiegeZone = true)
+							then
+								Engine.UseItem(10157);
+						end;
+				delay(500);
+				end;
+			end;
+			
+			function siegeZoneStatus;
+			var
+				Action: TL2Action;
+				prm, prm2: pointer;
+			begin
+				while Engine.Status = lsOnline do
+				begin	
+					Action:= Engine.WaitAction([laSysMsg], prm, prm2);
+					if (Action = laSysMsg) then
+					begin
+						if (Cardinal(prm) = 283) then
+							isSiegeZone:= true;
+						if (Cardinal(prm) = 284) then
+							isSiegeZone:= false;
+					end;
+					delay(500);
+				end;
+			end;
+			
+			
+			procedure manaPotion;
+			var
+				tempEffect: tl2effect;
+			begin
+			while Engine.Status = lsOnline do
+			begin
+				if (User.MP < 80) and not User.Dead and not isMedused(User)
+				and not User.Buffs.ByID(1509, tempEffect) {seal of limit} 
+				and not User.Buffs.ByID(1556, tempEffect)
+				and not isInvincible(User) then
+				begin
+					Engine.UseItem(728);
+					delay(12 * 1000);
+				end;
+				delay(1000);
+			end;
+			end;
+			
+			procedure manaPotionLimit;
+			var
+				tempEffect: tl2effect;
+			begin
+			while Engine.Status = lsOnline do
+			begin
+				if (User.MP < 15) and not User.Dead and not isMedused(User)
+				and User.Buffs.ByID(1509, tempEffect)  {seal of limit}
+				and not User.Buffs.ByID(1556, tempEffect)
+				and not isInvincible(User) then
+				begin
+					Engine.UseItem(728);
+					delay(12 * 1000);
+				end;
+				delay(1000);
+			end;
+			end;
+		
+
+end.

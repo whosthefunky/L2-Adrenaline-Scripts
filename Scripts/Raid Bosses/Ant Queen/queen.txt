@@ -1,0 +1,65 @@
+uses
+  Classes, SysUtils;
+
+procedure waitRaid;
+const
+  queen = 29001;
+var
+  i: integer;
+  npc: TL2Live;
+begin
+  while true do
+  begin
+  delay(100);
+  NpcList.ByID(queen, npc);
+  if (Assigned(npc)) then
+  begin
+    Engine.ConfirmDialog(true);
+    Engine.MoveTo(-22529, 183517, -5741);
+    Engine.UseItem(20393);
+    Engine.UseSkill(628);
+    Engine.UseSkill(479);
+    Engine.SetTarget(npc);
+    Engine.UseSkill(507);  
+    delay(10000);
+  end;
+  
+  end;
+end;
+
+procedure waitRaidNotification;
+const
+  queen = 29001;
+var
+  npc: TL2Live;
+  isPlaying: boolean;
+  startTime: cardinal;
+begin
+  isPlaying := false;
+  while true do
+  begin
+  delay(100);
+  NpcList.ByID(queen, npc);
+  if (Assigned(npc)) and not isPlaying then
+  begin
+    PlaySound('C:\refresh.wav',  true);
+    startTime := GetTickCount + 30 * 1000;
+    isPlaying := true;
+    delay(5000);
+  end;
+
+  if (GetTickCount > startTime) then
+  begin
+    StopSound;
+    isPlaying := false;
+    delay(1000);
+  end;
+  
+  end;
+end;
+
+begin
+   StopSound;
+   script.newThread(@waitRaidNotification);
+   script.newThread(@waitRaid);
+end.

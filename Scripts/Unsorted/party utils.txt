@@ -1,0 +1,107 @@
+uses
+  Classes, SysUtils;
+
+procedure countMembers;
+var
+  i: integer;
+begin
+  for i:=0 to Party.chars.count-1 do
+  begin
+    if (User.DistTo(party.chars.items(i)) > 1000) or ((User.Z - party.chars.items(i).Z) > 100) then
+      print(party.chars.items(i).name);
+  end;
+end;
+
+procedure checkLabaFirstFloor;
+var
+  i: integer;
+  result: integer;
+begin
+  result := 0;
+  for i:=0 to NpcList.count-1 do
+  begin
+    if (AnsiSameText(npclist.items(i).name, 'Lost Watchman')) then
+      inc(result);
+  end;
+  print(result);
+end;
+
+procedure printLvl;
+var
+  i: integer;
+begin
+  for i:=0 to Party.chars.count-1 do
+  begin
+   print(party.chars.items(i).name + ' ' + inttostr(party.chars.items(i).level));
+  end;
+end;
+
+procedure waitRaid;
+const
+  cabrioChest = 31027;
+  cabrioRaid = 25035;
+  golkondaChest = 31029;
+  kernonChest = 31028;
+var
+  i: integer;
+  npc: TL2Live;
+begin
+  while true do
+  begin
+  delay(100);
+  NpcList.ByID(kernonChest, npc);
+  if (Assigned(npc)) then
+  begin
+    Engine.SetTarget(npc);
+    Engine.MoveTo(npc);
+    Engine.DlgOpen;
+    Engine.DlgSel(1);
+    Engine.DlgSel(1);
+    delay(10000);
+  end;
+  
+  end;
+end;
+
+procedure waitRaidNotification;
+const
+  cabrioChest = 31027;
+  cabrioRaid = 25035;
+  hallateRaid = 25220;
+  golkondaRaid = 25126;
+  kernonRaid = 25054;
+var
+  npc: TL2Live;
+  isPlaying: boolean;
+  startTime: cardinal;
+begin
+  isPlaying := false;
+  while true do
+  begin
+  delay(100);
+  NpcList.ByID(kernonRaid, npc);
+  //Charlist.byname('03', npc);
+  if (Assigned(npc)) and not isPlaying then
+  begin
+    PlaySound('C:\refresh.wav',  true);
+    startTime := GetTickCount + 30 * 1000;
+    isPlaying := true;
+    delay(10000);
+  end;
+
+  if (GetTickCount > startTime) then
+  begin
+    StopSound;
+    isPlaying := false;
+    delay(10000);
+  end;
+  
+  end;
+end;
+
+
+begin
+  StopSound;
+  script.newThread(@waitRaid);
+  //script.newThread(@waitRaidNotification);
+end.

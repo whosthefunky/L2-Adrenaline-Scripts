@@ -1,0 +1,74 @@
+1_61 main controller
+
+procedure RebuffController;
+procedure evt0_1;
+procedure evt2_5;
+procedure evt6_9;
+procedure evt10_15;
+procedure evt16_18;
+procedure exp1_18;
+
+
+Functions
+
+procedure writeToArray(var iArray: array of integer; val1, val2, val3: integer);
+function getClosestLoc(arr: DimensionArray): integer;
+function distanceBetween(x1, y1, z1, x2, y2, z2: int64): extended;
+function inRange(obj: TL2Spawn; x1, y1, z1: integer; range: integer): boolean; overload;
+function inRange(obj: TL2Spawn; iArray: array of integer; range: integer): boolean; overload;
+function moveTo(iArray: array of integer): boolean;
+function moveToLoc(coordHolder: DimensionArray): boolean;
+function revertArray(arr: DimensionArray): DimensionArray;
+
+
+NpcFunctions
+
+procedure loadNpcAvoidList;
+function findFreeClosestEnemy: TL2Live;
+function attackNpc: boolean;
+function getNpcById(id: integer): TL2Live;
+function startDialog(npcId: integer): boolean;
+
+function countPlayersInZone(x, y, z: integer; radius: integer = 2000): integer; overload;
+function countRangePlayersInZone(x, y, z: integer; radius: integer = 2000): integer; overload;
+function countMiliPlayersInZone(x, y, z: integer; radius: integer = 2000): integer; overload;
+
+function countPlayersInZone(iArray: array of integer; radius: integer = 2000): integer; overload;
+function countRangePlayersInZone(iArray: array of integer; radius: integer = 2000): integer; overload;
+function countMiliPlayersInZone(iArray: array of integer; radius: integer = 2000): integer; overload;
+
+
+UserFunctions
+
+procedure equipNewbieItems;
+function isMage(obj: TL2Char): boolean; overload;
+function isMage: boolean; overload;
+procedure getCoupon;
+procedure getShadowWeaponFromCoupon(itemID: integer);
+function couponItemTaken(itemID: integer): boolean;
+procedure equipItem(itemID: integer);
+procedure updateState(stateType: string; stateValue: string; value: string); overload;
+procedure updateState(stateType: string; stateValue: string; value: integer); overload;
+function getState(stateType: string; stateValue: string; value: string): string; overload;
+function getState(stateType: string; stateValue: string; value: integer): integer; overload;
+function getState(stateType: string; stateValue: string; value: boolean): boolean; overload;
+function getArray(stateType: string; stateValue: string; value: string): array of integer;
+
+function getNewbieBuffer: TL2Live;
+function countItems(itemID: integer): integer;
+function shouldRebuff: boolean;
+
+LocationModule
+
+function GetCity(shouldGoHome: boolean = true; inCityEvt: boolean = false): TCity;
+procedure GoHome(SkillOrItem:String=''; Val: boolean = false);
+procedure InCity;
+function DoTeleport(TeleportValue: String): boolean;
+function isRightCity(val: TCity; shouldGoHome: boolean = true): boolean;
+function toRightCity(val: TCity): boolean;
+function inStartLoc: boolean;
+function getNewbieBuffer: TL2Live;
+procedure GetBuff;
+procedure initBuffPathArrays;
+function getNewbieQuest: boolean;
+

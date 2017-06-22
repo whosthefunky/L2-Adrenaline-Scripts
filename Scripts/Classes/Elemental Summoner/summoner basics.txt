@@ -1,0 +1,102 @@
+uses SysUtils, Classes;
+
+procedure tpContoller;
+var
+  buff: TL2Buff;
+begin
+  while Engine.Status = lsOnline do
+  begin
+    if not User.Dead and not User.Buffs.ById(1262, buff) then
+      Engine.UseSkill(1262);
+      
+    delay(1000);
+  end;
+end;
+
+procedure summonRangeProtect;
+var
+  previousTarget: TL2Live;
+begin
+  print('[Thread] Summon range check started');
+  while Engine.Status = lsOnline do
+  begin
+    if (petlist.count > 0) and (User.distTo(petlist.items(0)) > 800) then
+    begin
+      if User.Target <> nil then
+        previousTarget := User.Target;
+        
+      Engine.SetTarget(User);
+      Engine.UseAction(53);
+      Engine.UseAction(21);
+      Engine.SetTarget(previousTarget);
+      delay(3 * 1000);
+    end;
+    delay(500);
+  end;
+end;  
+
+procedure summonHeal;
+begin
+  print('[Thread] Summon heal thread started');
+  while Engine.Status = lsOnline do
+  begin
+    if (petlist.count > 0) and (Petlist.items(0).HP < 70){ and not isStunned(User)}
+        and (User.MP > 5) and (User.HP > 15) then
+      Engine.UseSkill(1127);
+    
+	  if (petlist.count > 0) and (Petlist.items(0).MP < 70){ and not isStunned(User)}
+        and (User.MP > 5) and (User.HP > 15) then
+      Engine.UseSkill(1126);
+  
+    delay(1000);
+  end;
+end;
+
+procedure countExpAdena;
+var
+  exp : int64;
+  TxtList : TStringList;
+  today : tdatetime;
+  adena : int64;
+  obj: tl2item;
+begin
+  TxtList := TStringList.Create;
+  exp := User.exp;
+  adena := obj.count;
+  while Engine.Status = lsOnline do begin
+     Inventory.User.ById(57, obj);
+     
+     if exp < User.exp then begin
+        if fileexists(Script.Path + 'exp.txt') then
+          TxtList.LoadFromFile(Script.Path + 'exp.txt');
+          
+        exp := User.exp - exp;
+        today := now;
+        TxtList.Add('+' + inttostr(exp)+', '+User.Name+', '+datetostr(today)+', '+timetostr(today));
+        TxtList.SaveToFile(Script.Path + 'exp.txt'); 
+        exp := User.exp; 
+     end;
+     if adena < obj.count then
+     begin
+      if fileexists(Script.Path + 'adena.txt') then
+          TxtList.LoadFromFile(Script.Path + 'adena.txt');
+          
+        adena := obj.count - adena;
+        today := now;
+        TxtList.Add('+' + inttostr(adena)+', '+User.Name+', '+datetostr(today)+', '+timetostr(today));
+        TxtList.SaveToFile(Script.Path + 'adena.txt'); 
+        adena := obj.count;
+     end;
+     delay(60 * 5 * 1000);
+   end;
+   TxtList.Free;  
+end;
+ 
+
+begin
+  script.newThread(@summonHeal);
+  script.newThread(@summonRangeProtect);
+  script.newThread(@tpContoller);
+  script.newThread(@countExpAdena);
+  delay(-1);
+end.
