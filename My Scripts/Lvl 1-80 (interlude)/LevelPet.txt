@@ -13,7 +13,7 @@ begin
   end;
 end;
 
-procedure summonRangeProtect;
+procedure petRangeProtect;
 var
   previousTarget: TL2Live;
 begin
@@ -26,8 +26,9 @@ begin
         previousTarget := User.Target;
         
       Engine.SetTarget('Moon Howler');
-      Engine.UseAction(53);
-      Engine.UseAction(21);
+      Engine.MoveToTarget (-500);
+      //Engine.UseAction(53); // Move action (ID 53)
+      //Engine.UseAction(21); // Change movement mode);
       Engine.SetTarget(previousTarget);
       delay(3 * 1000);
     end;
@@ -35,20 +36,26 @@ begin
   end;
 end;  
 
-procedure summonHeal;
+procedure petHeal;
 begin
-  print('[Thread] Summon heal thread started');
+    print('[Thread] Summon heal thread started');
   while Engine.Status = lsOnline do
   begin
-    if (petlist.count > 0) and (Petlist.items(0).HP < 70){ and not isStunned(User)}
+    if (petlist.count > 0) and (Petlist.items(0).HP < 70)
         and (User.MP > 5) and (User.HP > 15) then
-      Engine.UseSkill(1127);
-    
-	  if (petlist.count > 0) and (Petlist.items(0).MP < 70){ and not isStunned(User)}
+    begin
+      Engine.SetTarget('Moon Howler');
+      Engine.UseSkill(1401); // Major heal the pet
+    end;
+
+    if (petlist.count > 0) and (Petlist.items(0).Dead)
         and (User.MP > 5) and (User.HP > 15) then
-      Engine.UseSkill(1126);
+    begin
+      Engine.SetTarget('Moon Howler');
+      Engine.UseSkill(1016); // Resurrect the pet
+    end;
   
-    delay(1000);
+    delay(250);
   end;
 end;
 
@@ -64,7 +71,7 @@ begin
   exp := User.exp;
   adena := obj.count;
   while Engine.Status = lsOnline do begin
-     Inventory.User.ById(57, obj);
+     Inventory.User.ById(57, obj); // move adena (ID 57) to obj
      
      if exp < User.exp then begin
         if fileexists(Script.Path + 'exp.txt') then
@@ -94,11 +101,9 @@ end;
  
 
 begin
-  end;
-  script.newThread(@summonHeal);
-  script.newThread(@summonRangeProtect);
+  script.newThread(@petHeal);
+  script.newThread(@petRangeProtect);
   script.newThread(@tpContoller);
   script.newThread(@countExpAdena);
-  delay(-1);}
-  Print(Petlist.items(0).HP);
+  delay(-1);
 end.

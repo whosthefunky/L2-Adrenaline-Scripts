@@ -1,0 +1,86 @@
+uses  SysUtils;
+
+{
+--------------------------------------------------------------------------------
+  Retreat Spider Cletu (lvl 42)
+--------------------------------------------------------------------------------
+}
+function  goToRetreatSpiderCletu:  Boolean;
+begin
+  if  User.InRange (117000, 76900, -2700, 500, 200)  then begin
+    Print ('Moving from Gatekeeper to hunting ground');
+    Engine.MoveTo (118056, 75755, -2688);
+    Engine.MoveTo (118412, 73809, -2339);
+    Engine.MoveTo (118371, 73273, -2256);
+    Engine.MoveTo (119344, 70452, -2937);
+  end;
+  if  User.InRange (119344, 70452, -2937, 100, 30)  then begin
+    Engine.MoveTo (119857, 70458, -2952);
+  end;
+  if  User.InRange (119857, 70458, -2952, 1000, 30)  then begin
+    Print ('First bridge');
+    Engine.MoveTo (123296, 70570, -2888);
+    Engine.MoveTo (126571, 73452, -2816);
+    Engine.MoveTo (126340, 76455, -2152);
+    Engine.MoveTo (126558, 77572, -2048);
+    Engine.MoveTo (125773, 77830, -2408);
+    Engine.MoveTo (125708, 77828, -2455);
+    Engine.MoveTo (125488, 77591, -2456);
+  end;
+  if  User.InRange (125488, 77591, -2456, 50, 30)  then begin
+    Print ('Second Bridge');
+    Engine.MoveTo (124212, 76217, -2504);
+  end;
+  if  User.InRange (124212, 76217, -2504, 500, 200)  then begin
+    while  true  do
+    begin
+      if  Engine.SetTarget ('Retreat Spider Cletu')  then
+        PlaySound (exepath + 'beep.wav')
+      else
+        Print ('Not found at ' + TimeToStr(Time));
+        Delay (60 * 1000);
+    end;
+  end;
+end;
+
+{
+--------------------------------------------------------------------------------
+  Eva's Spirit Niniel (lvl 54)
+-------------------------------------------------------------------------------- 
+}
+function  goToNiniel:  Boolean;
+begin
+  if  goToGardenOfEva  then
+  begin
+    Engine.MoveTo (83127, 254411, -10872);
+    Print ('You''ve arrived to Eva''s Spirit Niniel');
+    while  true  do
+    begin
+      if  Engine.SetTarget ('Eva''s Spirit Niniel')  then begin
+        PlaySound (exepath + 'beep.wav');
+      end else begin
+        Print ('Not found at ' + TimeToStr(Time));
+        Delay (60 * 1000);
+      end;
+    end;
+  end;
+end;
+
+{
+--------------------------------------------------------------------------------
+  Don't know which one (lvl ?)
+--------------------------------------------------------------------------------
+}
+function  goToUnknown:  Boolean;
+begin
+  Engine.MoveTo (81973, 252445, -10592);
+  Engine.MoveTo ();
+  // check number of Keys of a Thief
+  //use Unlock skill
+  Engine.MoveTo (81985, 258157, -10376);
+  Engine.MoveTo (77311, 258247, -10404);
+  
+end;
+
+BEGIN
+END.
