@@ -1,0 +1,20 @@
+  
+  // teleportTo ('frozen labirinth');
+  if  User.InRange (113869, -108865, -840, 500, 200)  then begin
+    Print ('Path to the Ice Queen Castle');
+    Engine.MoveTo (113830, -109266, -848);
+    Engine.MoveTo (114054, -109795, -872);
+    Engine.MoveTo (114942, -111016, -896);
+    Engine.MoveTo (116211, -112923, -1200);
+    Engine.MoveTo (116292, -114843, -1624);
+    Engine.MoveTo (117183, -116222, -1936);
+    Engine.MoveTo (119929, -117277, -2496);
+    Engine.MoveTo (122172, -119132, -2648);
+    Engine.MoveTo (122142, -121419, -2776);
+    Engine.MoveTo (120968, -122722, -2768);
+    Engine.MoveTo (120613, -123986, -2808);
+    Engine.MoveTo (118917, -124990, -2784);
+    Engine.MoveTo (117230, -124403, -2976);
+    Engine.MoveTo (116915, -124893, -2992);
+    Engine.MoveTo (116319, -125765, -3232);
+  end;

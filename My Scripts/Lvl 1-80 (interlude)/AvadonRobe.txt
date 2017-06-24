@@ -1,0 +1,77 @@
+{
+--------------------------------------------------------------------------------
+  Karmian Stockings and Boots Recipes (lvl 41-43)
+  Stockings: 1/14 chance, 1m 34s avg. respawn time
+  Boots: 1/8 chance, 1m 34s avg. respawn time
+--------------------------------------------------------------------------------
+}
+procedure  KarmianStockingsBootsRecipes;
+begin
+  //Load
+  //goToGardenOfEva (1); // Indicate Level
+end;
+
+{
+--------------------------------------------------------------------------------
+  Karmian Gloves Drop (lvl 44)
+  Stockings: 1/4237 chance, 45s avg. respawn time
+--------------------------------------------------------------------------------
+}
+
+{
+--------------------------------------------------------------------------------
+  Karmian Boots and Stockings Recipe Spoiling
+  1/143 chance, 23s avg. respawn time
+--------------------------------------------------------------------------------
+}
+procedure  PlatedLeatherBootsRecipe;
+begin
+if  User.InRange (150500, 86000, -2700, 500, 200)  then begin
+  Print ('Moving from respawn to hunting ground');
+  Engine.MoveTo (147365, 87920, -3496);
+  Engine.MoveTo (143181, 83144, -3552);
+  Engine.MoveTo (143254, 82519, -3520);
+  Engine.MoveTo (142441, 80543, -3176);
+  Engine.MoveTo (142935, 78988, -3120);
+  Engine.MoveTo (142678, 78312, -3192);
+  Engine.MoveTo (142803, 77442, -3200);
+  Engine.MoveTo (143010, 76373, -3336);
+  Engine.MoveTo (143719, 75680, -3359);
+end;
+if  User.InRange (143700, 75680, -3360, 1000, 200)  then begin
+  Engine.LoadZone ('PlatedLeatherBootsSpoil.zmap');
+end;
+end;
+
+{	
+--------------------------------------------------------------------------------
+  Karmian Tunic and Gaiters by Drop (lvl 45) and Tunic Recipe by Drop
+  Tunic 1/4425 chance, Stockings 1/2762 chance, 23s avg. respawn time
+--------------------------------------------------------------------------------
+}
+procedure  KarmianTunicGaiters;
+begin
+  if  User.InRange (126438, 174785, -3074, 500, 200)  then begin
+    Engine.MoveTo (125406, 175937, -3352);
+  end;
+  if  User.InRange (125406, 175937, -3352, 500, 200)  then begin
+    Engine.MoveTo (122550, 177468, -3472);
+  end;
+  if  User.InRange (122550, 177468, -3472, 500, 200)  then begin
+    Engine.MoveTo (119338, 177971, -3768);
+  end;
+  if  User.InRange (119338, 177971, -3768, 500, 200)  then begin
+    Engine.LoadZone ('KarmianTunicGaiters.zmap');
+  end;
+end;
+
+  
+{	
+--------------------------------------------------------------------------------
+  Karmian Tunic Recipe by Drop (
+  Tunic Recipe 1/295 chance, 1m avg. respawn time
+--------------------------------------------------------------------------------
+}
+BEGIN
+  KarmianTunicGaiters;
+END.

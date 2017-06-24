@@ -1,0 +1,133 @@
+{	
+--------------------------------------------------------------------------------
+  Blue Wolf Breastplate Recipe by Spoil
+  Ice Tarantula (lvl 57) (Schuttgart, Frozen Labyrinth)
+  1/177 chance, 1m avg. respawn time
+  Blue Wolf Gaiters Recipe by Spoil
+  Frost Iron Golem (lvl 59) (Schuttgart, Frozen Labyrinth)
+--------------------------------------------------------------------------------
+}
+procedure  BlueWolfRecipes;
+begin
+  if  User.InRange (113869, -108865, -840, 500, 200)  then begin
+    Print ('Path to the Ice Queen Castle');
+    Engine.MoveTo (113830, -109266, -848);
+  end;
+  if  User.InRange (113473, -109977, -861, 500, 200)  or
+    User.InRange (113830, -109266, -848, 500, 200 )  then
+  begin
+    Engine.MoveTo (114054, -109795, -872);
+    Engine.MoveTo (114942, -111016, -896);
+    Engine.MoveTo (116211, -112923, -1200);
+    Engine.MoveTo (116292, -114843, -1624);
+    Engine.MoveTo (117183, -116222, -1936);
+    Engine.MoveTo (119929, -117277, -2496);
+    Engine.MoveTo (122172, -119132, -2648);
+  end;
+  if  User.InRange (122172, -119132, -264, 500, 200)  then begin
+    Engine.MoveTo (124842, -116045, -2609);
+    Engine.MoveTo (125986, -116198, -2576);
+  end;
+end;
+
+{	
+--------------------------------------------------------------------------------
+  Blue Wolf Breastplate Part by Spoil
+  Spiteful Soul Wizard (lvl 63) (Aden, Devastated Castle)
+  1/16 chance, 1m 50s avg. respawn time
+  Blue Wolf Gaiters Material by Spoil
+  Spiteful Soul Fighter (lvl 62)
+  1/13 chance, 1m 50s avg. respawn time
+--------------------------------------------------------------------------------
+}
+procedure BlueWolfMaterials;
+begin
+  // teleportTo ('devastated castle');
+  if  User.InRange (172138, 20330, -3321, 500, 200)  then begin
+    Print ('Moving from respawn to hunting zone');
+    Engine.MoveTo (172911, 18506, -3280);
+  end;
+  if  User.InRange (184791, 19725, -3163, 500, 200)  then begin
+    Print ('Moving from respawn to hunting zone');
+    Engine.MoveTo (175314, 17300, -3248);
+  end;
+  if  User.InRange (175314, 17300, -3248, 1000, 200)  or  User.InRange (172911, 18506, -3280, 500, 200) then begin
+    Engine.LoadZone ('FullPlateArmorTemper.zmap');
+  end;
+end;
+
+{	
+--------------------------------------------------------------------------------
+  Blue Wolf Boots Recipe by Drop
+  Fallen Orc Shaman (lvl 58) (Aden, Forsaken Plains)
+  1/80 chance, 30s avg. respawn time
+--------------------------------------------------------------------------------
+}
+// Same as FullPlateBootsPart;
+
+{	
+--------------------------------------------------------------------------------
+  Blue Wolf Boots Design by Spoil
+  Blue Wolf Gloves Fabric by Spoil
+  Blue Wolf Helmet Design by Spoil
+  Alpine Kookaburra (lvl 65) (Rune, Beast Farm)
+  1/9 chance, 36s avg. respawn time
+  Alpine Buffalo (lvl 67)
+  1/3, 45s avg. respawn time
+--------------------------------------------------------------------------------
+}
+procedure  BlueWolfBootsDesign;
+begin
+  // teleportTo ('beast farm');
+  if  User.InRange (167290, 37124, -4003, 500, 200)  then begin
+    Print ('Moving from respawn to hunting zone');
+    Engine.MoveTo (170082, 38731, -4048);
+    Engine.MoveTo (173925, 40050, -4120);
+    Engine.MoveTo (180626, 39767, -3751);
+  end;
+  if  User.InRange (180626, 39767, -3751, 500, 200)  or
+    User.InRange (172911, 18506, -3280, 500, 200) then begin
+    Engine.LoadZone ('AncientGargoyle.zmap');
+  end;
+end;
+
+{	
+--------------------------------------------------------------------------------
+  Blue Wolf Gloves Recipe by Drop
+  Leogul (lvl 61) ()
+  1/926 chance, 1m 22s avg. respawn time
+--------------------------------------------------------------------------------
+}
+procedure  BlueWolfRecipe;
+begin
+
+end;
+
+{	
+--------------------------------------------------------------------------------
+  Blue Wolf Helmet Recipe by Drop
+  Luminun (lvl 58) (Oren, West of the village)
+  1/2786 chance, 33s avg. respawn time
+--------------------------------------------------------------------------------
+}
+procedure  BlueWolfHelmetRecipe;
+begin
+  if  User.InRange (82512, 53266, -1488, 500, 200)  then begin
+    Engine.MoveTo (80997, 53507, -1552);
+  end;
+  if  User.InRange (80997, 53507, -1552, 500, 200)  then begin
+    Engine.MoveTo (81020, 53029, -1560);
+    Engine.MoveTo (80966, 50100, -2152);
+    Engine.MoveTo (82348, 50293, -3174);
+    Engine.MoveTo (84600, 50441, -3480);
+    // TODO: fix this. Doesn't go through the river
+    Engine.MoveTo (90673, 50468, -3685);
+  end;
+  if  User.InRange (90673, 50468, -3685, 500, 200)  then begin
+    Engine.LoadZone ('Luminun.zmap');
+  end;
+end;
+
+BEGIN
+  BlueWolfHelmetRecipe;
+END.

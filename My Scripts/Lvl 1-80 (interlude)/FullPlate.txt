@@ -46,6 +46,20 @@ end;
 }
 procedure FullPlateBootsPart;
 begin
+  // teleportTo ('forsaken plains');
+  if  User.InRange (167290, 37124, -4003, 500, 200)  then begin
+    Print ('Moving from respawn to hunting zone');
+    Engine.MoveTo (170082, 38731, -4048);
+    Engine.MoveTo (173925, 40050, -4120);
+    Engine.MoveTo (180626, 39767, -3751);
+  end;
+  if  User.InRange (180626, 39767, -3751, 500, 200)  or
+    User.InRange (172911, 18506, -3280, 500, 200) then begin
+    Engine.LoadZone ('AncientGargoyle.zmap');
+  end;
+end;
+{procedure FullPlateBootsPartDrake;
+begin
   // teleportTo ('antharas lair');
   if  User.InRange (132823, 114423, -3720, 500, 200)  then begin
     Print ('Moving from respawn to hunting zone');
@@ -62,7 +76,7 @@ begin
   if  User.InRange (175314, 17300, -3248, 1000, 200)  or  User.InRange (172911, 18506, -3280, 500, 200) then begin
     Engine.LoadZone ('FullPlateArmorTemper.zmap');
   end;
-end;
+end;}
 
 {	
 --------------------------------------------------------------------------------
@@ -79,6 +93,18 @@ end;
   1/337 chance, 36s avg. respawn time
 --------------------------------------------------------------------------------
 }
+procedure  FullPlateGauntletsPart;
+begin
+  // teleportTo ('giants cave');
+  if  User.InRange (167290, 37124, -4003, 500, 200)  then begin
+    Print ('Moving from respawn to hunting zone');
+	// TODO: make this
+  end;
+  if  User.InRange (180626, 39767, -3751, 500, 200)  or
+    User.InRange (172911, 18506, -3280, 500, 200) then begin
+    Engine.LoadZone ('AncientGargoyle.zmap');
+  end;
+end;
 
 {	
 --------------------------------------------------------------------------------
@@ -89,6 +115,95 @@ end;
   1/252 chance, 3m avg. respawn time
 --------------------------------------------------------------------------------
 }
+procedure  goToDevilIsle;
+begin
+  if  User.InRange (47930, 186762, -3486, 500, 200)  then begin
+  Engine.MoveTo (45785, 187239, -3480);
+	Engine.MoveTo (45269, 187513, -3384);
+	Engine.MoveTo (43212, 188372, -3480);
+	Engine.MoveTo (42151, 185865, -3376);
+	Engine.MoveTo (40838, 184134, -3312);
+	Engine.MoveTo (39870, 184048, -3217);
+	Engine.MoveTo (39766, 184041, -3208);
+	Engine.MoveTo (37109, 185309, -3122);
+	Engine.MoveTo (35590, 190287, -3088);
+	Engine.MoveTo (35862, 191200, -3119);
+	Engine.MoveTo (35815, 192153, -3088);
+	Print ('Jump to the water');
+  end;
+  if  User.InRange (42178, 208161, -3783, 500, 200)  then begin
+    Print ('Teleported with global gatekeeper');
+    Engine.MoveTo (43347, 207016, -3752);
+	  Engine.MoveTo (44043, 207082, -3752);
+  end;
+  
+  if  User.InRange (44043, 207082, -3752, 500, 200)  then begin
+    Print ('Next to kitty the cat');
+    Engine.MoveTo (44437, 207154, -3752);
+    Engine.MoveTo (44806, 206968, -3783);
+    Engine.MoveTo (44989, 205789, -3648);
+    Engine.MoveTo (46151, 205125, -3667);
+    Engine.MoveTo (47876, 205117, -3528);
+    Engine.MoveTo (48352, 205374, -3520);
+    Engine.MoveTo (48475, 208018, -3547);
+    Engine.MoveTo (48400, 209264, -3592);
+    Engine.MoveTo (47858, 209398, -3592);
+    Engine.MoveTo (46273, 211340, -3592);
+    Engine.MoveTo (45356, 212117, -3696);
+    Engine.MoveTo (46022, 213051, -3779);
+    Engine.MoveTo (45249, 213810, -3752);
+  end;
+  if  User.InRange (45249, 213810, -3752, 500, 200)  then begin
+    Engine.MoveTo (46254, 215000, -3752);
+    Engine.MoveTo (46505, 216640, -3752);
+    Engine.MoveTo (46305, 218633, -3712);
+    Engine.MoveTo (46867, 219257, -3640);
+    Engine.MoveTo (46730, 219866, -3584);
+    Engine.MoveTo (47319, 220901, -3584);
+    Engine.MoveTo (49756, 220656, -3584);
+    Engine.MoveTo (50404, 219276, -3584);
+    Engine.MoveTo (49794, 218996, -3584);
+    Engine.MoveTo (47954, 218598, -3611);
+    Engine.MoveTo (48018, 217480, -3584);
+    Engine.MoveTo (48314, 217454, -3584);
+    Engine.MoveTo (50404, 216926, -3584);
+    Engine.MoveTo (50330, 216624, -3611);
+    Engine.MoveTo (49071, 214989, -3584);
+    Engine.MoveTo (49072, 214309, -3440);
+    Engine.MoveTo (49292, 211601, -3344);
+    Engine.MoveTo (50493, 211622, -3040);
+    Engine.MoveTo (50900, 211541, -3037);
+  end;
+    {Print ('In this chamber you can spoil a lot of things');
+    Engine.LoadConfig (User.Name);
+    Engine.LoadZone ('ChamberDevilIsle');}
+  if  User.InRange (50900, 211541, -3037, 500, 200)  then begin
+    Engine.MoveTo (50883, 210317, -2720);
+  end;
+  if  User.InRange (50883, 210317, -2720, 500, 200)  then begin
+    Engine.MoveTo (50856, 209913, -2731);
+  end;
+  if  User.InRange (50856, 209913, -2731, 500, 200)  then begin
+    Engine.MoveTo (52192, 209997, -2510);
+  end;
+  if  User.InRange (52192, 209997, -2510, 500, 200)  then begin
+    Engine.MoveTo (53784, 210206, -2464);
+    Engine.MoveTo (55039, 210099, -2464);
+    Engine.MoveTo (55011, 211470, -2476);
+    Engine.MoveTo (55013, 211698, -2464);
+    Print ('Rock jumping');
+    Engine.MoveTo (55105, 212218, -3883);
+    Engine.MoveTo (55095, 215550, -4126);
+    Engine.MoveTo (54900, 216693, -3786);
+    Engine.MoveTo (55084, 216867, -3773);
+    Engine.MoveTo (55047, 216870, -3616);
+    Engine.MoveTo (56052, 216854, -3480);
+    Engine.MoveTo (56359, 216768, -3464);
+    Engine.MoveTo (56110, 216275, -3528);
+    Engine.MoveTo (52798, 216285, -3335);
+    Engine.MoveTo (52803, 216582, -3328);
+  end;
+end;
 
 {	
 --------------------------------------------------------------------------------
@@ -97,6 +212,31 @@ end;
   1/19 chance, 1m avg. respawn time
 --------------------------------------------------------------------------------
 }
+procedure  FullPlateHelmetDesign;
+begin
+  // teleportTo ('frozen labirinth');
+  if  User.InRange (113869, -108865, -840, 500, 200)  then begin
+    Print ('Path to Baby Panthera');
+    Engine.MoveTo (113830, -109266, -848);
+    Engine.MoveTo (113433, -109810, -864);
+    Engine.MoveTo (112339, -110839, -952);
+    Engine.MoveTo (111971, -111552, -1000);
+    Engine.MoveTo (111514, -112082, -1160);
+    Engine.MoveTo (110606, -113173, -1880);
+    Engine.MoveTo (119234, -113872, -2128);
+    Engine.MoveTo (107926, -115882, -2810);
+  end;
+  if  User.InRange (107926, -115882, -2810, 500, 200)  then begin
+    Print ('Nice spot to farm lvl 50-60');
+    Engine.MoveTo (111514, -112082, -1160);
+    Engine.MoveTo (110606, -113173, -1880);
+    Engine.MoveTo (119234, -113872, -2128);
+    Engine.MoveTo (107926, -115882, -2810);
+  end;
+  if  User.InRange (107926, -115882, -2810, 500, 200)  then begin
+    Engine.FaceControl (0, true);
+  end;
+end;
 
 {	
 --------------------------------------------------------------------------------
@@ -117,7 +257,34 @@ end;
   1/117 chance, 1m avg. respawn time
 --------------------------------------------------------------------------------
 }
+procedure FullPlateShieldFragment;
+begin
+  if  User.InRange (-21738, 77402, -5172);
+    LoadConfig ('KillAgroMobs');
+    Engine.MoveTo (-21369, 77659, -5197);
+    Engine.MoveTo (-21344, 78407, -5199);
+
+    Engine.MoveTo (-18962, 77643, -5199);
+  end;
+end;
+  {// TeleportTo ('the forest of mirrors');
+  if  User.InRange (150487, 85923, -2748, 500, 200)  then begin
+    Print ('Path to Harit Lizardman Warrior');
+    Engine.MoveTo (151888, 84714, -3320);
+    Engine.MoveTo (152916, 83435, -3200);
+    Engine.MoveTo (157187, 78612, -3336);
+  end;
+if  User.InRange (157187, 78612, -3336, 500, 200)  then begin  
+    Engine.MoveTo (157303, 78487, -2920);
+    Engine.MoveTo (160775, 76584, -3163);
+    Engine.MoveTo (163458, 79749, -2390);
+  end;
+  if  User.InRange (161149, 75635, -3174, 500, 200)  then begin
+    Engine.LoadZone ('HaritLizardmanWarrior2.zmap');
+    Engine.FaceControl (0, true);
+  end;
+end;}
 
 BEGIN
-  FullPlateArmorTemper;
+  FullPlateShieldFragment;
 END.
