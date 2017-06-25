@@ -131,4 +131,5 @@ end;
 
 
 BEGIN
+  doteleport ('goddard');
 END.
