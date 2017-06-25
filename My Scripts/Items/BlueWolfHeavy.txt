@@ -128,6 +128,34 @@ begin
   end;
 end;
 
+{	
+--------------------------------------------------------------------------------
+  Blue Wolf Helmet by Drop
+  Plando (lvl 64) (Giran, Anthara's Lair)
+  1/11628 chance, 4m avg. respawn time
+--------------------------------------------------------------------------------
+}
+procedure  BlueWolfHelmet;
+begin
+  if  User.InRange (132839, 114438, -3720, 500, 200)  or
+      User.InRange (131423, 114461, -3716, 500, 200)  then
+  begin
+    Print ('Moving to hunting zone');
+    Engine.LoadConfig ('KillAgroMobs');
+    Engine.FaceControl (0, true);
+    Engine.MoveTo (134835, 114489, -3751);
+    Engine.MoveTo (136032, 115060, -3720);
+  end;
+  if  User.InRange (136032, 115060, -3720, 500, 200)  then begin
+    Engine.MoveTo (136834, 114537, -3712);
+    Engine.MoveTo (139934, 114361, -3720);
+    Engine.MoveTo (140890, 113430, -3720);
+    Engine.MoveTo (141731, 112430, -3720);
+    Engine.MoveTo (142600, 111915, -3944);
+    Engine.MoveTo (142280, 109216, -3944);
+  end;
+end;
+
 BEGIN
-  BlueWolfHelmetRecipe;
+  BlueWolfHelmet;
 END.
