@@ -1,57 +1,88 @@
+uses  TeleportModule, FunctionsModule;
+
+const
+  AVADON_CIRCLET_RECIPE = 4149;
+  AVADON_CIRCLET_PATTERN = 4072;
+  AVADON_ROBE_RECIPE = 4148;
+  AVADON_ROBE_FABRIC = 4071;
+  AVADON_GLOVES_RECIPE = 4150;
+  AVADON_GLOVES_PART = 4073;
+  AVADON_BOOTS_RECIPE = 4175;
+  AVADON_BOOTS_DESIGN = 4098;
+  AVADON_SHIELD_RECIPE = 4441;
+  AVADON_SHIELD_FRAGMENT = 4439;
+
 {
 --------------------------------------------------------------------------------
-  Karmian Stockings and Boots Recipes (lvl 41-43)
-  Stockings: 1/14 chance, 1m 34s avg. respawn time
-  Boots: 1/8 chance, 1m 34s avg. respawn time
+  Avadon Circlet Recipe by Drop
+  Marsh Stalker (lvl 54) (Aden, Forsaken Plains)
+  1/1618 chance, 27s avg. respawn time
 --------------------------------------------------------------------------------
 }
-procedure  KarmianStockingsBootsRecipes;
+function  AvadonCircletRecipe: boolean;
 begin
-  //Load
-  //goToGardenOfEva (1); // Indicate Level
+  TeleportTo ('forsaken plains');
+  Result := true;
 end;
 
 {
 --------------------------------------------------------------------------------
-  Karmian Gloves Drop (lvl 44)
-  Stockings: 1/4237 chance, 45s avg. respawn time
+  Avadon Circlet Pattern by Drop
+  Grave Lich (lvl 57) (Aden, Devastated Castle)
+  1/315 chance, 1m 15s avg. respawn time
 --------------------------------------------------------------------------------
 }
+function  AvadonCircletPattern: boolean;
+begin
+  TeleportTo ('devastated castle');
+  Result := true;
+end;
 
 {
 --------------------------------------------------------------------------------
-  Karmian Boots and Stockings Recipe Spoiling
-  1/143 chance, 23s avg. respawn time
+  Avadon Robe Recipe by Spoil
+  Baby Panthera (lvl 55) (Shuttgart, Frost Lake)
+  1/150 chance, 1m avg. respawn time
 --------------------------------------------------------------------------------
 }
-procedure  PlatedLeatherBootsRecipe;
+function  AvadonRobeRecipe: boolean;
 begin
-if  User.InRange (150500, 86000, -2700, 500, 200)  then begin
-  Print ('Moving from respawn to hunting ground');
-  Engine.MoveTo (147365, 87920, -3496);
-  Engine.MoveTo (143181, 83144, -3552);
-  Engine.MoveTo (143254, 82519, -3520);
-  Engine.MoveTo (142441, 80543, -3176);
-  Engine.MoveTo (142935, 78988, -3120);
-  Engine.MoveTo (142678, 78312, -3192);
-  Engine.MoveTo (142803, 77442, -3200);
-  Engine.MoveTo (143010, 76373, -3336);
-  Engine.MoveTo (143719, 75680, -3359);
-end;
-if  User.InRange (143700, 75680, -3360, 1000, 200)  then begin
-  Engine.LoadZone ('PlatedLeatherBootsSpoil.zmap');
-end;
+  TeleportTo ('frozen labirinth');
+  if  User.InRange (113869, -108865, -840, 500, 200)  then begin
+    Print ('Path to Baby Panthera');
+    Engine.MoveTo (113830, -109266, -848);
+    Engine.MoveTo (113433, -109810, -864);
+    Engine.MoveTo (112339, -110839, -952);
+    Engine.MoveTo (111971, -111552, -1000);
+    Engine.MoveTo (111514, -112082, -1160);
+    Engine.MoveTo (110606, -113173, -1880);
+    Engine.MoveTo (119234, -113872, -2128);
+    Engine.MoveTo (107926, -115882, -2810);
+  end;
+  if  User.InRange (107926, -115882, -2810, 500, 200)  then begin
+    Print ('Nice spot to farm lvl 50-60');
+    Engine.MoveTo (111514, -112082, -1160);
+    Engine.MoveTo (110606, -113173, -1880);
+    Engine.MoveTo (119234, -113872, -2128);
+    Engine.MoveTo (107926, -115882, -2810);
+  end;
+  if  User.InRange (107926, -115882, -2810, 500, 200)  then begin
+    Engine.FaceControl (0, true);
+  end;
+  Result := true;
 end;
 
 {	
 --------------------------------------------------------------------------------
-  Karmian Tunic and Gaiters by Drop (lvl 45) and Tunic Recipe by Drop
-  Tunic 1/4425 chance, Stockings 1/2762 chance, 23s avg. respawn time
+  Avadon Robe Fabric by Spoil
+  Malruk Succubus Turen (lvl 56) (Giran, Dragon Valley)
+  1/30 chance, 36s avg. respawn time
 --------------------------------------------------------------------------------
 }
-procedure  KarmianTunicGaiters;
+function  AvadonRobeFabric: boolean;
 begin
-  if  User.InRange (126438, 174785, -3074, 500, 200)  then begin
+  TeleportTo ('antharas lair');
+  {if  User.InRange (126438, 174785, -3074, 500, 200)  then begin
     Engine.MoveTo (125406, 175937, -3352);
   end;
   if  User.InRange (125406, 175937, -3352, 500, 200)  then begin
@@ -63,15 +94,171 @@ begin
   if  User.InRange (119338, 177971, -3768, 500, 200)  then begin
     Engine.LoadZone ('KarmianTunicGaiters.zmap');
   end;
+  Result := true;}
 end;
 
   
 {	
 --------------------------------------------------------------------------------
-  Karmian Tunic Recipe by Drop (
-  Tunic Recipe 1/295 chance, 1m avg. respawn time
+  Avadon Gloves Recipe by Drop
+  Falibati (lvl 64) (Aden, Seal of Shillen)
+  1/781 chance, 25s avg. respawn time
 --------------------------------------------------------------------------------
 }
+function  AvadonGlovesRecipe: boolean;
+begin
+  TeleportTo ('seal of shillen');
+  {if  User.InRange (, 500, 200)  then begin
+    Engine.MoveTo (125406, 175937, -3352);
+  end;
+  if  User.InRange (125406, 175937, -3352, 500, 200)  then begin
+    Engine.MoveTo (122550, 177468, -3472);
+  end;
+  if  User.InRange (122550, 177468, -3472, 500, 200)  then begin
+    Engine.MoveTo (119338, 177971, -3768);
+  end;
+  if  User.InRange (119338, 177971, -3768, 500, 200)  then begin
+    Engine.LoadZone ('KarmianTunicGaiters.zmap');
+  end;
+  Result := true;}
+end;
+
+{	
+--------------------------------------------------------------------------------
+  Avadon Gloves Part by Drop (Aden, The Giant's Cave)
+  Avadon Boots Design by Drop
+  Yintzu (lvl 56) 1/179 chance, 1m 14s avg. respawn time
+  Paliote (lvl 57) 1/166 chance, 1m 15s avg. respawn time
+--------------------------------------------------------------------------------
+}
+function  AvadonGlovesBootsMats: boolean;
+begin
+  TeleportTo ('giant cave');
+  {if  User.InRange (, 500, 200)  then begin
+    Engine.MoveTo (125406, 175937, -3352);
+  end;
+  if  User.InRange (125406, 175937, -3352, 500, 200)  then begin
+    Engine.MoveTo (122550, 177468, -3472);
+  end;
+  if  User.InRange (122550, 177468, -3472, 500, 200)  then begin
+    Engine.MoveTo (119338, 177971, -3768);
+  end;
+  if  User.InRange (119338, 177971, -3768, 500, 200)  then begin
+    Engine.LoadZone ('KarmianTunicGaiters.zmap');
+  end;
+  Result := true;}
+end;
+
+{	
+--------------------------------------------------------------------------------
+  Avadon Boots Recipe by Drop
+  Past Knight (lvl 64) (Aden, Ancient Battleground)
+  1/884 chance, 37s avg. respawn time
+--------------------------------------------------------------------------------
+}
+function  AvadonBootsRecipe: boolean;
+begin
+  TeleportTo ('ancient battleground');
+  {if  User.InRange (, 500, 200)  then begin
+    Engine.MoveTo (125406, 175937, -3352);
+  end;
+  if  User.InRange (125406, 175937, -3352, 500, 200)  then begin
+    Engine.MoveTo (122550, 177468, -3472);
+  end;
+  if  User.InRange (122550, 177468, -3472, 500, 200)  then begin
+    Engine.MoveTo (119338, 177971, -3768);
+  end;
+  if  User.InRange (119338, 177971, -3768, 500, 200)  then begin
+    Engine.LoadZone ('KarmianTunicGaiters.zmap');
+  end;
+  Result := true;}
+end;
+
+{	
+--------------------------------------------------------------------------------
+  Avadon Boots Design by Drop
+  Past Knight (lvl 64) (Aden, Ancient Battleground)
+  1/884 chance, 37s avg. respawn time
+--------------------------------------------------------------------------------
+}
+function  AvadonBootsRecipe: boolean;
+begin
+  TeleportTo ('ancient battleground');
+  {if  User.InRange (, 500, 200)  then begin
+    Engine.MoveTo (125406, 175937, -3352);
+  end;
+  if  User.InRange (125406, 175937, -3352, 500, 200)  then begin
+    Engine.MoveTo (122550, 177468, -3472);
+  end;
+  if  User.InRange (122550, 177468, -3472, 500, 200)  then begin
+    Engine.MoveTo (119338, 177971, -3768);
+  end;
+  if  User.InRange (119338, 177971, -3768, 500, 200)  then begin
+    Engine.LoadZone ('KarmianTunicGaiters.zmap');
+  end;
+  Result := true;}
+end;
+
+{	
+--------------------------------------------------------------------------------
+  Avadon Shield Recipe by Drop
+  Marsh Drake (lvl 55) (Aden, Forsaken Plains)
+  1/989 chance, 27s avg. respawn time
+--------------------------------------------------------------------------------
+}
+function  AvadonShieldRecipe: boolean;
+begin
+  TeleportTo ('forsaken plains');
+  {if  User.InRange (, 500, 200)  then begin
+    Engine.MoveTo (125406, 175937, -3352);
+  end;
+  if  User.InRange (125406, 175937, -3352, 500, 200)  then begin
+    Engine.MoveTo (122550, 177468, -3472);
+  end;
+  if  User.InRange (122550, 177468, -3472, 500, 200)  then begin
+    Engine.MoveTo (119338, 177971, -3768);
+  end;
+  if  User.InRange (119338, 177971, -3768, 500, 200)  then begin
+    Engine.LoadZone ('KarmianTunicGaiters.zmap');
+  end;
+  Result := true;}
+end;
+
+{	
+--------------------------------------------------------------------------------
+  Avadon Shield Fragment by Drop
+  Ghost Of The Tower (lvl 60) (Aden, Tower of Insolence)
+  1/3 chance, 2m 28s avg. respawn time
+--------------------------------------------------------------------------------
+}
+function  AvadonShieldFragment: boolean;
+begin
+  TeleportTo ('tower of insolence');
+  {if  User.InRange (, 500, 200)  then begin
+    Engine.MoveTo (125406, 175937, -3352);
+  end;
+  if  User.InRange (125406, 175937, -3352, 500, 200)  then begin
+    Engine.MoveTo (122550, 177468, -3472);
+  end;
+  if  User.InRange (122550, 177468, -3472, 500, 200)  then begin
+    Engine.MoveTo (119338, 177971, -3768);
+  end;
+  if  User.InRange (119338, 177971, -3768, 500, 200)  then begin
+    Engine.LoadZone ('KarmianTunicGaiters.zmap');
+  end;
+  Result := true;}
+end;
+
+
 BEGIN
-  KarmianTunicGaiters;
+ {GetItem (@AvadonCircletRecipe, AVADON_CIRCLET_RECIPE, -1, -1, 54, 2, -1, -1);
+  GetItem (@AvadonShieldRecipe, AVADON_SHIELD_RECIPE, -1, -1, 55, 2, -1, -1);
+  GetItem (@AvadonRobeRecipe, AVADON_ROBE_RECIPE, -1, -1, 55, 2, -1, -1);
+  GetItem (@AvadonRobeFabric, AVADON_ROBE_FABRIC, -1, -1, 56, 1 * 12, -1, -1);
+  GetItem (@AvadonGlovesBootsMats, AVADON_GLOVES_PART, AVADON_BOOTS_DESIGN, -1, 56, 1 * 12, 1 * 12, -1);
+  GetItem (@AvadonCircletPattern, AVADON_CIRCLET_PATTERN, -1, -1, 57, 1 * 12, -1, -1);
+  GetItem (@AvadonShieldFragment, AVADON_SHIELD_FRAGMENT, -1, -1, 60, 1 * 12, -1, -1);
+  GetItem (@AvadonGlovesRecipe, AVADON_GLOVES_RECIPE, -1, -1, 64, 2, -1, -1);
+  GetItem (@AvadonBootsRecipe, AVADON_BOOTS_RECIPE, -1, -1, 64, 2, -1, -1);
+   }
 END.

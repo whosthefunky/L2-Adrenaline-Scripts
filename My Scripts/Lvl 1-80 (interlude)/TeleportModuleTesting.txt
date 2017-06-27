@@ -5,16 +5,50 @@ interface
 uses
   SysUtils, Classes;
 type
+  DimensionArray = array of array of integer;
+
   TCity = (DWARVEN = 0, ORC = 1, DARK_ELVEN = 2, ELVEN = 3, TALKING_ISLAND = 4,
     HEINE = 5, DION = 6, GIRAN = 7, ADEN = 8, GODDARD = 9, GLUDIO = 10, GLUDIN = 11,
     SHTUTTGART = 12, RUNE = 13, OREN = 14, HUNTER = 15, NON_CITY = 16);
+  
+  TCity2 = record
+    //Enum: TCity;
+    //ID: integer;
+    Name: String;
+    gateKeeperID: integer;
+    //supplyManagerID: integer;
+    //newbieBufferID: integer;
+    //pathToBuffer: DimensionArray;
+    //pathToSupply: DimensionArray;
+    GateKeepersString: String;
+  end;
 
 const
   SCROLL_OF_SCAPE = 736;
   ROXXY = 30006;
-
+  
+  DWARVEN2 = (Name: 'dwarven village', gateKeeperID: 30540, GateKeepersString: 'gludio,schuttgart,"dark elf village","talking island","elf village","orc village","mithril mines","abandoned coal mines","eastern mining zone","western mining zone"');
+  ORC2 = (Name: 'orc village', gateKeeperID: 30576, GateKeepersString: 'gludio,schuttgart,"dark elf village","dwarven village","talking island","elf village","immortal plateau","immortal plateau south","fozen waterfall"');
+  DARK_ELVEN2 = (Name: 'dark elf village', gateKeeperID: 30134, GateKeepersString: 'gludio,"dwarven village","talking island","orc village","dark forest","swampland","spider nest","neutral zone"');
+  ELVEN2 = (Name: 'elf village', gateKeeperID: 30146, GateKeepersString: 'gludio,"dwarven village","talking island","orc village","elven forest","elven fortress","neutral zone"');
+  TALKING_ISLAND2 = (Name: 'talking island', gateKeeperID: 30006, GateKeepersString: 'gludin,"dark elf village","dwarven village","elf village","orc village","elven ruins","singing waterfall","northen territory","obelisk of victory"');
+  HEINE2 = (Name: 'heine', gateKeeperID: 30899, GateKeepersString: 'giran,oren,dion,aden,goddard,rune,schuttgart,gludio,"giran harbor","field of silence","field of whispers","alligator island","garden of eva"');
+  DION2 = (Name: 'dion', gateKeeperID: 30059, GateKeepersString: 'giran,heine,gludio,goddard,rune,schuttgart,aden,oren,"cruma marshland","cruma tower","fortress of resistance","plains of dion","bee hive","tanor canyon"');
+  GIRAN2 = (Name: 'giran', gateKeeperID: 30080, GateKeepersString: 'oren,heine,dion,goddard,rune,schuttgart,gludio,aden,"giran harbor","hardins private academy","dragon valley","antharas lair","devils isle","breka stronghold"');
+  ADEN2 = (Name: 'aden', gateKeeperID: 30848, GateKeepersString: 'goddard,oren,giran,heine,schuttgart,dion,gludio,rune,"hunter village","coliseum","forsaken plains","seal of shilen","forest of mirrors","blazing swamp","field of massacre","ancient battleground","silent valley","tower of insolence"');
+  GODDARD2 = (Name: 'goddard', gateKeeperID: 31275, GateKeepersString: 'gludio,giran,dion,rune,heine,schuttgart,aden,oren,"varka","ketra","hot springs","wall of argos","monastery of silence"');
+  GLUDIO2 = (Name: 'gludio', gateKeeperID: 30256, GateKeepersString: 'schuttgart,heine,aden,oren,dion,goddard,giran,rune,gludin,"elf village","dark elf village","dwarven village","orc village","ruins of agony","ruins of despair","ant nest","windawood manor"');
+  GLUDIN2 = (Name: 'gludin', gateKeeperID: 30320, GateKeepersString: 'gludio,"talking island","elf village","dark elf village","dwarven village","orc village","langk lizardman dwellings","windmill hill","fellmere harvesting grounds","forgotten temple","orc barracks","windy hill",wasteland,"red rock ridge"');
+  SHTUTTGART2 = (Name: 'schuttgart', gateKeeperID: 31964, GateKeepersString: 'rune,goddard,aden,oren,heine,giran,dion,gludio,"orc village","dwarven village","den of evil","plunderous plains","frozen labyrinth","crypts of disgrace","pavel ruines"');
+  RUNE2 = (Name: 'rune', gateKeeperID: 31320, GateKeepersString: 'goddard,gludio,giran,dion,heine,schuttgart,aden,oren,"wild beast pastues","valley of saints","forest of the dead","swamp of screams","monasterty of silence"');
+  OREN2 = (Name: 'oren', gateKeeperID: 30177, GateKeepersString: 'aden,giran,rune,goddard,heine,dion,schuttgart,gludio,"ivory tower","hunter village","hardins private academy","skyshadow meadow","plains of the lizardmen","outlaw forest","sea of spores"');
+  HUNTER2 = (Name: 'hunter village', gateKeeperID: 30233, GateKeepersString: 'aden,oren,"hardins private academy","enchanted valley south","enchanted valley north","forest of mirrors"');
+  
   TCities : array[0..16] of TCity = (DWARVEN, ORC, DARK_ELVEN, ELVEN, TALKING_ISLAND,
     HEINE, DION, GIRAN, ADEN, GODDARD, GLUDIO, GLUDIN, SHTUTTGART, RUNE, OREN, HUNTER, NON_CITY);
+
+  TCities2 : array[0..16] of TCity2 = (DWARVEN2, ORC2, DARK_ELVEN2, ELVEN2, TALKING_ISLAND2,
+    HEINE2, DION2, GIRAN2, ADEN2, GODDARD2, GLUDIO2, GLUDIN2, SHTUTTGART2, RUNE2, OREN2, HUNTER2, NON_CITY);
   
   CityNames: array[0..15] of string = ('dwarven village','orc village','dark elf village','elf village','talking island',
     'heine','dion','giran','aden','goddard','gludio','gludin','schuttgart','rune','oren','hunter village');
@@ -1203,22 +1237,6 @@ begin
 
 {
 ------------------------------------------------------------------------------
-                             Dwarven Island
-------------------------------------------------------------------------------
-}
-  if City = DWARVEN then begin
-    // south entrance
-    if  User.InRange (116514, -183912, -1560, 500, 150)  then begin
-      Engine.MoveTo (116611, -179919, -1152);
-      Engine.MoveTo (115125, -178212, -896);
-      Engine.MoveTo(-84552, 244040, -3712);
-      Engine.MoveTo(-84184, 244504, -3712);
-    end;
-    if User.InRange (-84184, 244504, -3712, 500, 150) then Moved := true;
-  end;
-
-{
-------------------------------------------------------------------------------
   If no movement has taken place in the city
 ------------------------------------------------------------------------------
 }
@@ -1365,7 +1383,7 @@ begin
       Engine.DlgOpen;
       Delay (500);
       // TODO: Check the gatekeepers that don't have the teleport dialog in the first option
-      if  gatekeeper.ID = ROXXY  then  // if we are in talking island
+      if  gatekeeper.ID = ROXXY  then  // if we are in talking island, the teleport is in the second option
         Engine.DlgSel (2)
       {
       else

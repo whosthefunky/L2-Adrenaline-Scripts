@@ -72,22 +72,22 @@ var
 begin
   City := NON_CITY;
   if User.InRange (147509, 25928, User.Z, 5000, 100)       then City := ADEN;
-  if User.InRange (11416, 16856,User.Z,5000,10)            then City := DARK_ELVEN;
-  if User.InRange (18591,144708,User.Z,5000,10)            then City := DION;
-  if User.InRange (116569,-179848,User.Z,7000,10)          then City := DWARVEN;
-  if User.InRange (44904, 49800, User.Z, 7000, 10)         then City := ELVEN;
-  if User.InRange (82876,148960,User.Z,5000,10)            then City := GIRAN;
-  if User.InRange (-81311,152663,User.Z,5000,10)           then City := GLUDIN;
-  if User.InRange (-14236,123701,User.Z,5000,10)           then City := GLUDIO;
-  if User.InRange (147713,-56202,User.Z,5000,10)           then City := GODDARD;
-  if User.InRange (111434,220426,User.Z,5000,10)           then City := HEINE;
-  if User.InRange (117144, 76824,User.Z,5000,10)           then City := HUNTER;
-  if User.InRange (-45080, -113576, User.Z, 5000, 10)      then City := ORC;
-  if User.InRange (81150, 54880, User.Z, 5000, 10)         then City := OREN;
-  if User.InRange (43838, -48222, User.Z, 5000, 10) or
-    User.InRange (38283, -48102, User.Z, 5000, 10)         then City := RUNE;
-  if User.InRange (88041, -142502, User. Z,5000, 10)       then City := SHTUTTGART;
-  if User.InRange (-83139, 243145, User.Z,5000, 10)        then City := TALKING_ISLAND;
+  if User.InRange (11416, 16856, User.Z, 5000, 100)        then City := DARK_ELVEN;
+  if User.InRange (18591, 144708, User.Z, 5000, 100)       then City := DION;
+  if User.InRange (116569, -179848, User.Z, 7000, 100)     then City := DWARVEN;
+  if User.InRange (44904, 49800, User.Z, 7000, 100)        then City := ELVEN;
+  if User.InRange (82876, 148960, User.Z, 5000, 100)       then City := GIRAN;
+  if User.InRange (-81311, 152663, User.Z, 5000, 100)      then City := GLUDIN;
+  if User.InRange (-14236, 123701, User.Z, 5000, 100)      then City := GLUDIO;
+  if User.InRange (147713, -56202, User.Z, 5000, 100)      then City := GODDARD;
+  if User.InRange (111434, 220426, User.Z, 5000, 100)      then City := HEINE;
+  if User.InRange (117144, 76824, User.Z, 5000, 100)       then City := HUNTER;
+  if User.InRange (-45080, -113576, User.Z, 5000, 100)     then City := ORC;
+  if User.InRange (81150, 54880, User.Z, 5000, 100)        then City := OREN;
+  if User.InRange (43838, -48222, User.Z, 5000, 100) or
+    User.InRange (38283, -48102, User.Z, 5000, 100)        then City := RUNE;
+  if User.InRange (88041, -142502, User. Z, 5000, 100)     then City := SHTUTTGART;
+  if User.InRange (-83139, 243145, User.Z, 5000, 100)      then City := TALKING_ISLAND;
 
   // If it isn't in one of the previous locations then goHome and try again
   if (City = NON_CITY) and (shouldGoHome) then
@@ -617,6 +617,15 @@ begin
 ------------------------------------------------------------------------------
 }
   if CITY = GLUDIO then begin
+    // Next to Black Marketeer of Mammon
+    if User.InRange (-12240, 121807, -3010, 250, 150) then begin
+      Engine.MoveTo (-12712, 122189, -2984);
+    end;
+	// Stairs in front of church close to gatekeeper
+	if User.InRange (-12712, 122189, -2984, 250, 150) then begin
+      Engine.MoveTo (-13257, 122669, -3048);
+      Engine.MoveTo (-12782, 122689, -3143);
+    end;
     if User.InRange(-14704,122032,-3056, 250, 150) then begin
       Engine.MoveTo(-14704,122032,-3056);
       Engine.MoveTo(-14538,122671,-3116);
@@ -1207,14 +1216,44 @@ begin
 ------------------------------------------------------------------------------
 }
   if City = DWARVEN then begin
-    // south entrance
+    // North entrance
+    if  User.InRange (116499, -183985, -1588, 500, 150)  then begin
+      Engine.MoveTo (116643, -180342, -1360);
+      Engine.MoveTo (116322, -179598, -1104);
+    end;
+    // South entrance
     if  User.InRange (116514, -183912, -1560, 500, 150)  then begin
       Engine.MoveTo (116611, -179919, -1152);
-      Engine.MoveTo (115125, -178212, -896);
-      Engine.MoveTo(-84552, 244040, -3712);
-      Engine.MoveTo(-84184, 244504, -3712);
+      Engine.MoveTo (116322, -179598, -1104);
     end;
-    if User.InRange (-84184, 244504, -3712, 500, 150) then Moved := true;
+    // In the middle
+    if  User.InRange (116666, -179540, -1122, 500, 150)  then begin
+      Engine.MoveTo (115698, -178876, -968);
+      Engine.MoveTo (116322, -179598, -1104);
+    end;
+    if User.InRange (116322, -179598, -1104, 500, 150) then Moved := true;
+  end;
+  
+{
+------------------------------------------------------------------------------
+                             Dark Elven
+------------------------------------------------------------------------------
+}
+  if City = DARK_ELVEN then begin
+    // Next to newbie guide
+    if  User.InRange (12094, 16709, -4580, 500, 150)  then begin
+      Engine.MoveTo (11631, 16756, -4656);
+      Engine.MoveTo (10759, 16654, -4608);
+    end;
+	// West entrance
+	if  User.InRange (7439, 17778, -4376, 500, 150)  then begin
+      Engine.MoveTo (10759, 16654, -4608);
+    end;
+    // Last turn to gatekeeper
+    if  User.InRange (10759, 16654, -4608, 500, 150)  then begin
+      Engine.MoveTo (10182, 16799, -4584);
+    end;
+	if  User.InRange (12094, 16709, -4580, 500, 150)  then Moved := true;
   end;
 
 {

@@ -1,8 +1,10 @@
 uses classes;
-var
-pin: Integer;
 begin
-  //pin := 290100;
-  //Engine.BypassToServer('custom_pin_unlock ' + IntToStr(pin));
-  Engine.BypassToServer('custom_pin_unlock 290100');
+with Tstringlist.create do
+try
+  Text := Engine.DlgText;
+  SaveToFile(exepath+'show dlg'+'.txt');
+finally
+  Free;
+ end;
 end.

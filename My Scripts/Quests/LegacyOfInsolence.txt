@@ -1,0 +1,6 @@
+{
+  Legacy of Insolence
+  Start Level :59
+  Start Location: Tower of Aden
+  Rewards: A-grade boot/helm/glove fabrics & recipes
+}

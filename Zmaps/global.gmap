@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<zones>
+	<zone character="y">
+		<externalPoly>
+			<points>
+				<point x="81732" y="13532"/>
+				<point x="81322" y="12672"/>
+				<point x="82352" y="12952"/>
+			</points>
+		</externalPoly>
+		<internalPolies/>
+	</zone>
+	<zone character="Angelical">
+		<externalPoly>
+			<points>
+				<point x="142756" y="111311"/>
+				<point x="143849" y="111893"/>
+				<point x="143010" y="112683"/>
+				<point x="142036" y="111891"/>
+			</points>
+		</externalPoly>
+		<internalPolies/>
+	</zone>
+	<zone character="KatnissEverdeen">
+		<externalPoly>
+			<points>
+				<point x="163983" y="80855"/>
+				<point x="165764" y="80302"/>
+				<point x="163670" y="78809"/>
+				<point x="163164" y="80157"/>
+			</points>
+		</externalPoly>
+		<internalPolies/>
+	</zone>
+	<zone character="Gromka">
+		<externalPoly>
+			<points>
+				<point x="111950" y="-118310"/>
+				<point x="112366" y="-120966"/>
+				<point x="113334" y="-120927"/>
+				<point x="114346" y="-118244"/>
+			</points>
+		</externalPoly>
+		<internalPolies>
+			<poly>
+				<points>
+					<point x="113113" y="-119113"/>
+					<point x="113392" y="-119209"/>
+					<point x="113220" y="-119474"/>
+					<point x="112960" y="-119331"/>
+				</points>
+			</poly>
+		</internalPolies>
+	</zone>
+	<zone character="Justicar">
+		<externalPoly>
+			<points>
+				<point x="46023" y="176660"/>
+				<point x="46278" y="177460"/>
+				<point x="47905" y="177278"/>
+				<point x="47736" y="176436"/>
+			</points>
+		</externalPoly>
+		<internalPolies/>
+	</zone>
+	<zone character="Dared">
+		<externalPoly>
+			<points>
+				<point x="142756" y="111311"/>
+				<point x="144755" y="112266"/>
+				<point x="143965" y="113266"/>
+				<point x="142036" y="111891"/>
+			</points>
+		</externalPoly>
+		<internalPolies>
+			<poly>
+				<points>
+					<point x="143664" y="112093"/>
+					<point x="144007" y="112483"/>
+					<point x="143476" y="112568"/>
+				</points>
+			</poly>
+		</internalPolies>
+	</zone>
+</zones>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<zone>
+	<externalPoly>
+		<points>
+			<point x="111950" y="-118310"/>
+			<point x="112366" y="-120966"/>
+			<point x="113334" y="-120927"/>
+			<point x="114346" y="-118244"/>
+		</points>
+	</externalPoly>
+	<internalPolies>
+		<poly>
+			<points>
+				<point x="113113" y="-119113"/>
+				<point x="113392" y="-119209"/>
+				<point x="113220" y="-119474"/>
+				<point x="112960" y="-119331"/>
+			</points>
+		</poly>
+	</internalPolies>
+</zone>

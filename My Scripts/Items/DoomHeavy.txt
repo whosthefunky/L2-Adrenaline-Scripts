@@ -189,7 +189,6 @@ end;
 }
 function  BlueWolfHelmetDesign: boolean;
 begin
-  TeleportTo ('goddard');
   Result := true;  
 end;
 
@@ -202,7 +201,6 @@ end;
 }
 function  BlueWolfHelmet: boolean;
 begin
-  TeleportTo ('antharas lair');
   if  User.InRange (132839, 114438, -3720, 500, 200)  or
       User.InRange (131423, 114461, -3716, 500, 200)  then
   begin

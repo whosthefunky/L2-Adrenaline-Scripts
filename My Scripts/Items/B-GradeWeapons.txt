@@ -14,8 +14,26 @@ end;
 --------------------------------------------------------------------------------
   Sword Of Damascus Recipe by Drop
   Malruk Knight (lvl 66) (Giran, Anthara's Lair)
+  1/5319 chance, 5m avg. respawn time
 --------------------------------------------------------------------------------
 }
+function  BlueWolfRecipes: boolean;
+begin
+  if  User.InRange (, 500, 200)  then begin
+  end;
+end;
+
+{	
+--------------------------------------------------------------------------------
+  Sword Of Valhalla Recipe by Drop
+  Connabi (54) (Oren, Skyshadow Meadow)
+  1/579 chance, 33s avg. respawn time
+--------------------------------------------------------------------------------
+}
+procedure  SwordOfValhalla;
+begin
+  
+end;
 
 {	
 --------------------------------------------------------------------------------
@@ -41,6 +59,10 @@ begin
     Engine.MoveTo (140890, 113430, -3720);
     Engine.MoveTo (141731, 112430, -3720);
     Engine.MoveTo (142600, 111915, -3944);
+  end;
+  if  User.InRange (142600, 111915, -3944, 500, 200)  then begin
+    Engine.LoadConfig (User.Name);
+    Engine.LoadZone ('BloodyLady.zmap');
   end;
 end;
 

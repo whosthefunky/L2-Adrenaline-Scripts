@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<zone>
+	<externalPoly>
+		<points>
+			<point x="83793" y="255478"/>
+			<point x="85675" y="254224"/>
+			<point x="86399" y="252036"/>
+			<point x="85714" y="249880"/>
+			<point x="83944" y="248564"/>
+			<point x="81660" y="248579"/>
+			<point x="79846" y="249841"/>
+			<point x="79105" y="251958"/>
+			<point x="79900" y="254285"/>
+			<point x="81630" y="255422"/>
+		</points>
+	</externalPoly>
+	<internalPolies>
+		<poly>
+			<points>
+				<point x="81177" y="253702"/>
+				<point x="81491" y="253973"/>
+				<point x="80915" y="254855"/>
+				<point x="80523" y="254604"/>
+			</points>
+		</poly>
+		<poly>
+			<points>
+				<point x="79488" y="251114"/>
+				<point x="80518" y="251534"/>
+				<point x="80619" y="251090"/>
+				<point x="79681" y="250657"/>
+			</points>
+		</poly>
+		<poly>
+			<points>
+				<point x="82617" y="248708"/>
+				<point x="82600" y="249734"/>
+				<point x="83070" y="249716"/>
+				<point x="83074" y="248635"/>
+			</points>
+		</poly>
+		<poly>
+			<points>
+				<point x="85938" y="250825"/>
+				<point x="84853" y="251206"/>
+				<point x="85014" y="251595"/>
+				<point x="86034" y="251211"/>
+			</points>
+		</poly>
+		<poly>
+			<points>
+				<point x="84927" y="254652"/>
+				<point x="84251" y="253688"/>
+				<point x="83796" y="253977"/>
+				<point x="84494" y="254893"/>
+			</points>
+		</poly>
+		<poly>
+			<points>
+				<point x="82930" y="255398"/>
+				<point x="82937" y="254635"/>
+				<point x="82212" y="254601"/>
+				<point x="82159" y="255350"/>
+			</points>
+		</poly>
+		<poly>
+			<points>
+				<point x="81226" y="250802"/>
+				<point x="82074" y="250394"/>
+				<point x="83059" y="250352"/>
+				<point x="83854" y="250899"/>
+				<point x="84335" y="251667"/>
+				<point x="84272" y="252556"/>
+				<point x="83774" y="253389"/>
+				<point x="83011" y="253923"/>
+				<point x="82015" y="253928"/>
+				<point x="81193" y="253330"/>
+				<point x="80769" y="252585"/>
+				<point x="80749" y="251703"/>
+			</points>
+		</poly>
+	</internalPolies>
+</zone>
