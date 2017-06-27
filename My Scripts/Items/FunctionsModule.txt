@@ -4,7 +4,7 @@ interface
 
 {procedure  GetItem (ItemFunction: TItemFunction, Item1ID, Item2ID, Item3ID: integer = -1,
   lvl: integer, quantityItem1, quantityItem2, quantityItem3: integer = -1);}
-  
+
 implementation
 
 {procedure  GetItem (ItemFunction: TItemFunction, Item1ID, Item2ID, Item3ID: integer = -1,
@@ -12,7 +12,7 @@ implementation
 begin
   while  (Item1ID <> -1)  and  not  Inventory.Items.ByID (Item1ID)  and  (Inventory.Items.ByID(Item1ID).Count < quantityItem1)  or
          (Item2ID <> -1)  and  not  Inventory.Items.ByID (Item2ID)  and  (Inventory.Items.ByID(Item2ID).Count < quantityItem2)  or
-		 (Item3ID <> -1)  and  not  Inventory.Items.ByID (Item3ID)  and  (Inventory.Items.ByID(Item3ID).Count < quantityItem3)  then
+         (Item3ID <> -1)  and  not  Inventory.Items.ByID (Item3ID)  and  (Inventory.Items.ByID(Item3ID).Count < quantityItem3)  then
   begin
     if  User.Level >= (lvl - 5)  and  User.Level <= (lvl + 5)  then
       ItemFunction;

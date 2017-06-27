@@ -1,0 +1,51 @@
+uses  FunctionsModule, MaterialsRecipes, SoulshotsRecipes, Karmian, PlatedLeather,
+  FullPlate, C-GradeWeapons, BlueWolfHeavy, AvadonRobe, DoomHeavy, B-GradeWeapons;
+
+BEGIN
+  // GetItem (@function, lvl, quantity);
+
+  GetItem (@LeatherRecipe, 6, 1);
+  GetItem (@CokesRecipe, 7, 1);
+  GetItem (@BraidedHempRecipe, 8, 1);
+  GetItem (@SteelRecipe, 8, 1);
+  GetItem (@SyntheticCokesRecipe, 14, 1);
+  GetItem (@CompoundBraidRecipe, 17, 1);
+  GetItem (@CordRecipe, 18, 1);
+  GetItem (@SuedeSilverMoldRecipe, 18, 1);
+  GetItem (@VarnishOfPurityRecipe, 19, 1);
+  GetItem (@SteelMoldRecipe, 20, 1);
+  GetItem (@BlacksmithFrameRecipe, 33, 1);
+  GetItem (@ArtisanFrameRecipe, ----, 1);
+  GetItem (@CordRecipe, 18, 1);
+  GetItem (@CordRecipe, 18, 1);
+  GetItem (@CordRecipe, 18, 1);
+  GetItem (@CordRecipe, 18, 1);
+  GetItem (@CordRecipe, 18, 1);
+  GetItem (@CordRecipe, 18, 1);
+  GetItem (@CordRecipe, 18, 1);
+
+  GetItem (@SoulshotDGradeRecipe, 21, 1);
+  GetItem (@BlessedSpiritshotDGradeRecipe, 27, 1);
+
+  GetItem (@CrystalDaggerRecipe, 48, 1);
+  GetItem (@DwarvenHammerRecipe, 49, 2);
+  GetItem (@SamuraiLongSwordRecipe, 51, 1);
+  GetItem (@EminenceBowRecipe, 51, 1);
+  GetItem (@SamuraiLongSwordBlade, 53, 1 * 11);
+  GetItem (@BerserkerBladeEdge, 53, 1 * 11);
+  GetItem (@CrystalDaggerBlade, 54, 1 * 11);
+  GetItem (@BerserkerBladeRecipe, 54, 1);
+  GetItem (@EminenceBowShaft, 55, 1 * 11);
+  GetItem (@YaksaMaceHead, 54, 1 * 11);
+
+  GetItem (@CrystalDaggerRecipe, 48, 2);
+  GetItem (@CrystalDaggerRecipe, 48, 2);
+  GetItem (@CrystalDaggerRecipe, 48, 2);
+  GetItem (@CrystalDaggerRecipe, 48, 2);
+  GetItem (@CrystalDaggerRecipe, 48, 2);
+  GetItem (@CrystalDaggerRecipe, 48, 2);
+  GetItem (@CrystalDaggerRecipe, 48, 2);
+  GetItem (@CrystalDaggerRecipe, 48, 2);
+  GetItem (@CrystalDaggerRecipe, 48, 2);
+  GetItem (@CrystalDaggerRecipe, 48, 2);
+END.

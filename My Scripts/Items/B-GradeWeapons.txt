@@ -1,41 +1,53 @@
-{	
+{
 --------------------------------------------------------------------------------
-  Star Buster Recipe by Drop
-  Freya's White Bear (lvl 57)
+  Sword Of Valhalla Recipe (100%) by Drop
+  Garden Guard Leader (lvl 50) (Heine, Garden of Eva)
+  1/5208 chance, 1m 50s avg. respawn time
 --------------------------------------------------------------------------------
 }
-procedure  BlueWolfRecipes;
+procedure  SwordOfValhallaRecipe;
+begin
+
+end;
+
+{
+--------------------------------------------------------------------------------
+  Sword Of Valhalla Recipe (60%) by Drop
+  Connabi (54) (Oren, Skyshadow Meadow)
+  1/579 chance, 33s avg. respawn time
+--------------------------------------------------------------------------------
+}
+procedure  SwordOfValhallaRecipe60;
+begin
+
+end;
+
+{
+--------------------------------------------------------------------------------
+  Star Buster Recipe by Drop
+  Freya's White Bear (lvl 57) where is it????
+--------------------------------------------------------------------------------
+}
+procedure  StarBusterRecipe;
 begin
   if  User.InRange (113869, -108865, -840, 500, 200)  then begin
   end;
 end;
 
-{	
+{
 --------------------------------------------------------------------------------
-  Sword Of Damascus Recipe by Drop
-  Malruk Knight (lvl 66) (Giran, Anthara's Lair)
-  1/5319 chance, 5m avg. respawn time
+  Demon Dager Recipe by Drop
+  Grave Predator (lvl 59) (Aden, Devastated Castle)
+  1/22727 chance, 1m 15s avg.respawn time
 --------------------------------------------------------------------------------
 }
-function  BlueWolfRecipes: boolean;
+procedure  DemonDagerRecipe;
 begin
-  if  User.InRange (, 500, 200)  then begin
+  if  User.InRange (113869, -108865, -840, 500, 200)  then begin
   end;
 end;
 
-{	
---------------------------------------------------------------------------------
-  Sword Of Valhalla Recipe by Drop
-  Connabi (54) (Oren, Skyshadow Meadow)
-  1/579 chance, 33s avg. respawn time
---------------------------------------------------------------------------------
-}
-procedure  SwordOfValhalla;
-begin
-  
-end;
-
-{	
+{
 --------------------------------------------------------------------------------
   Sword Of Valhalla Recipe by Drop
   Bloody Lady (lvl 60) (Giran, Anthara's Lair)
@@ -63,6 +75,32 @@ begin
   if  User.InRange (142600, 111915, -3944, 500, 200)  then begin
     Engine.LoadConfig (User.Name);
     Engine.LoadZone ('BloodyLady.zmap');
+  end;
+end;
+
+{
+--------------------------------------------------------------------------------
+  Demon Dager Recipe (60%) by Drop
+  Slaughter Bathin (lvl 63) (Aden, Tower of Insolence, floor???)
+  1/9709 chance, 3m 20s avg.respawn time
+--------------------------------------------------------------------------------
+}
+procedure  DemonDagerRecipe60;
+begin
+  if  User.InRange (113869, -108865, -840, 500, 200)  then begin
+  end;
+end;
+
+{
+--------------------------------------------------------------------------------
+  Sword Of Damascus Recipe by Drop
+  Malruk Knight (lvl 66) (Giran, Anthara's Lair)
+  1/5319 chance, 5m avg. respawn time
+--------------------------------------------------------------------------------
+}
+function  BlueWolfRecipes: boolean;
+begin
+  if  User.InRange (, 500, 200)  then begin
   end;
 end;
 

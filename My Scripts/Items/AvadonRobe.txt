@@ -72,7 +72,7 @@ begin
   Result := true;
 end;
 
-{	
+{
 --------------------------------------------------------------------------------
   Avadon Robe Fabric by Spoil
   Malruk Succubus Turen (lvl 56) (Giran, Dragon Valley)
@@ -97,8 +97,8 @@ begin
   Result := true;}
 end;
 
-  
-{	
+
+{
 --------------------------------------------------------------------------------
   Avadon Gloves Recipe by Drop
   Falibati (lvl 64) (Aden, Seal of Shillen)
@@ -123,7 +123,7 @@ begin
   Result := true;}
 end;
 
-{	
+{
 --------------------------------------------------------------------------------
   Avadon Gloves Part by Drop (Aden, The Giant's Cave)
   Avadon Boots Design by Drop
@@ -149,7 +149,7 @@ begin
   Result := true;}
 end;
 
-{	
+{
 --------------------------------------------------------------------------------
   Avadon Boots Recipe by Drop
   Past Knight (lvl 64) (Aden, Ancient Battleground)
@@ -174,7 +174,7 @@ begin
   Result := true;}
 end;
 
-{	
+{
 --------------------------------------------------------------------------------
   Avadon Boots Design by Drop
   Past Knight (lvl 64) (Aden, Ancient Battleground)
@@ -199,7 +199,7 @@ begin
   Result := true;}
 end;
 
-{	
+{
 --------------------------------------------------------------------------------
   Avadon Shield Recipe by Drop
   Marsh Drake (lvl 55) (Aden, Forsaken Plains)
@@ -224,7 +224,7 @@ begin
   Result := true;}
 end;
 
-{	
+{
 --------------------------------------------------------------------------------
   Avadon Shield Fragment by Drop
   Ghost Of The Tower (lvl 60) (Aden, Tower of Insolence)

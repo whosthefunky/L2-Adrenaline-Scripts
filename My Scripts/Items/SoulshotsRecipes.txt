@@ -1,6 +1,6 @@
 {
 --------------------------------------------------------------------------------
-Recipe: Soulshot: D-Grade
+Soulshot D-Grade Recipe by Spoil
 Akaste Succubus Turen lvl 21 (Dwarven Village, Mithril Mines)
 Giant Poison Bee lvl 21 (Oracle of Dawn/Fellmere Harvest Grounds)
 Ruin Spartoi lvl 21 (Gludio, Ruins of Agony)
@@ -8,23 +8,20 @@ Ol Mahum Deserter lvl 23 (Gludin Village, Abandoned Camp)
 Ol Mahum Reserve lvl 23 (Gludin Village, Abandoned Camp)
 --------------------------------------------------------------------------------
 }
+function  SoulshotDGradeRecipe: boolean;
+begin
+end;
 
 {
 --------------------------------------------------------------------------------
-Recipe: Spiritshot D-Grade
-Nightmare Weaver lvl 21 (Dwarven Village, Mithril Mines)
-Ruin Imp Elder lvl 21 (Gludio, Ruins of Agony)
-Ruins Spartoi lvl 21 (Gludio, Ruins of Agony)
+Blessed Spiritshot D-Grade Recipe by Spoil
+Turek Orc Supplier (lvl 27) (Gludin Village, Orc Barracks)
+1/29 chance
 --------------------------------------------------------------------------------
 }
-
-{
---------------------------------------------------------------------------------
-Recipe: Blessed Spiritshot D-Grade
-Turec Orc Supllier lvl 27 (Gludin Village, Orc Barracks)
-Basilisk lvl 28 (Gludio, Wasteland/Ant Nest)
---------------------------------------------------------------------------------
-}
+function  BlessedSpiritshotDGradeRecipe: boolean;
+begin
+end;
 
 {
 --------------------------------------------------------------------------------
@@ -34,14 +31,6 @@ Timak Orc Archer lvl 41 (Town of Oren, Timak Outpost)
 Snipe Cohort lvl 42 (Town of Dion, Cruma Tower 1st Floor)
 Crockian Lad Warrior lvl 43 (Heine, Aligator Island)
 Zaken's Elitte Pikeman lvl 43 (Town of Giran Teleport or swim from Giran Harbor, inside the Devil's Isle)
---------------------------------------------------------------------------------
-}
-
-{
---------------------------------------------------------------------------------
-Recipe: Spiritshot C <<--->> DROP ONLY!!
-Zaken's Seer lvl 45 (Town of Giran Teleport or swim from Giran Harbor, inside the Devil's Isle)
-Blade Stakato Warrior lvl 43 (Heine, Garden of Eva)
 --------------------------------------------------------------------------------
 }
 
@@ -63,15 +52,6 @@ Pobby's Maid lvl 53 (Town of Oren, Outside)
 Connabi lvl 54 (Town of Oren, Skyshadow Meadow)
 Satyr Elder lvl 54 (Hunters Village, South Part of Enchanted Valley)
 Bloody Queen lvl 61 (Town of Aden, Forbidden Gateway / Dragon Valley)
---------------------------------------------------------------------------------
-}
-
-{
---------------------------------------------------------------------------------
-Recipe: Spiritshot B-Grade
-Valley Treant Elder lvl 53 (Hunters Village, Enchanted Valley Deep)
-Marsh Drake lvl 55 (Town of Aden, Forshaken Plains)
-Pobby's Escort lvl 55 (Town of Oren Outside)
 --------------------------------------------------------------------------------
 }
 

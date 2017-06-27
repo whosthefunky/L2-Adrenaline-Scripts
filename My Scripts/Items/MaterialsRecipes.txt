@@ -37,20 +37,20 @@ begin
     end;
     Delay (60 * 1000); // Wait 1 minute while we haven't get the items
   end;
-  
+
   Print ('You''ve found the recipe');
   Engine.FaceControl (0, false);
   while  User.InCombat  do Delay (3 * 1000);
   GoHome;
 end;}
-  
-  
+
+
 {
 --------------------------------------------------------------------------------
-Recipe: Leather (ID 1814)
-Kaboo Orc lvl 6 (Outside Elven Village)
-1/24 chance by Spoil, 20s avg. respawn time
-Rakeclaw Imp Chieften lvl 10 (Orc Village, Valley of Heroes West)
+  Recipe: Leather (ID 1814)
+  Kaboo Orc lvl 6 (Outside Elven Village)
+  1/24 chance by Spoil, 20s avg. respawn time
+  Rakeclaw Imp Chieften lvl 10 (Orc Village, Valley of Heroes West)
 --------------------------------------------------------------------------------
 }
 function  LeatherRecipe (quantity: integer = 1): boolean;
@@ -61,17 +61,17 @@ begin
   if  User.InRange (46909, 51442, -3003, 500, 200)  then
   begin
     Engine.MoveTo (47546, 51692, -2992);
-	Engine.MoveTo (49431, 53636, -3268);
-	Engine.MoveTo (50003, 57969, -3504);
+    Engine.MoveTo (49431, 53636, -3268);
+    Engine.MoveTo (50003, 57969, -3504);
   end;
   if  User.InRange (50003, 57969, -3504, 2000, 200)  then
   begin
     Engine.LoadZone (exepath + '\Zmaps\KabooOrc.zmap');
     // Load config that only targets useful mobs for drops and spoils
-	  Engine.LoadConfig ('Spoiling'); 
-	  Engine.FaceControl (0, true);
-	// Wait 1 minute while we haven't get the items
-	while  not Inventory.User.ByID (LEATHER_RECIPE, recipe)  or  (recipe.count < quantity)  do Delay (60 * 1000);
+    Engine.LoadConfig ('Spoiling');
+    Engine.FaceControl (0, true);
+    // Wait 1 minute while we haven't get the items
+    while  not Inventory.User.ByID (LEATHER_RECIPE, recipe)  or  (recipe.count < quantity)  do Delay (60 * 1000);
     Print ('You already found the recipe');
     Engine.FaceControl (0, false);
     while  User.InCombat  do Delay (3 * 1000);
@@ -82,9 +82,9 @@ end;
 
 {
 --------------------------------------------------------------------------------
-Recipe: Cokes (ID 2136)
-RakeClaw Imp Hunter lvl 7 (Outside Orc Village)
-Kuruka Ratman lvl 16 (Orc Village, Near Cave of Trials)
+  Recipe: Cokes (ID 2136)
+  Rakeclaw Imp Hunter lvl 7 (Outside Orc Village)
+  Kuruka Ratman lvl 16 (Orc Village, Near Cave of Trials)
 --------------------------------------------------------------------------------
 }
 function  CokesRecipe (quantity: integer = 1): boolean;
@@ -102,26 +102,26 @@ begin
   end;
   if  User.InRange (-40843, -105006, -2776, 1000, 200)  then begin
     Engine.LoadZone (exepath + '\Zmaps\RakeclawImpHunter.zmap');
-	  Engine.LoadConfig ('Spoiling'); // Load config that only targets those mobs
-	  Engine.FaceControl (0, true);
-	  // Wait 1 minute while we haven't get the items
-	  while  not Inventory.User.ByID (COKES_RECIPE, recipe)  or  (recipe.Count < quantity)  do Delay (60 * 1000);
-	  Print ('You already found the recipe');
-	  Engine.FaceControl (0, false);
-	  while  User.InCombat  do Delay (3 * 1000);
-	  GoHome;
-	  Result := true;
+    Engine.LoadConfig ('Spoiling'); // Load config that only targets those mobs
+    Engine.FaceControl (0, true);
+    // Wait 1 minute while we haven't get the items
+    while  not Inventory.User.ByID (COKES_RECIPE, recipe)  or  (recipe.Count < quantity)  do Delay (60 * 1000);
+    Print ('You already found the recipe');
+    Engine.FaceControl (0, false);
+    while  User.InCombat  do Delay (3 * 1000);
+    GoHome;
+    Result := true;
   end;
 end;
 
 {
 --------------------------------------------------------------------------------
-Recipe: Braided Hemp (ID 2135), Recipe: Cokes (ID 2136), Recipe Coarse Bone Powder (ID 2138)
-Goblin Scout lvl 8 (Talking Island, near Obelisk of Victory)
-Braided Hemp Recipe: 1/27 chance by Spoil, 20s avg. respawn time
-Coarse Bone Powder Recipe: 1/277 chance by Drop, 20s avg. respawn time
-Orc Archer lvl 8
-Cokes Recipe: 1/134 chance by Drop, 20s avg. respawn time
+  Recipe: Braided Hemp (ID 2135), Recipe: Cokes (ID 2136), Recipe Coarse Bone Powder (ID 2138)
+  Goblin Scout lvl 8 (Talking Island, near Obelisk of Victory)
+  Braided Hemp Recipe: 1/27 chance by Spoil, 20s avg. respawn time
+  Coarse Bone Powder Recipe: 1/277 chance by Drop, 20s avg. respawn time
+  Orc Archer lvl 8
+  Cokes Recipe: 1/134 chance by Drop, 20s avg. respawn time
 --------------------------------------------------------------------------------
 }
 function  BraidedHempRecipe (quantity: integer = 1): boolean;
@@ -131,34 +131,34 @@ begin
   Result := false;
   if  User.InRange (-99671, 237557, -3562, 500, 200)  then begin
     Engine.MoveTo (-98816, 236557, -3368);
-	Engine.MoveTo (-96567, 234039, -3624);
+    Engine.MoveTo (-96567, 234039, -3624);
   end;
   if  User.InRange (-96567, 234039, -3624, 500, 200)  then begin
     Engine.LoadZone (exepath + '\Zmaps\BraidedHempCokesRecipes.zmap');
-	  Engine.LoadConfig ('Spoiling'); // Create config that only targets those mobs
-	  Engine.FaceControl (0, true);
-	  // Wait 1 minute while we haven't get the items
-	  while  not Inventory.User.ByID (BRAIDED_HEMP_RECIPE, recipe)  or  (recipe.Count < quantity)
-	    or not Inventory.User.ByID (COKES_RECIPE, recipe)  or  (recipe.Count < quantity)
-	    or  not Inventory.User.ByID (COARSE_BONE_POWDER, recipe)  or  (recipe.Count < quantity)  do Delay (60 * 1000);
-	  Print ('You already found the recipe');
-	  Engine.FaceControl (0, false);
-	  while  User.InCombat  do Delay (3 * 1000);
-	  GoHome;
-	  Result := true;
+    Engine.LoadConfig ('Spoiling'); // Create config that only targets those mobs
+    Engine.FaceControl (0, true);
+    // Wait 1 minute while we haven't get the items
+    while  not Inventory.User.ByID (BRAIDED_HEMP_RECIPE, recipe)  or  (recipe.Count < quantity)
+      or not Inventory.User.ByID (COKES_RECIPE, recipe)  or  (recipe.Count < quantity)
+      or  not Inventory.User.ByID (COARSE_BONE_POWDER, recipe)  or  (recipe.Count < quantity)  do Delay (60 * 1000);
+    Print ('You already found the recipe');
+    Engine.FaceControl (0, false);
+    while  User.InCombat  do Delay (3 * 1000);
+    GoHome;
+    Result := true;
   end;
 end;
 
 {
 --------------------------------------------------------------------------------
-Recipe: Coarse Bone Powder (ID 2138)
-Utuku Orc Archer lvl 8 (Dwarven Village, Western Mining Zone)
-1/26 chance by Spoil, 20s avg. respawn time
+  Recipe: Coarse Bone Powder (ID 2138)
+  Utuku Orc Archer lvl 8 (Dwarven Village, Western Mining Zone)
+  1/26 chance by Spoil, 20s avg. respawn time
 --------------------------------------------------------------------------------
-Recipe : Steel (ID 2137)
-Goblin Lookout lvl 8 (Near the Catacomb of Dark Omens, Dark Elven Village)
-Garum Werewolf lvl 9 (Dwarven Village, Western Mining Zone)
-1/23 chance by Spoil, 20s avg. respawn time
+  Recipe : Steel (ID 2137)
+  Goblin Lookout lvl 8 (Near the Catacomb of Dark Omens, Dark Elven Village)
+  Garum Werewolf lvl 9 (Dwarven Village, Western Mining Zone)
+  1/23 chance by Spoil, 20s avg. respawn time
 --------------------------------------------------------------------------------
 }
 function  SteelRecipe (quantity: integer = 1): boolean;
@@ -177,42 +177,42 @@ begin
   end;
   if  User.InRange (116742, -180342, -1200, 500, 200)  then begin
     Print ('Going to the exit of the village');
-	Engine.MoveTo (116471, -184434, -1568);
+    Engine.MoveTo (116471, -184434, -1568);
   end;
   if  User.InRange (116471, -184434, -1568, 500, 200)  then begin
     Print ('Going down');
-	Engine.MoveTo (116496, -184571, -1576);
+    Engine.MoveTo (116496, -184571, -1576);
   end;
   if  User.InRange (116496, -184571, -1576, 500, 200)  then begin
-	Engine.MoveTo (117291, -186252, -2184);
+    Engine.MoveTo (117291, -186252, -2184);
   end;
   if  User.InRange (117291, -186252, -2184, 500, 200)  then begin
-	Engine.MoveTo (118368, -187678, -2760);
-  end;  
+    Engine.MoveTo (118368, -187678, -2760);
+  end;
   if  User.InRange (118368, -187678, -2760, 500, 200)  then begin
-  Print ('Turning left');
-	Engine.MoveTo (117930, -189037, -2696);
+    Print ('Turning left');
+    Engine.MoveTo (117930, -189037, -2696);
   end;
   if  User.InRange (117930, -189037, -2696, 500, 200)  then begin
-	Engine.MoveTo (118995, -189826, -2840);
+    Engine.MoveTo (118995, -189826, -2840);
   end;
   if  User.InRange (118995, -189826, -2840, 500, 200)  then begin
-	Engine.MoveTo (117719, -192457, -2492);
+    Engine.MoveTo (117719, -192457, -2492);
   end;
   if  User.InRange (117719, -192457, -2492, 500, 200)  then begin
     Print ('Going left');
-	Engine.MoveTo (117001, -192845, -2288);
+    Engine.MoveTo (117001, -192845, -2288);
   end;
   if  User.InRange (117001, -192845, -2288, 500, 200)  then begin
-	Engine.MoveTo (116742, -180342, -1200);
+    Engine.MoveTo (116742, -180342, -1200);
   end;
   if  User.InRange (116742, -180342, -1200, 500, 200)  then begin
     Print ('Going right');
-	Engine.MoveTo (116883, -192868, -2280);
+    Engine.MoveTo (116883, -192868, -2280);
   end;
   if  User.InRange (116883, -192868, -2280, 500, 200)  then begin
     Print ('Going left');
-	Engine.MoveTo (115013, -192427, -1968);
+    Engine.MoveTo (115013, -192427, -1968);
   end;
   if  User.InRange (115013, -192427, -1968, 500, 200)  then begin
     Engine.MoveTo (114348, -193150, -1952);
@@ -224,10 +224,10 @@ begin
     Engine.MoveTo (114256, -196172, -2288);
   end;
   if  User.InRange (114256, -196172, -2288, 500, 200)  then begin
-	Engine.MoveTo (114460, -196801, -2520);
+    Engine.MoveTo (114460, -196801, -2520);
   end;
   if  User.InRange (114460, -196801, -2520, 500, 200)  then begin
-	Engine.MoveTo (117263, -196691, -3624);
+    Engine.MoveTo (117263, -196691, -3624);
   end;
   if  User.InRange (117263, -196691, -3624, 2000, 200)  then begin
     Engine.LoadZone (exepath + '\Zmaps\SteelRecipe.zmap');
@@ -246,10 +246,8 @@ end;
 
 {
 --------------------------------------------------------------------------------
-Recipe: Synthetic Cokes (ID 2143)
-Whinstone Golem lvl 14 (Dwarven Village, Western Mining Zone)
-Moonstone Beast lvl 17 (Neutral Zone)
-Undead Slve lvl 19 (Orc Village, Valley of the Lords)
+  Recipe: Synthetic Cokes (ID 2143)
+  Whinstone Golem lvl 14 (Dwarven Village, Western Mining Zone)
 --------------------------------------------------------------------------------
 }
 function  SyntheticCokesRecipe (quantity: integer = 1): boolean;
@@ -298,11 +296,9 @@ end;
 
 {
 --------------------------------------------------------------------------------
-Recipe: Compound Braid (ID 2144)
-Scarlet Salamander lvl 17 (Orc Village, Cave of Trials)
-Pitchstone Golem lvl 19 (Dwarven Village, Abandoned Coal Mines)
-Lesser Succubus lvl 20 (Dark Elven Village, School of Dark Arts)
-1/22 chance by Spoil, 1m avg. respawn time
+  Recipe: Compound Braid (ID 2144)
+  Pitchstone Golem lvl 19 (Dwarven Village, Abandoned Coal Mines)
+  1/22 chance by Spoil, 1m avg. respawn time
 --------------------------------------------------------------------------------
 }
 function  CompoundBraidRecipe (quantity: integer = 1): boolean;
@@ -336,19 +332,19 @@ begin
     Engine.MoveTo (155709, -173591, 2488);
   end;
   if  User.InRange (155709, -173591, 2488, 500, 200)  then begin
-	  Engine.MoveTo (153686, -173467, 2384);
+    Engine.MoveTo (153686, -173467, 2384);
   end;
   if  User.InRange (153686, -173467, 2384, 500, 200)  then begin
-	  Engine.MoveTo (152685, -172836, 2034);
+    Engine.MoveTo (152685, -172836, 2034);
   end;
   if  User.InRange (152685, -172836, 2034, 500, 200)  then begin
-	  Engine.MoveTo (152396, -171300, 2256);
+    Engine.MoveTo (152396, -171300, 2256);
   end;
   if  User.InRange (152396, -171300, 2256, 500, 200)  then begin
-	  Engine.MoveTo (152387, -170973, 2272);
+    Engine.MoveTo (152387, -170973, 2272);
   end;
   if  User.InRange (152387, -170973, 2272, 500, 200)  then begin
-	  Engine.MoveTo (152336, -170090, 2184);
+    Engine.MoveTo (152336, -170090, 2184);
   end;
   if  User.InRange (152336, -170090, 2184, 500, 200)  then begin
     Engine.MoveTo (151817, -169001, 2056);
@@ -360,11 +356,11 @@ begin
     Engine.MoveTo (148561, -169250, 2008);
   end;
   if  User.InRange (148561, -169250, 2008, 500, 200)  then begin
-	Engine.MoveTo (148272, -170049, 2256);
+    Engine.MoveTo (148272, -170049, 2256);
   end;
   if  User.InRange (148272, -170049, 2256, 500, 200)  then begin
-	Engine.MoveTo (147263, -172343, 2248);
-  end; 
+    Engine.MoveTo (147263, -172343, 2248);
+  end;
   if  User.InRange (147263, -172343, 2248, 500, 200)  then begin
     Engine.LoadZone (exepath + '\Zmaps\CompoundBraidRecipe.zmap');
     Engine.LoadConfig ('Spoiling'); // Load config that only targets Pitchstone Golem
@@ -382,10 +378,9 @@ end;
 
 {
 --------------------------------------------------------------------------------
-Recipe: Cord (ID 1817)
-Tainted Zombie lvl 18 (Dark Elven Village, School of Dark Arts)
-Arachnid Tracker lvl 19 (Spider Nest/Neutral Zone/Windmill Hill/Orc Barracks)
-1/17 chance by Spoil, 20s avg. respawn time
+  Recipe: Cord (ID 1817)
+  Arachnid Tracker lvl 19 (Spider Nest/Neutral Zone/Windmill Hill/Orc Barracks)
+  1/17 chance by Spoil, 20s avg. respawn time
 --------------------------------------------------------------------------------
 }
 function  CordRecipe (quantity: integer = 1): boolean;
@@ -411,7 +406,7 @@ begin
     Engine.LoadConfig ('Spoiling'); // Load config that only targets Arachnid Tracker
     Engine.FaceControl (0, true);
     // Wait 1 minute while we haven't get the items
-	  while  not Inventory.User.ByID (CORD_RECIPE, recipe)
+    while  not Inventory.User.ByID (CORD_RECIPE, recipe)
       or  (recipe.Count < quantity)  do Delay (60 * 1000);
     Print ('You''ve found the recipe');
     Engine.FaceControl (0, false);
@@ -423,19 +418,9 @@ end;
 
 {
 --------------------------------------------------------------------------------
-Recipe: High Grade Suede (ID 2140)
-Tracker Skeleton lvl 17 (Gludio, Ruins of Agony)
-Ratman Hunter lvl 18 (Gludio, Evil Hunting Grounds)
-Sukar Wererat lvl 18 (Elven Village, Outside Elven Fortress)
-Lycanthrope lvl 20 ( Neutral Zone)
---------------------------------------------------------------------------------
-}
-{
---------------------------------------------------------------------------------
-Recipe: Silver Mold (ID 2141)
-Ratman Hunter lvl 18 (Gludio, Evil Hunting Grounds)
-Scavenger Bat lvl 18 (Gludio, Ruins of Despair)
-Undead Slave lvl 19 (Orc Village, Valey of the Lords)dddd
+  Recipe: High Grade Suede (ID 2140)
+  Recipe: Silver Mold (ID 2141)
+  Ratman Hunter lvl 18 (Gludio, Evil Hunting Grounds)
 --------------------------------------------------------------------------------
 }
 function  SuedeSilverMoldRecipe (quantity: integer = 1): boolean;
@@ -473,7 +458,7 @@ begin
     Engine.LoadConfig ('Spoiling'); // Load config that only targets Arachnid Tracker
     Engine.FaceControl (0, true);
     // Wait 1 minute while we haven't get the items
-	  while  not Inventory.User.ByID (HIGH_GRADE_SUEDE_RECIPE, recipe)  or  (recipe.Count < quantity)
+    while  not Inventory.User.ByID (HIGH_GRADE_SUEDE_RECIPE, recipe)  or  (recipe.Count < quantity)
       or  not Inventory.User.ByID (SILVER_MOLD_RECIPE, recipe)  or  (recipe.Count < quantity)  do Delay (60 * 1000);
     Print ('You''ve found the recipe');
     Engine.FaceControl (0, false);
@@ -485,10 +470,9 @@ end;
 
 {
 --------------------------------------------------------------------------------
-Recipe: Varnish Of Purity
-Akaste Bone Lord lvl 19 (Dwarven Village, Mithril Mines)
-Lirein Elder lvl 19 (Neutral Zone, Before the Bridge at the right side)
-1/19 chance, 15s avg. respawn time
+  Recipe: Varnish Of Purity
+  Lirein Elder lvl 19 (Neutral Zone, Before the Bridge at the right side)
+  1/19 chance, 15s avg. respawn time
 --------------------------------------------------------------------------------
 }
 function  VarnishOfPurityRecipe (quantity: integer = 1): boolean;
@@ -524,7 +508,7 @@ begin
     Engine.LoadConfig ('Spoiling'); // Load config that only targets Arachnid Tracker
     Engine.FaceControl (0, true);
     // Wait 1 minute while we haven't get the items
-	  while  not Inventory.User.ByID (STEEL_MOLD_RECIPE, recipe)  or  (recipe.Count < quantity)  do Delay (60 * 1000);
+    while  not Inventory.User.ByID (STEEL_MOLD_RECIPE, recipe)  or  (recipe.Count < quantity)  do Delay (60 * 1000);
     Print ('You''ve found the recipe');
     Engine.FaceControl (0, false);
     while  User.InCombat  do Delay (3 * 1000);
@@ -535,10 +519,8 @@ end;
 
 {
 --------------------------------------------------------------------------------
-Recipe: Steel Mold (ID 2139)
-Shade Horror lvl 17 (Elven Village, Elven Fortress)
-Sukar Wererat Leader lvl 19 ((Elven Village, Elven Fortress)
-Enku Orc Shaman lvl 20 (Dion Town, Outside East Gate)
+  Recipe: Steel Mold (ID 2139)
+  Enku Orc Shaman lvl 20 (Dion Town, Outside East Gate)
 --------------------------------------------------------------------------------
 }
 function  SteelMoldRecipe (quantity: integer = 1): boolean;
@@ -573,7 +555,7 @@ begin
     Engine.LoadConfig ('Spoiling'); // Load config that only targets Arachnid Tracker
     Engine.FaceControl (0, true);
     // Wait 1 minute while we haven't get the items
-	  while  not Inventory.User.ByID (STEEL_MOLD_RECIPE, recipe)  or  (recipe.Count < quantity)  do Delay (60 * 1000);
+    while  not Inventory.User.ByID (STEEL_MOLD_RECIPE, recipe)  or  (recipe.Count < quantity)  do Delay (60 * 1000);
     Print ('You''ve found the recipe');
     Engine.FaceControl (0, false);
     while  User.InCombat  do Delay (3 * 1000);
@@ -584,75 +566,251 @@ end;
 
 {
 --------------------------------------------------------------------------------
-Recipe: Blacksmith's Frame
-Marh Stakato Soldier lvl 33 (Town of Dion, Cruma Marhlands)
+  Recipe: Blacksmith's Frame
+  Marh Stakato Soldier lvl 33 (Town of Dion, Cruma Marhlands)
 --------------------------------------------------------------------------------
 }
+function  BlacksmithFrameRecipe (quantity: integer = 1): boolean;
+var
+  recipe: TL2Item;
+begin
+  Result := false;
+  //TeleportTo ('dion');
+  if  User.InRange (15627, 142909, -2696, 1000, 200)  then begin
+    Engine.MoveTo (15728, 143823, -2880);
+  end;
+  if  User.InRange (14823, 136184, -3384, 2000, 200)  then begin
+    Engine.LoadZone (exepath + '\Zmaps\SteelMoldRecipe.zmap');
+    Engine.LoadConfig ('Spoiling'); // Load config that only targets Arachnid Tracker
+    Engine.FaceControl (0, true);
+    // Wait 1 minute while we haven't get the items
+    while  not Inventory.User.ByID (STEEL_MOLD_RECIPE, recipe)  or  (recipe.Count < quantity)  do Delay (60 * 1000);
+    Print ('You''ve found the recipe');
+    Engine.FaceControl (0, false);
+    while  User.InCombat  do Delay (3 * 1000);
+    GoHome;
+    Result := true;
+  end;
+end;
 
 {
 --------------------------------------------------------------------------------
-Recipe: Artisan's Frame
-Tyrant lvl 35 (Gludio, Wasteland)
-Grandis lvl 40 (Town of Giran, Death Pass)
+  Recipe: Artisan's Frame
+  Tyrant lvl 35 (Gludio, Wasteland)
+  Grandis lvl 40 (Town of Giran, Death Pass)
 --------------------------------------------------------------------------------
 }
+function  ArtisanFrameRecipe (quantity: integer = 1): boolean;
+var
+  recipe: TL2Item;
+begin
+  Result := false;
+  //TeleportTo ('dion');
+  if  User.InRange (15627, 142909, -2696, 1000, 200)  then begin
+    Engine.MoveTo (15728, 143823, -2880);
+  end;
+  if  User.InRange (14823, 136184, -3384, 2000, 200)  then begin
+    Engine.LoadZone (exepath + '\Zmaps\SteelMoldRecipe.zmap');
+    Engine.LoadConfig ('Spoiling'); // Load config that only targets Arachnid Tracker
+    Engine.FaceControl (0, true);
+    // Wait 1 minute while we haven't get the items
+    while  not Inventory.User.ByID (STEEL_MOLD_RECIPE, recipe)  or  (recipe.Count < quantity)  do Delay (60 * 1000);
+    Print ('You''ve found the recipe');
+    Engine.FaceControl (0, false);
+    while  User.InCombat  do Delay (3 * 1000);
+    GoHome;
+    Result := true;
+  end;
+end;
 
 {
 --------------------------------------------------------------------------------
-Recipe: Crafted Leather <<--->> DROP ONLY!!
-Gaurdian Basilisk lvl 36 (Town of Giran, Death Pass)
-Wasp Leader lvl 37 (Town of Dion, Behive)
+  Recipe: Crafted Leather by Drop
+  Gaurdian Basilisk lvl 36 (Town of Giran, Death Pass)
+  Wasp Leader lvl 37 (Town of Dion, Behive)
 --------------------------------------------------------------------------------
 }
+function  CraftedLeatherRecipe (quantity: integer = 1): boolean;
+var
+  recipe: TL2Item;
+begin
+  Result := false;
+  //TeleportTo ('dion');
+  if  User.InRange (15627, 142909, -2696, 1000, 200)  then begin
+    Engine.MoveTo (15728, 143823, -2880);
+  end;
+  if  User.InRange (14823, 136184, -3384, 2000, 200)  then begin
+    Engine.LoadZone (exepath + '\Zmaps\SteelMoldRecipe.zmap');
+    Engine.LoadConfig ('Spoiling'); // Load config that only targets Arachnid Tracker
+    Engine.FaceControl (0, true);
+    // Wait 1 minute while we haven't get the items
+    while  not Inventory.User.ByID (STEEL_MOLD_RECIPE, recipe)  or  (recipe.Count < quantity)  do Delay (60 * 1000);
+    Print ('You''ve found the recipe');
+    Engine.FaceControl (0, false);
+    while  User.InCombat  do Delay (3 * 1000);
+    GoHome;
+    Result := true;
+  end;
+end;
 
 {
 --------------------------------------------------------------------------------
-Recipe: Mithril Alloy
-Cave Ant lvl 37 (Gludio, Ant Nest inside)
-Frozen Wasteland Werewolf lvl 38 (Town of Shuttgurt, outside west gate / Sky wagon relic)
-Pageos lvl 38 (Heine, Field of Whispers)
-Warrior of the Plains lvl 38 (Town of Oren, Plains of the Lizardmen)
-Tasaba lizardman sniper lvl 39 (Heine, Fields of Silence)
-Windsus lvl 39 (Town of Giran, Death Pass)
+  Recipe: Mithril Alloy
+  Cave Ant lvl 37 (Gludio, Ant Nest inside)
+  Frozen Wasteland Werewolf lvl 38 (Town of Shuttgurt, outside west gate / Sky wagon relic)
+  Pageos lvl 38 (Heine, Field of Whispers)
+  Warrior of the Plains lvl 38 (Town of Oren, Plains of the Lizardmen)
+  Tasaba lizardman sniper lvl 39 (Heine, Fields of Silence)
+  Windsus lvl 39 (Town of Giran, Death Pass)
 --------------------------------------------------------------------------------
 }
+function  BlacksmithFrameRecipe (quantity: integer = 1): boolean;
+var
+  recipe: TL2Item;
+begin
+  Result := false;
+  //TeleportTo ('dion');
+  if  User.InRange (15627, 142909, -2696, 1000, 200)  then begin
+    Engine.MoveTo (15728, 143823, -2880);
+  end;
+  if  User.InRange (14823, 136184, -3384, 2000, 200)  then begin
+    Engine.LoadZone (exepath + '\Zmaps\SteelMoldRecipe.zmap');
+    Engine.LoadConfig ('Spoiling'); // Load config that only targets Arachnid Tracker
+    Engine.FaceControl (0, true);
+    // Wait 1 minute while we haven't get the items
+    while  not Inventory.User.ByID (STEEL_MOLD_RECIPE, recipe)  or  (recipe.Count < quantity)  do Delay (60 * 1000);
+    Print ('You''ve found the recipe');
+    Engine.FaceControl (0, false);
+    while  User.InCombat  do Delay (3 * 1000);
+    GoHome;
+    Result := true;
+  end;
+end;
 
 {
 --------------------------------------------------------------------------------
-Recipe: Durable Metal Plate <<--->> DROP ONLY!!
-Lageos lvl 38 (Heine, Field of Whispers)
-Shaman of the Plains lvl 39 (Town of Oren, Fields of the Lizardmen)
-Giant Fangus lvl 40 (Town of Oren, Sea of Spores - as you enter the TP zone)
-Grandis lvl 40 (Town of Giran, Death Pass)
-Lienrik Lad lvl 40 (Heine, Fields of Silence)
+  Recipe: Durable Metal Plate <<--->> DROP ONLY!!
+  Lageos lvl 38 (Heine, Field of Whispers)
+  Shaman of the Plains lvl 39 (Town of Oren, Fields of the Lizardmen)
+  Giant Fangus lvl 40 (Town of Oren, Sea of Spores - as you enter the TP zone)
+  Grandis lvl 40 (Town of Giran, Death Pass)
+  Lienrik Lad lvl 40 (Heine, Fields of Silence)
 --------------------------------------------------------------------------------
 }
+function  BlacksmithFrameRecipe (quantity: integer = 1): boolean;
+var
+  recipe: TL2Item;
+begin
+  Result := false;
+  //TeleportTo ('dion');
+  if  User.InRange (15627, 142909, -2696, 1000, 200)  then begin
+    Engine.MoveTo (15728, 143823, -2880);
+  end;
+  if  User.InRange (14823, 136184, -3384, 2000, 200)  then begin
+    Engine.LoadZone (exepath + '\Zmaps\SteelMoldRecipe.zmap');
+    Engine.LoadConfig ('Spoiling'); // Load config that only targets Arachnid Tracker
+    Engine.FaceControl (0, true);
+    // Wait 1 minute while we haven't get the items
+    while  not Inventory.User.ByID (STEEL_MOLD_RECIPE, recipe)  or  (recipe.Count < quantity)  do Delay (60 * 1000);
+    Print ('You''ve found the recipe');
+    Engine.FaceControl (0, false);
+    while  User.InCombat  do Delay (3 * 1000);
+    GoHome;
+    Result := true;
+  end;
+end;
 
 {
 --------------------------------------------------------------------------------
-Recipe: Metallic Thread <<--->> DROP ONLY!!
-Noble Ant Leader lvl 38 (Gludio, Ant Nest deep inside near the Queen Ant RB)
+  Recipe: Metallic Thread <<--->> DROP ONLY!!
+  Noble Ant Leader lvl 38 (Gludio, Ant Nest deep inside near the Queen Ant RB)
 --------------------------------------------------------------------------------
 }
+function  BlacksmithFrameRecipe (quantity: integer = 1): boolean;
+var
+  recipe: TL2Item;
+begin
+  Result := false;
+  //TeleportTo ('dion');
+  if  User.InRange (15627, 142909, -2696, 1000, 200)  then begin
+    Engine.MoveTo (15728, 143823, -2880);
+  end;
+  if  User.InRange (14823, 136184, -3384, 2000, 200)  then begin
+    Engine.LoadZone (exepath + '\Zmaps\SteelMoldRecipe.zmap');
+    Engine.LoadConfig ('Spoiling'); // Load config that only targets Arachnid Tracker
+    Engine.FaceControl (0, true);
+    // Wait 1 minute while we haven't get the items
+    while  not Inventory.User.ByID (STEEL_MOLD_RECIPE, recipe)  or  (recipe.Count < quantity)  do Delay (60 * 1000);
+    Print ('You''ve found the recipe');
+    Engine.FaceControl (0, false);
+    while  User.InCombat  do Delay (3 * 1000);
+    GoHome;
+    Result := true;
+  end;
+end;
 
 {
 --------------------------------------------------------------------------------
-Recipe: Metallic Fiber
-Ant Warrior Captain lvl 39 (Gludio, Ant Nest / Wasteland)
+  Recipe: Metallic Fiber
+  Ant Warrior Captain lvl 39 (Gludio, Ant Nest / Wasteland)
 --------------------------------------------------------------------------------
 }
+function  BlacksmithFrameRecipe (quantity: integer = 1): boolean;
+var
+  recipe: TL2Item;
+begin
+  Result := false;
+  //TeleportTo ('dion');
+  if  User.InRange (15627, 142909, -2696, 1000, 200)  then begin
+    Engine.MoveTo (15728, 143823, -2880);
+  end;
+  if  User.InRange (14823, 136184, -3384, 2000, 200)  then begin
+    Engine.LoadZone (exepath + '\Zmaps\SteelMoldRecipe.zmap');
+    Engine.LoadConfig ('Spoiling'); // Load config that only targets Arachnid Tracker
+    Engine.FaceControl (0, true);
+    // Wait 1 minute while we haven't get the items
+    while  not Inventory.User.ByID (STEEL_MOLD_RECIPE, recipe)  or  (recipe.Count < quantity)  do Delay (60 * 1000);
+    Print ('You''ve found the recipe');
+    Engine.FaceControl (0, false);
+    while  User.InCombat  do Delay (3 * 1000);
+    GoHome;
+    Result := true;
+  end;
+end;
 
 {
 --------------------------------------------------------------------------------
-Recipe: Metal Hardener
-Aligator lvl 40 (Heine, Aligator Beach / Aligator Island)
-Zaken's Pikeman lvl 43 (Town of Giran Teleport or swim from Giran Harbor, inside the Devil's Isle)
-Ossiud lvl 47 (Town of Dion, Cruma Tower 1st floor)
-Liangma lvl 49 (Town of Dion, Cruma Tower 1st floor)
+  Recipe: Metal Hardener
+  Aligator lvl 40 (Heine, Aligator Beach / Aligator Island)
+  Zaken's Pikeman lvl 43 (Town of Giran Teleport or swim from Giran Harbor, inside the Devil's Isle)
+  Ossiud lvl 47 (Town of Dion, Cruma Tower 1st floor)
+  Liangma lvl 49 (Town of Dion, Cruma Tower 1st floor)
 --------------------------------------------------------------------------------
 }
+function  BlacksmithFrameRecipe (quantity: integer = 1): boolean;
+var
+  recipe: TL2Item;
+begin
+  Result := false;
+  //TeleportTo ('dion');
+  if  User.InRange (15627, 142909, -2696, 1000, 200)  then begin
+    Engine.MoveTo (15728, 143823, -2880);
+  end;
+  if  User.InRange (14823, 136184, -3384, 2000, 200)  then begin
+    Engine.LoadZone (exepath + '\Zmaps\SteelMoldRecipe.zmap');
+    Engine.LoadConfig ('Spoiling'); // Load config that only targets Arachnid Tracker
+    Engine.FaceControl (0, true);
+    // Wait 1 minute while we haven't get the items
+    while  not Inventory.User.ByID (STEEL_MOLD_RECIPE, recipe)  or  (recipe.Count < quantity)  do Delay (60 * 1000);
+    Print ('You''ve found the recipe');
+    Engine.FaceControl (0, false);
+    while  User.InCombat  do Delay (3 * 1000);
+    GoHome;
+    Result := true;
+  end;
+end;
 
-{	
+{
 --------------------------------------------------------------------------------
   Oriharukon and Metal Hardener Recipes by Spoil and Drop
   Karul Bugbear lvl 40 (Hunters Village)
@@ -660,53 +818,182 @@ Liangma lvl 49 (Town of Dion, Cruma Tower 1st floor)
   Metal Hardener Recipe: 1/150 chance by Drop, 25s avg. respawn time
 --------------------------------------------------------------------------------
 }
-procedure  OriharukonRecipe;
-begin
   //Located in same place as Karmian Boots recipes
   //KarmianStockingsBootsRecipes;
+function  BlacksmithFrameRecipe (quantity: integer = 1): boolean;
+var
+  recipe: TL2Item;
+begin
+  Result := false;
+  //TeleportTo ('dion');
+  if  User.InRange (15627, 142909, -2696, 1000, 200)  then begin
+    Engine.MoveTo (15728, 143823, -2880);
+  end;
+  if  User.InRange (14823, 136184, -3384, 2000, 200)  then begin
+    Engine.LoadZone (exepath + '\Zmaps\SteelMoldRecipe.zmap');
+    Engine.LoadConfig ('Spoiling'); // Load config that only targets Arachnid Tracker
+    Engine.FaceControl (0, true);
+    // Wait 1 minute while we haven't get the items
+    while  not Inventory.User.ByID (STEEL_MOLD_RECIPE, recipe)  or  (recipe.Count < quantity)  do Delay (60 * 1000);
+    Print ('You''ve found the recipe');
+    Engine.FaceControl (0, false);
+    while  User.InCombat  do Delay (3 * 1000);
+    GoHome;
+    Result := true;
+  end;
 end;
 
 {
 --------------------------------------------------------------------------------
-Recipe: Oriharukon
-Zaken's Pikeman lvl 43 (Town of Giran Teleport or swim from Giran Harbor, inside the Devil's Isle)
-Cave Ant lvl 37 (Gludio, Ant Nest inside)
-Wasp Leader lvl 37 (Town of Dion, Behive)
-Lageos lvl 38 (Heine, Field of Whispers)
-Crockian Warrior lvl 38 (Heine, Aligator Beach / Aligator Island)
-Fettered Soul lvl 38 (Town of Giran, Death Pass)
-Shaman of the Plains lvl 39 (Town of Oren, Plains of the Lizardmen)
-Noble Ant Leader lvl 38 (Gludio, Ant Nest deep inside near the Queen Ant RB)
+  Recipe: Oriharukon
+  Zaken's Pikeman lvl 43 (Town of Giran Teleport or swim from Giran Harbor, inside the Devil's Isle)
+  Cave Ant lvl 37 (Gludio, Ant Nest inside)
+  Wasp Leader lvl 37 (Town of Dion, Behive)
+  Lageos lvl 38 (Heine, Field of Whispers)
+  Crockian Warrior lvl 38 (Heine, Aligator Beach / Aligator Island)
+  Fettered Soul lvl 38 (Town of Giran, Death Pass)
+  Shaman of the Plains lvl 39 (Town of Oren, Plains of the Lizardmen)
+  Noble Ant Leader lvl 38 (Gludio, Ant Nest deep inside near the Queen Ant RB)
 --------------------------------------------------------------------------------
 }
+function  BlacksmithFrameRecipe (quantity: integer = 1): boolean;
+var
+  recipe: TL2Item;
+begin
+  Result := false;
+  //TeleportTo ('dion');
+  if  User.InRange (15627, 142909, -2696, 1000, 200)  then begin
+    Engine.MoveTo (15728, 143823, -2880);
+  end;
+  if  User.InRange (14823, 136184, -3384, 2000, 200)  then begin
+    Engine.LoadZone (exepath + '\Zmaps\SteelMoldRecipe.zmap');
+    Engine.LoadConfig ('Spoiling'); // Load config that only targets Arachnid Tracker
+    Engine.FaceControl (0, true);
+    // Wait 1 minute while we haven't get the items
+    while  not Inventory.User.ByID (STEEL_MOLD_RECIPE, recipe)  or  (recipe.Count < quantity)  do Delay (60 * 1000);
+    Print ('You''ve found the recipe');
+    Engine.FaceControl (0, false);
+    while  User.InCombat  do Delay (3 * 1000);
+    GoHome;
+    Result := true;
+  end;
+end;
 
 {
 --------------------------------------------------------------------------------
-Recipe: Maestro Anvil Lock
-Hatar Hanishee lvl 49 (Town of Aden, Wartorn Plains)
+  Recipe: Maestro Anvil Lock
+  Hatar Hanishee lvl 49 (Town of Aden, Wartorn Plains)
 --------------------------------------------------------------------------------
 }
+function  BlacksmithFrameRecipe (quantity: integer = 1): boolean;
+var
+  recipe: TL2Item;
+begin
+  Result := false;
+  //TeleportTo ('dion');
+  if  User.InRange (15627, 142909, -2696, 1000, 200)  then begin
+    Engine.MoveTo (15728, 143823, -2880);
+  end;
+  if  User.InRange (14823, 136184, -3384, 2000, 200)  then begin
+    Engine.LoadZone (exepath + '\Zmaps\SteelMoldRecipe.zmap');
+    Engine.LoadConfig ('Spoiling'); // Load config that only targets Arachnid Tracker
+    Engine.FaceControl (0, true);
+    // Wait 1 minute while we haven't get the items
+    while  not Inventory.User.ByID (STEEL_MOLD_RECIPE, recipe)  or  (recipe.Count < quantity)  do Delay (60 * 1000);
+    Print ('You''ve found the recipe');
+    Engine.FaceControl (0, false);
+    while  User.InCombat  do Delay (3 * 1000);
+    GoHome;
+    Result := true;
+  end;
+end;
 
 {
 --------------------------------------------------------------------------------
-Recipe: Maestro Mold
-Tarlk Bugbear High Warrior lvl 49 (Town of Oren, Ivory Tower - near the Ivory Fortress)
+  Recipe: Maestro Mold
+  Tarlk Bugbear High Warrior lvl 49 (Town of Oren, Ivory Tower - near the Ivory Fortress)
 --------------------------------------------------------------------------------
 }
+function  BlacksmithFrameRecipe (quantity: integer = 1): boolean;
+var
+  recipe: TL2Item;
+begin
+  Result := false;
+  //TeleportTo ('dion');
+  if  User.InRange (15627, 142909, -2696, 1000, 200)  then begin
+    Engine.MoveTo (15728, 143823, -2880);
+  end;
+  if  User.InRange (14823, 136184, -3384, 2000, 200)  then begin
+    Engine.LoadZone (exepath + '\Zmaps\SteelMoldRecipe.zmap');
+    Engine.LoadConfig ('Spoiling'); // Load config that only targets Arachnid Tracker
+    Engine.FaceControl (0, true);
+    // Wait 1 minute while we haven't get the items
+    while  not Inventory.User.ByID (STEEL_MOLD_RECIPE, recipe)  or  (recipe.Count < quantity)  do Delay (60 * 1000);
+    Print ('You''ve found the recipe');
+    Engine.FaceControl (0, false);
+    while  User.InCombat  do Delay (3 * 1000);
+    GoHome;
+    Result := true;
+  end;
+end;
 
 {
 --------------------------------------------------------------------------------
-Recipe: Maestro Holder
-Tarik Basilisk lvl 50 (Town of Oren, Outlaw Forest)
+  Recipe: Maestro Holder
+  Tarik Basilisk lvl 50 (Town of Oren, Outlaw Forest)
 --------------------------------------------------------------------------------
 }
+function  BlacksmithFrameRecipe (quantity: integer = 1): boolean;
+var
+  recipe: TL2Item;
+begin
+  Result := false;
+  //TeleportTo ('dion');
+  if  User.InRange (15627, 142909, -2696, 1000, 200)  then begin
+    Engine.MoveTo (15728, 143823, -2880);
+  end;
+  if  User.InRange (14823, 136184, -3384, 2000, 200)  then begin
+    Engine.LoadZone (exepath + '\Zmaps\SteelMoldRecipe.zmap');
+    Engine.LoadConfig ('Spoiling'); // Load config that only targets Arachnid Tracker
+    Engine.FaceControl (0, true);
+    // Wait 1 minute while we haven't get the items
+    while  not Inventory.User.ByID (STEEL_MOLD_RECIPE, recipe)  or  (recipe.Count < quantity)  do Delay (60 * 1000);
+    Print ('You''ve found the recipe');
+    Engine.FaceControl (0, false);
+    while  User.InCombat  do Delay (3 * 1000);
+    GoHome;
+    Result := true;
+  end;
+end;
 
 {
 --------------------------------------------------------------------------------
-Recipe: Craftsman Mold
-Doom Knight lvl 65 (Town of Aden, Devestated Castle / The Forbidden Gateway)
+  Recipe: Craftsman Mold
+  Doom Knight lvl 65 (Town of Aden, Devestated Castle / The Forbidden Gateway)
 --------------------------------------------------------------------------------
 }
+function  BlacksmithFrameRecipe (quantity: integer = 1): boolean;
+var
+  recipe: TL2Item;
+begin
+  Result := false;
+  //TeleportTo ('dion');
+  if  User.InRange (15627, 142909, -2696, 1000, 200)  then begin
+    Engine.MoveTo (15728, 143823, -2880);
+  end;
+  if  User.InRange (14823, 136184, -3384, 2000, 200)  then begin
+    Engine.LoadZone (exepath + '\Zmaps\SteelMoldRecipe.zmap');
+    Engine.LoadConfig ('Spoiling'); // Load config that only targets Arachnid Tracker
+    Engine.FaceControl (0, true);
+    // Wait 1 minute while we haven't get the items
+    while  not Inventory.User.ByID (STEEL_MOLD_RECIPE, recipe)  or  (recipe.Count < quantity)  do Delay (60 * 1000);
+    Print ('You''ve found the recipe');
+    Engine.FaceControl (0, false);
+    while  User.InCombat  do Delay (3 * 1000);
+    GoHome;
+    Result := true;
+  end;
+end;
 
 BEGIN
   VarnishOfPurityRecipe (10);

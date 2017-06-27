@@ -15,7 +15,7 @@ const
 
   TCities : array[0..16] of TCity = (DWARVEN, ORC, DARK_ELVEN, ELVEN, TALKING_ISLAND,
     HEINE, DION, GIRAN, ADEN, GODDARD, GLUDIO, GLUDIN, SHTUTTGART, RUNE, OREN, HUNTER, NON_CITY);
-  
+
   CityNames: array[0..15] of string = ('dwarven village','orc village','dark elf village','elf village','talking island',
     'heine','dion','giran','aden','goddard','gludio','gludin','schuttgart','rune','oren','hunter village');
 
@@ -49,7 +49,7 @@ const
     'aden,giran,rune,goddard,heine,dion,schuttgart,gludio,"ivory tower","hunter village","hardins private academy","skyshadow meadow","plains of the lizardmen","outlaw forest","sea of spores"', //oren
     'aden,oren,"hardins private academy","enchanted valley south","enchanted valley north","forest of mirrors"' //hunter
   );
-  
+
   function  GetCity (shouldGoHome: boolean = true; inCityEvt: boolean = false): TCity;
   procedure  GoHome (ItemID: integer = -1; skillID: integer = -1; move: boolean = false);
   procedure  MoveInCity;
@@ -58,7 +58,7 @@ const
   function  toRightCity (destination: TCity): boolean;
   function  TeleportToLocation (destination: String): boolean;
   function  TeleportTo (destination: String): boolean;
-  
+
 implementation
 
 {
@@ -621,8 +621,8 @@ begin
     if User.InRange (-12240, 121807, -3010, 250, 150) then begin
       Engine.MoveTo (-12712, 122189, -2984);
     end;
-	// Stairs in front of church close to gatekeeper
-	if User.InRange (-12712, 122189, -2984, 250, 150) then begin
+      // Stairs in front of church close to gatekeeper
+      if User.InRange (-12712, 122189, -2984, 250, 150) then begin
       Engine.MoveTo (-13257, 122669, -3048);
       Engine.MoveTo (-12782, 122689, -3143);
     end;
@@ -705,7 +705,7 @@ begin
       Engine.MoveTo(147936, -55368, -2760);
     end;
     // East stairs
-    if User.InRange(149872, -57424, -2976, 250, 150) then begin //  
+    if User.InRange(149872, -57424, -2976, 250, 150) then begin
       Engine.MoveTo(149897, -56910, -2979);
       Engine.MoveTo(149230, -56412, -2779);
       Engine.MoveTo(147939, -55999, -2772);
@@ -1233,7 +1233,7 @@ begin
     end;
     if User.InRange (116322, -179598, -1104, 500, 150) then Moved := true;
   end;
-  
+
 {
 ------------------------------------------------------------------------------
                              Dark Elven
@@ -1245,15 +1245,15 @@ begin
       Engine.MoveTo (11631, 16756, -4656);
       Engine.MoveTo (10759, 16654, -4608);
     end;
-	// West entrance
-	if  User.InRange (7439, 17778, -4376, 500, 150)  then begin
+    // West entrance
+    if  User.InRange (7439, 17778, -4376, 500, 150)  then begin
       Engine.MoveTo (10759, 16654, -4608);
     end;
     // Last turn to gatekeeper
     if  User.InRange (10759, 16654, -4608, 500, 150)  then begin
       Engine.MoveTo (10182, 16799, -4584);
     end;
-	if  User.InRange (12094, 16709, -4580, 500, 150)  then Moved := true;
+    if  User.InRange (12094, 16709, -4580, 500, 150)  then Moved := true;
   end;
 
 {
@@ -1364,7 +1364,7 @@ begin
   if  (City <> NON_CITY)  or  (Length(destination) <> 0)  then
   begin
     teleportIndex := TStringList.Create;
-	  dialogIndex := 0;
+    dialogIndex := 0;
 
     gkId := GateKeepers[cityIndex];  // Get the Gatekeeper ID of our current city
 
@@ -1387,18 +1387,18 @@ begin
       {
         We search the string destination in the possible destinations of our gatekeeper
         and assign it to dialogIndex. indexOf returns -1 if it wasn't found.
-		We add 1 to match the dialog option of the gatekeeper
+        We add 1 to match the dialog option of the gatekeeper
       }
       rightCity := true;
       dialogIndex := teleportIndex.indexOf (destination) + 1;
-	    if  dialogIndex = 0  then
-	    begin
-	      dialogIndex := 1;
-	      rightCity := false;
-	    end;
-	  {
+      if  dialogIndex = 0  then
+      begin
+        dialogIndex := 1;
+          rightCity := false;
+      end;
+      {
         Checks if we are in the right city or teleport us to the first city of the dialog options
-	  }
+      }
       Engine.SetTarget (gatekeeper);
       Engine.MoveTo (gatekeeper);
       Engine.DlgOpen;
@@ -1410,20 +1410,19 @@ begin
       else
         Engine.DlgSel (ifThen((Pos(buffer.name, 'Ragara') <> 0), 'Teleport', GkDlg));
         case buffer.id of
-          30256: Engine.DlgSel(2);  
+          30256: Engine.DlgSel(2);
           30006: Engine.DlgSel(3);
-		}
+      }
       else
         Engine.DlgSel(1);
       Delay (500);
       Engine.DlgSel (dialogIndex);
       Delay (TPDelay);
       Result := true;
-	  
-	  if  rightCity = false  then
-	    TeleportTo (destination);
-    end;
 
+      if  rightCity = false  then
+        TeleportTo (destination);
+    end;
     teleportIndex.Free;
   end;
 end;

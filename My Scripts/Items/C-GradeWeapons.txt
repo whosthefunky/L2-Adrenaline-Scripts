@@ -1,0 +1,112 @@
+{
+--------------------------------------------------------------------------------
+  Crystal Dagger Recipe by Spoil
+  Cave Servant Warrior (lvl 48) (Giran, Dragon Valley NorthWest)
+  1/385 chance, 36s avg. respawn time
+--------------------------------------------------------------------------------
+}
+function  CrystalDaggerRecipe: boolean;
+begin
+end;
+
+{
+--------------------------------------------------------------------------------
+  Crystal Dagger Blade by Spoil
+  Horrifying Ginzu Golem VIII (lvl 54) (Schuttgart, Archaic Laboratory SouthEast)
+  1/35 chance, 1m avg. respawn time
+--------------------------------------------------------------------------------
+}
+function  CrystalDaggerBlade: boolean;
+begin
+end;
+
+{
+--------------------------------------------------------------------------------
+  Samurai Long Sword Recipe by Spoil 1/336 chance, 36s avg. respawn time
+  Yaksa Mace Recipe by Drop 1/8929 chance, 36s avg. respawn time
+  Royal Cave Servant (lvl 51) (Giran, Dragon Valley NorthWest)
+--------------------------------------------------------------------------------
+}
+function  SamuraiLongSwordRecipe: boolean;
+begin
+end;
+
+{
+--------------------------------------------------------------------------------
+  Samurai Long Sword Blade by Drop
+  Epic Cannon Golem (53)  (Schuttgart, Archaic Laboratory SouthEast)
+  1/43 chance, 1m avg. respawn time
+--------------------------------------------------------------------------------
+}
+function  SamuraiLongSwordBlade: boolean;
+begin
+end;
+
+{
+--------------------------------------------------------------------------------
+  Berserker Blade Recipe by Drop
+  Soul of Ruins (lvl 54) (Aden, Cementery)
+  1/12346 chance, 30s avg. respawn time
+--------------------------------------------------------------------------------
+}
+function  BerserkerBladeRecipe: boolean;
+begin
+end;
+
+{
+--------------------------------------------------------------------------------
+  Berserker Blade Edge by Spoil
+  Deadly Ginzu Golem V (lvl 53) (Schuttgart, Archaic Laboratory SouthEast)
+  1/590 chance, 1m avg. respawn time
+--------------------------------------------------------------------------------
+}
+function  BerserkerBladeEdge: boolean;
+begin
+end;
+
+{
+--------------------------------------------------------------------------------
+  Eminence Bow Recipe by Spoil
+  Taik Orc Supply (lvl 51) (Aden, Aden Castle NorthEast)
+  1/340 chance, 23s avg. respawn time
+--------------------------------------------------------------------------------
+}
+function  EminenceBowRecipe: boolean;
+begin
+end;
+
+{
+--------------------------------------------------------------------------------
+  Eminence Bow Shaft by Spoil
+  Harit Lizardman Matriarch (lvl 55) (Hunters Village, The Forest of Mirrors)
+  1/57 chance, 23s avg. respawn time
+--------------------------------------------------------------------------------
+}
+function  EminenceBowShaft: boolean;
+begin
+end;
+
+{
+--------------------------------------------------------------------------------
+  Yaksa Mace Head by Drop 1/1263 chance, 1m avg. respawn time
+  Dwarven Hammer Piece by Drop 1/1328
+  Horrifying Ginzu Golem VIII (54) (Schuttgart, Archaic Laboratory SouthEast)
+--------------------------------------------------------------------------------
+}
+function  YaksaMaceHead;
+begin
+end;
+
+{
+--------------------------------------------------------------------------------
+  Dwarven Hammer Recipe by Drop
+  Cruel Vice Golem (lvl 49) (Schuttgart, Archaic Laboratory North)
+  1/7813 chance, 1m avg. respawn time
+--------------------------------------------------------------------------------
+}
+function  DwarvenHammerRecipe;
+begin
+end;
+
+BEGIN
+END.
