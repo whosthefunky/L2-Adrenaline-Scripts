@@ -1,6 +1,21 @@
+unit  LevelPet;
+
+interface
+
 uses SysUtils, Classes;
 
-procedure tpContoller;
+const
+  GREATER_HEAL = 1217;
+  MAJOR_HEAL = 1401;
+  
+procedure  tpContoller;
+procedure  petRangeProtect;
+procedure  petHeal;
+procedure  countExpAdena;
+
+implementation
+
+procedure  tpContoller;
 var
   buff: TL2Buff;
 begin
@@ -13,7 +28,7 @@ begin
   end;
 end;
 
-procedure petRangeProtect;
+procedure  petRangeProtect;
 var
   previousTarget: TL2Live;
 begin
@@ -36,7 +51,7 @@ begin
   end;
 end;  
 
-procedure petHeal;
+procedure  petHeal;
 begin
     print('[Thread] Summon heal thread started');
   while Engine.Status = lsOnline do
@@ -45,7 +60,7 @@ begin
         and (User.MP > 5) and (User.HP > 15) then
     begin
       Engine.SetTarget('Moon Howler');
-      Engine.UseSkill(1401); // Major heal the pet
+      Engine.UseSkill(GREATER_HEAL);
     end;
 
     if (petlist.count > 0) and (Petlist.items(0).Dead)
@@ -59,7 +74,7 @@ begin
   end;
 end;
 
-procedure countExpAdena;
+procedure  countExpAdena;
 var
   exp : int64;
   TxtList : TStringList;
@@ -100,10 +115,5 @@ begin
 end;
  
 
-begin
-  script.newThread(@petHeal);
-  script.newThread(@petRangeProtect);
-  script.newThread(@tpContoller);
-  script.newThread(@countExpAdena);
-  delay(-1);
-end.
+BEGIN
+END.

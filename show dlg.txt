@@ -1,1 +1,38 @@
-<html><body><br><center><img src=l2warland.fb_box_new height=110 width=120></center><br><center><font color="LEVEL">[Drop Info]</font></center><br><center>Color : <font color="LEVEL">DROP</font>  -  <font color="00ff00">SPOIL</font></center><table border=0 cellpadding=0 cellspacing=0 width="95%"><tr><td></td><td><center>name</td><td><center>max</td><td><center>chance</td></tr><tr><td height=40><img src=icon.etc_adena_i00 height=32 width=32></td><td  height=40 width=290><font color="LEVEL">Adena</font></td><td  height=40 width=70><center><font color="LEVEL">3367</font></td><td  height=40 width=100><center><font color="LEVEL">1400%</font></td></tr><tr><td height=40><img src=icon.etc_reagent_green_i00 height=32 width=32></td><td  height=40 width=290><font color="LEVEL">Greater Antidote</font></td><td  height=40 width=70><center><font color="LEVEL">1</font></td><td  height=40 width=100><center><font color="LEVEL">299,452%</font></td></tr><tr><td height=40><img src=icon.etc_skein_white_i00 height=32 width=32></td><td  height=40 width=290><font color="LEVEL">Thread</font></td><td  height=40 width=70><center><font color="LEVEL">3</font></td><td  height=40 width=100><center><font color="LEVEL">269,506%</font></td></tr><tr><td height=40><img src=icon.etc_silver_i00 height=32 width=32></td><td  height=40 width=290><font color="LEVEL">Silver Nugget</font></td><td  height=40 width=70><center><font color="LEVEL">1</font></td><td  height=40 width=100><center><font color="LEVEL">107,802%</font></td></tr><tr><td height=40><img src=icon.etc_skein_gray_i00 height=32 width=32></td><td  height=40 width=290><font color="LEVEL">Metallic Thread</font></td><td  height=40 width=70><center><font color="LEVEL">1</font></td><td  height=40 width=100><center><font color="LEVEL">26,952%</font></td></tr><tr><td height=40><img src=icon.etc_compound_braid_i00 height=32 width=32></td><td  height=40 width=290><font color="LEVEL">Compound Braid</font></td><td  height=40 width=70><center><font color="LEVEL">1</font></td><td  height=40 width=100><center><font color="LEVEL">17,968%</font></td></tr><tr><td height=40><img src=icon.etc_gem_clear_i00 height=32 width=32></td><td  height=40 width=290><font color="LEVEL">Thons</font></td><td  height=40 width=70><center><font color="LEVEL">1</font></td><td  height=40 width=100><center><font color="LEVEL">8,984%</font></td></tr><tr><td height=40><img src=icon.etc_gem_blue_i00 height=32 width=32></td><td  height=40 width=290><font color="LEVEL">Blue Dimensional Stone</font></td><td  height=40 width=70><center><font color="LEVEL">1</font></td><td  height=40 width=100><center><font color="LEVEL">0,54%</font></td></tr><tr><td height=40><img src=icon.etc_recipe_red_i00 height=32 width=32></td><td  height=40 width=290><font color="LEVEL">Recipe: Staff of Evil Spirits</font></td><td  height=40 width=70><center><font color="LEVEL">1</font></td><td  height=40 width=100><center><font color="LEVEL">0,206%</font></td></tr><tr><td height=40><img src=icon.etc_recipe_red_i00 height=32 width=32></td><td  height=40 width=290><font color="LEVEL">Recipe: Deadman's Glory (60%)</font></td><td  height=40 width=70><center><font color="LEVEL">1</font></td><td  height=40 width=100><center><font color="LEVEL">0,206%</font></td></tr><tr><td height=40><img src=icon.etc_plate_silver_i00 height=32 width=32></td><td  height=40 width=290><font color="00ff00">Zubei's Breastplate Part</font></td><td  height=40 width=70><center><font color="00ff00">1</font></td><td  height=40 width=100><center><font color="00ff00">148,624%</font></td></tr><tr><td height=40><img src=icon.etc_recipe_red_i00 height=32 width=32></td><td  height=40 width=290><font color="00ff00">Recipe: Earrings of Black Ore</font></td><td  height=40 width=70><center><font color="00ff00">1</font></td><td  height=40 width=100><center><font color="00ff00">88,868%</font></td></tr><tr><td height=40><img src=icon.etc_sword_body_i00 height=32 width=32></td><td  height=40 width=290><font color="LEVEL">Great Sword Blade</font></td><td  height=40 width=70><center><font color="LEVEL">1</font></td><td  height=40 width=100><center><font color="LEVEL">2,314%</font></td></tr><tr><td height=40><img src=icon.etc_sword_body_i00 height=32 width=32></td><td  height=40 width=290><font color="LEVEL">Keshanberk Blade</font></td><td  height=40 width=70><center><font color="LEVEL">1</font></td><td  height=40 width=100><center><font color="LEVEL">2,278%</font></td></tr><tr><td height=40><img src=icon.etc_sword_body_i00 height=32 width=32></td><td  height=40 width=290><font color="LEVEL">Sword of Valhalla Blade</font></td><td  height=40 width=70><center><font color="LEVEL">1</font></td><td  height=40 width=100><center><font color="LEVEL">2,278%</font></td></tr><tr><td height=40><img src=icon.weapon_great_sword_i00 height=32 width=32></td><td  height=40 width=290><font color="LEVEL">Great Sword</font></td><td  height=40 width=70><center><font color="LEVEL">1</font></td><td  height=40 width=100><center><font color="LEVEL">0,01%</font></td></tr><tr><td height=40><img src=icon.weapon_kshanberk_i00 height=32 width=32></td><td  height=40 width=290><font color="LEVEL">Keshanberk</font></td><td  height=40 width=70><center><font color="LEVEL">1</font></td><td  height=40 width=100><center><font color="LEVEL">0,01%</font></td></tr><tr><td height=40><img src=icon.weapon_sword_of_valhalla_i00 height=32 width=32></td><td  height=40 width=290><font color="LEVEL">Sword of Valhalla</font></td><td  height=40 width=70><center><font color="LEVEL">1</font></td><td  height=40 width=100><center><font color="LEVEL">0,01%</font></td></tr><tr><td height=40><img src=icon.etc_mineral_special_i01 height=32 width=32></td><td  height=40 width=290><font color="LEVEL">Mid-Grade Life Stone: level 61</font></td><td  height=40 width=70><center><font color="LEVEL">1</font></td><td  height=40 width=100><center><font color="LEVEL">0,368%</font></td></tr></table></body></html>
+<html>
+<head>
+<body scroll="no">
+<title>Warland Info</title>
+<table border=0 cellpadding=0 cellspacing=0 width=292 height=358 background="l2ui_ct1.Windows_DF_TooltipBG">
+	<tr>
+		<td valign="top">
+			<table width=290 height=330>
+				<tr>
+					<td width=270 height=310 align=center valign=top>
+						<table border=0 cellspacing=2 cellpadding=4 width=270 height=40>
+							<tr>
+								<td FIXWIDTH=220 align=left valign=top>
+<font color=LEVEL>CHANGE ANTIBOT PUNISH</font><br>
+we change ANTIBOT PUNISH system<br1>
+1-3 KICK<br1>
+4-6 JAIL 60 MIN<br1>
+7-9 JAIL 4320 MIN<br1>
+10 PERMA BAN ACCOUNT<br>
+
+cost to remove 1 BOT POINT is:<br1>
+1. VIP : 1000 GOLD<br1>
+2. NO VIP : 1500 GOLD<br>
+
+*  From now never we reset BOT POINTS<br1>
+** Wrong Answer Punish Normaly
+						</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+</body>
+</html>
+

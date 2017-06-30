@@ -4,61 +4,39 @@ type
   TItemFuncion = function: boolean;
 
 const
-  BLUE_WOLF_HELMET_RECIPE = 4173;
-  BLUE_WOLF_HELMET_DESIGN = 4088;
-  BLUE_WOLF_BREASTPLATE_RECIPE = 4981;
-  BLUE_WOLF_BREASTPLATE_PART = 4078;
-  BLUE_WOLF_GAITERS_RECIPE = 4157;
-  BLUE_WOLF_GAITERS_MATERIAL = 4080;
-  BLUE_WOLF_GLOVES_RECIPE = 4173;
-  BLUE_WOLF_GLOVES_FABRIC = 4096;
-  BLUE_WOLF_BOOTS_RECIPE = 4167;
-  BLUE_WOLF_BOOTS_DESIGN = 4090;
+  DOOM_HELMET_RECIPE = 4166;
+  DOOM_HELMET_PATTERN = 4089;
+  DOOM_PLATE_ARMOR_RECIPE = 4158;
+  DOOM_PLATE_ARMOR_TEMPER = 4081;
+  DOOM_GLOVES_RECIPE = 4168;
+  DOOM_GLOVES_PART = 4091;
+  DOOM_BOOTS_RECIPE = 4176;
+  DOOM_BOOTS_PART = 4099;
   
 {	
 --------------------------------------------------------------------------------
-  Blue Wolf Breastplate Recipe by Spoil
-  Ice Tarantula (lvl 57) (Schuttgart, Frozen Labyrinth)
-  1/177 chance, 1m avg. respawn time
-  Blue Wolf Gaiters Recipe by Spoil
-  Frost Iron Golem (lvl 59) (Schuttgart, Frozen Labyrinth)
+  Doom Helmet Recipe by Drop
+  Doom Guard (lvl 61) (Aden, Devastated Castle)
+  1/2062 chance, 1m 15s avg. respawn time
 --------------------------------------------------------------------------------
 }
-function  BlueWolfRecipes: boolean;
+function  DoomHelmetRecipe: boolean;
 begin
-  if  User.InRange (113869, -108865, -840, 500, 200)  then begin
-    Print ('Path to the Ice Queen Castle');
-    Engine.MoveTo (113830, -109266, -848);
-  end;
-  if  User.InRange (113473, -109977, -861, 500, 200)  or
-    User.InRange (113830, -109266, -848, 500, 200 )  then
-  begin
-    Engine.MoveTo (114054, -109795, -872);
-    Engine.MoveTo (114942, -111016, -896);
-    Engine.MoveTo (116211, -112923, -1200);
-    Engine.MoveTo (116292, -114843, -1624);
-    Engine.MoveTo (117183, -116222, -1936);
-    Engine.MoveTo (119929, -117277, -2496);
-    Engine.MoveTo (122172, -119132, -2648);
-  end;
-  if  User.InRange (122172, -119132, -264, 500, 200)  then begin
-    Engine.MoveTo (124842, -116045, -2609);
-    Engine.MoveTo (125986, -116198, -2576);
-  end;
-  Result := true;
+  // Same as Blue Wolf Boots Design
+  BlueWolfMaterials;
 end;
 
 {	
 --------------------------------------------------------------------------------
-  Blue Wolf Gaiters Material by Spoil
-  Alpine Kookaburra (lvl 65) (Rune, Beast Farm)
-  1/43 chance, 36s avg. respawn time
+  Doom Helmet Pattern by Spoil
+  Chimera Piece (lvl 73) (Aden, The Giant Cave)
+  1/11 chance, 1m avg. respawn time
 --------------------------------------------------------------------------------
 }
-function  BlueWolfBootsDesign: boolean;
+function  DoomHelmetPattern: boolean;
 begin
   TeleportTo ('beast farm');
-  if  User.InRange (167290, 37124, -4003, 500, 200)  then begin
+  if  User.InRange (, 500, 200)  then begin
     Print ('Moving from respawn to hunting zone');
     Engine.MoveTo (170082, 38731, -4048);
   end;
@@ -71,58 +49,28 @@ end;
 
 {	
 --------------------------------------------------------------------------------
-  Blue Wolf Boots Recipe by Drop
-  Fallen Orc Shaman (lvl 58) (Aden, Forsaken Plains)
-  1/80 chance, 30s avg. respawn time
+  Doom Plate Armor Recipe by Spoil
+  Anger Of Splendor (lvl 63) (Rune, Valley of Saints)
+  1/32 chance, 48s avg. respawn time
 --------------------------------------------------------------------------------
 }
-// Same as FullPlateBootsPart;
-function  BlueWolfBootsRecipe: boolean;
+function  DoomPlateArmor: boolean;
 begin
+  BlueWolfRecipes;
   Result := true;
 end;
 
 {	
 --------------------------------------------------------------------------------
-  Blue Wolf Breastplate Part by Spoil
-  Spiteful Soul Wizard (lvl 63) (Aden, Devastated Castle)
-  1/16 chance, 1m 50s avg. respawn time
-  Blue Wolf Gaiters Material by Spoil
-  Spiteful Soul Fighter (lvl 62)
-  1/13 chance, 1m 50s avg. respawn time
-  Blue Wolf Boots Design by Drop
+  Doom Plate Armor Temper by Spoil
   Doom Knight (lvl 65) (Aden, Devastated Castle)
   1/169 chance, 1m 15s avg. respawn time
 --------------------------------------------------------------------------------
 }
-function  BlueWolfMaterials: boolean;
+function  DoomPlateArmorTemper: boolean;
 begin
   if  User.InRange (178418, -13892, -2284, 500, 200)  then begin
     Engine.MoveTo (179609, -13691, -2264);
-  end;
-  if  User.InRange (179609, -13691, -2264, 500, 200)  then begin
-    Engine.MoveTo (180742, -14939, -2256);
-  end;
-  if  User.InRange (180742, -14939, -2256, 500, 200)  then begin
-    Engine.MoveTo (181224, -15804, -2312);
-  end;
-  if  User.InRange (181224, -15804, -2312, 500, 200)  then begin
-    Engine.MoveTo (182766, -16957, -2704);
-  end;
-  if  User.InRange (182766, -16957, -2704, 500, 200)  then begin
-    Engine.MoveTo (184389, -18432, -2656);
-  end;
-  if  User.InRange (184389, -18432, -2656, 500, 200)  then begin
-    Engine.MoveTo (185936, -18990, -2248);
-  end;
-  if  User.InRange (185936, -18990, -2248, 500, 200)  then begin
-    Engine.MoveTo (187265, -18295, -1528);
-  end;
-  if  User.InRange (187265, -18295, -1528, 500, 200)  then begin
-    Engine.MoveTo (187261, -17736, -1336);
-  end;
-  if  User.InRange (187261, -17736, -1336, 500, 200)  then begin
-    Engine.MoveTo (187648, -16525, -1304);
   end;
   if  User.InRange (187648, -16525, -1304, 500, 200)  then begin
     Engine.LoadZone (exepath + '\Zmaps\DoomKnight.zmap');
@@ -132,36 +80,37 @@ end;
 
 {	
 --------------------------------------------------------------------------------
-  Blue Wolf Gloves Recipe by Drop
-  Leogul (lvl 61) ()
-  1/926 chance, 1m 22s avg. respawn time
+  Doom Gloves Recipe by Drop
+  Kranrot (lvl 59) (Aden, Giant Cave)
+  1/911 chance, 1m 20s avg. respawn time
 --------------------------------------------------------------------------------
 }
-function  BlueWolfGlovesRecipe: boolean;
+function  DoomGlovesRecipe: boolean;
 begin
   Result := true;
 end;
 
 {	
 --------------------------------------------------------------------------------
-  Blue Wolf Gloves Fabric by Spoil
+  Doom Gloves Part by Spoil
   Splinter Stakato Worker (lvl 67) (Goddard, Swamp of Screams)
   1/8 chance, 47s avg. respawn time
 --------------------------------------------------------------------------------
 }
-function  BlueWolfGlovesFabric: boolean;
+function  DoomGlovesPart: boolean;
 begin
+  // same as Blue Wolf Gloves Fabric
   Result := true;
 end;
 
 {	
 --------------------------------------------------------------------------------
-  Blue Wolf Helmet Recipe by Drop
-  Luminun (lvl 58) (Oren, West of the village)
-  1/2786 chance, 33s avg. respawn time
+  Doom Boots Recipe by Drop
+  Yintzu (lvl 56) (Aden, Giant Cave)
+  1/1121 chance, 1m 14s avg. respawn time
 --------------------------------------------------------------------------------
 }
-function  BlueWolfHelmetRecipe: boolean;
+function  DoomBootsRecipe: boolean;
 begin
   if  User.InRange (82512, 53266, -1488, 500, 200)  then begin
     Engine.MoveTo (80997, 53507, -1552);
@@ -182,54 +131,15 @@ end;
 
 {	
 --------------------------------------------------------------------------------
-  Blue Wolf Helmet Design by Spoil
-  Kookaburra (lvl 67) (Goddard, East of Castle)
-  1/8 chance, 40s avg. respawn time
+  Doom Boots Part by Spoil
+  Fang Of Splendor (lvl 67) (Rune, Valley of Saints)
+  1/6 chance, 48s avg. respawn time
 --------------------------------------------------------------------------------
 }
-function  BlueWolfHelmetDesign: boolean;
+function  DoomBootsPart: boolean;
 begin
   Result := true;  
 end;
 
-{	
---------------------------------------------------------------------------------
-  Blue Wolf Helmet by Drop
-  Plando (lvl 64) (Giran, Anthara's Lair)
-  1/11628 chance, 4m avg. respawn time
---------------------------------------------------------------------------------
-}
-function  BlueWolfHelmet: boolean;
-begin
-  if  User.InRange (132839, 114438, -3720, 500, 200)  or
-      User.InRange (131423, 114461, -3716, 500, 200)  then
-  begin
-    Print ('Moving to hunting zone');
-    Engine.LoadConfig ('KillAgroMobs');
-    Engine.FaceControl (0, true);
-    Engine.MoveTo (134835, 114489, -3751);
-    Engine.MoveTo (136032, 115060, -3720);
-  end;
-  if  User.InRange (136032, 115060, -3720, 500, 200)  then begin
-    Engine.MoveTo (136834, 114537, -3712);
-    Engine.MoveTo (139934, 114361, -3720);
-    Engine.MoveTo (140890, 113430, -3720);
-    Engine.MoveTo (141731, 112430, -3720);
-    Engine.MoveTo (142600, 111915, -3944);
-    Engine.MoveTo (142280, 109216, -3944);
-  end;
-  Result := true;
-end;
-
 BEGIN
-  BlueWolfMaterials;
-  {GetItem (@BlueWolfHelmetRecipe, BLUE_WOLF_HELMET_RECIPE, -1, -1, 58, 2, -1, -1);
-  GetItem (@BlueWolfRecipes, BLUE_WOLF_BREASTPLATE_RECIPE, BLUE_WOLF_GAITERS_RECIPE, -1, 58, 2, 2, -1);
-  GetItem (@BlueWolfBootsRecipe, BLUE_WOLF_BOOTS_RECIPE, -1, -1, 58, 2, -1, -1);
-  GetItem (@BlueWolfGlovesRecipe, BLUE_WOLF_GLOVES_RECIPE, -1, -1, 61, 2, -1, -1);
-  GetItem (@BlueWolfMaterials, BLUE_WOLF_BREASTPLATE_PART, BLUE_WOLF_GAITERS_MATERIAL,
-  BLUE_WOLF_BOOTS_DESIGN, 62, 1 * 13, 1 * 13, 1 * 13);
-  GetItem (@BlueWolfGlovesFabric, BLUE_WOLF_GLOVES_FABRIC, -1, -1, 67, 1 * 13, -1, -1);
-  GetItem (@BlueWolfHelmetDesign, BLUE_WOLF_HELMET_DESIGN, -1, -1, 67, 1 * 13, -1, -1);
-   }
 END.

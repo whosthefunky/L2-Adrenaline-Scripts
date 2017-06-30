@@ -1,0 +1,26 @@
+{
+--------------------------------------------------------------------------------
+  Sealed Imperial Crusader Helmet Pattern by Spoil
+  Sealed Imperial Crusader Boots Design by Spoil
+  Sealed Imperial Crusader Shield Part by Spoil
+  Pilgrim Of Light (78) (Monastery of Silence)
+  1/4 chance, 58s avg. respawn time
+--------------------------------------------------------------------------------  
+  Sealed Imperial Crusader Breastplate Part by Spoil
+  Sealed Imperial Crusader Gaiters Pattern
+  Sealed Imperial Crusader Gauntlets Design
+  Judge Of Light (78)
+  1/18 chance, 58s avg. respawn time
+--------------------------------------------------------------------------------
+}
+function  ImperialCrusaderParts (quantity: integer = 1): boolean;
+var
+  recipe: TL2Item;
+begin
+  Result := false;
+  //TeleportTo ('hunter village');
+  if  User.InRange (117000, 76900, -2700, 500, 200)  then begin
+    Print ('Moving from Gatekeeper to hunting ground');
+    Engine.MoveTo (118056, 75755, -2688);
+  end;
+end;

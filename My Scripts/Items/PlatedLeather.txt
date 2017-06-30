@@ -1,3 +1,9 @@
+uses  Classes, TeleportModule;
+
+const
+  PLATED_LEATHER_ARMOR_RECIPE = 2211;
+  BLESSED_SPIRITSHOT_C_RECIPE = 3954;
+
 {
 --------------------------------------------------------------------------------
   Plated Leather Armor Recipe by Spoil
@@ -5,6 +11,31 @@
   1/36 chance, 40s avg. respawn time
 --------------------------------------------------------------------------------
 }
+procedure  PlatedLeatherArmorRecipe;
+var
+  recipe: TL2Item;
+  quantity: integer;
+begin
+  TeleportTo ('skyshadow meadow');
+  if  User.InRange (82724, 61138, -3496, 500, 200)  then begin
+    Engine.MoveTo (77941, 63928, -3664);
+    Engine.MoveTo (77247, 64571, -3552);
+    Engine.MoveTo (73371, 67701, -3720);
+  end;
+  if  User.InRange (73371, 67701, -3720, 500, 200)  then begin
+    Engine.LoadZone (exepath + '\Zmaps\TimakOrc.zmap');
+    Engine.LoadConfig ('Spoiling'); // Load config that only targets Arachnid Tracker
+    Engine.FaceControl (0, true);
+    // Wait 1 minute while we haven't get the items
+    while  not Inventory.User.ByID (PLATED_LEATHER_ARMOR_RECIPE, recipe)
+	  or  not Inventory.User.ByID (BLESSED_SPIRITSHOT_C_RECIPE, recipe)  or  (recipe.Count < quantity)  do Delay (60 * 1000);
+    Print ('You''ve found the recipe');
+    Engine.FaceControl (0, false);
+    while  User.InCombat  do Delay (3 * 1000);
+    GoHome;
+    Engine.LoadZone ('PlatedLeatherGlovesRecipe.zmap');
+  end;
+end;
 
 {	
 --------------------------------------------------------------------------------
@@ -35,9 +66,9 @@ begin
     Engine.MoveTo (119338, 177971, -3768);
   end;
   if  User.InRange (119338, 177971, -3768, 500, 200)  then begin
-    Engine.MoveTo (119338, 117368, 179803, -3544);
+    Engine.MoveTo (117368, 179803, -3544);
   end;
-  if  User.InRange (119338, 117368, 179803, -3544, 500, 200)  then begin
+  if  User.InRange (117368, 179803, -3544, 500, 200)  then begin
     Engine.MoveTo (115675, 182753, -3808);
     // Engine.LoadConfig ('Target Crokian Lad Warrior');
     Engine.LoadZone ('PlatedLeatherGlovesRecipe.zmap');
@@ -52,7 +83,6 @@ Theeder Piker (48) 1/8 (Heine, Garden of Eva)
 Dragon Bearer Chief (49) 1/9 (Giran, Dragon Valley)
 
 --------------------------------------------------------------------------------
-}
   Plated Leather Boots Drop (lvl 44)
   1/4287 chance, 45s avg. respawn time
 --------------------------------------------------------------------------------
@@ -66,8 +96,8 @@ Dragon Bearer Chief (49) 1/9 (Giran, Dragon Valley)
 }
 procedure  PlatedLeatherBootsRecipe;
 var
-  Boots: Obj;
-  inventary: TlItemList;
+  Boots: TL2Item;
+  inventary: TItemList;
 begin
   // teleportTo (hunters);
   if  User.InRange (150500, 86000, -2700, 500, 200)  then begin
@@ -116,5 +146,5 @@ begin
 end;
 
 BEGIN
-  PlatedLeatherGlovesRecipe;
+  PlatedLeatherBootsRecipe;
 END.

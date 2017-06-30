@@ -50,15 +50,11 @@ begin
       Engine.MoveTo (86184, 244314, -7672);
     end;
     if  User.InRange (86184, 244314, -7672, 500, 100) then begin
-      Engine.MoveTo (82732, 244391, -8184);
+      Engine.MoveTo (82833, 245078, -8208);
     end;
-    if  User.InRange (82732, 244391, -8184, 500, 100) then begin
+    if  User.InRange (82833, 245078, -8208, 500, 200) then begin
       Print ('Jumping');
-      Engine.MoveTo (82625, 245488, -8748);
-    end;
-    
-    if  User.InRange (82625, 245488, -8748, 500, 100) then begin
-      Engine.MoveTo (84549, 245444, -8848);
+      Engine.MoveTo (84535, 245478, -8856);
     end;
     if  User.InRange (84549, 245444, -8848, 500, 100) then begin
       Engine.MoveTo (86380, 246645, -8823);
@@ -135,5 +131,5 @@ begin
 end;
 
 BEGIN
-  goToGardenOfEva (2);
+  goToGardenOfEva (5);
 END.

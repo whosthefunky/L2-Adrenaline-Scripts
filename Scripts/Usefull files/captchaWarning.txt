@@ -4,17 +4,18 @@ alarm:boolean= false;
 
 procedure OnPacket(ID, ID2: Cardinal; Data: Pointer; Size: Word);
 begin
-  if (IntToHex(ID, 2) = 'A0') and (not alarm) then alarm:= true;
+  if  (ID = 160)  and  (not alarm)  then alarm := true; 
 end;
 
 procedure doAlarm;
 begin
-  while Delay(1111) do
+  while true do
   begin
     if alarm then begin
-      playsound(exepath+'sounds\playeralarm.wav');
+      playsound(exepath+'\sounds\beep.wav');
       delay(2222);
     end;
+    Delay(1111)
   end;
 end;
 

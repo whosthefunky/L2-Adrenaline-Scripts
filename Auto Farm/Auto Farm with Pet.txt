@@ -1,4 +1,4 @@
-uses SettingsModule, Classes, TeleportModule, Locations, UserFunctions, Trade;
+uses SettingsModule, Classes, TeleportModule, Locations, UserFunctions, LevelPet;
 
 {
 --------------------------------------------------------------------------------
@@ -269,6 +269,8 @@ end;}
 BEGIN
   Script.NewThread(@continueFarming);
   Script.NewThread(@killAgroMobsThread);
-  Script.NewThread(@Trade);
+  script.newThread(@petHeal);
+  script.newThread(@petRangeProtect);
+  script.newThread(@tpContoller);
   //Script.NewThread(@checkForCaptcha);
 END.

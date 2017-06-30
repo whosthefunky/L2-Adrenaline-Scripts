@@ -1,205 +1,98 @@
-//uses DeadModule, CityModule, BuffModule, TeleportModule, HuntingModule, SettingsModule;
-uses SettingsModule, Classes;
+unit  TeleportModule;
 
-{
---------------------------------------------------------------------------------
-  SEARCH FRASE "CHANGE THIS" IN FILE AND MAKE THE PERTINENT CHANGES
---------------------------------------------------------------------------------
-}
+interface
+
+uses
+  SysUtils, Classes;
+type
+  TCity = (DWARVEN = 0, ORC = 1, DARK_ELVEN = 2, ELVEN = 3, TALKING_ISLAND = 4,
+    HEINE = 5, DION = 6, GIRAN = 7, ADEN = 8, GODDARD = 9, GLUDIO = 10, GLUDIN = 11,
+    SHTUTTGART = 12, RUNE = 13, OREN = 14, HUNTER = 15, NON_CITY = 16);
+
 const
-  HIRA = 31613;          // YOU HAVE TO CHANGE THIS TO YOUR SERVER CUSTOM BUFFER. IF THERE'S NONE THEN DELETE BUFFING LINE NEAR THE END OF THE SCRIPT
-  NOVA = 31124;          // YOU HAVE TO CHANGE THIS TO YOUR SERVER CUSTOM GATEKEEPER. IF THERE'S NONE CONFIGURE THE TELEPORT FUNCTION TO USE THE USUAL GATEKEEPER.
-  WIND_WALK = 1204;      // YOU MAY HAVE TO CHANGE THIS TO A BUFF YOU USE. IT'S USED TO KNOW WHEN YOU NEED TO BACK WHEN YOU'R BUFFS FINISH
   SCROLL_OF_SCAPE = 736;
+  ROXXY = 30006;
+
+  TCities : array[0..16] of TCity = (DWARVEN, ORC, DARK_ELVEN, ELVEN, TALKING_ISLAND,
+    HEINE, DION, GIRAN, ADEN, GODDARD, GLUDIO, GLUDIN, SHTUTTGART, RUNE, OREN, HUNTER, NON_CITY);
+
+  CityNames: array[0..15] of string = ('dwarven village','orc village','dark elf village','elf village','talking island',
+    'heine','dion','giran','aden','goddard','gludio','gludin','schuttgart','rune','oren','hunter village');
+
+  // IDs of the Gatekeepers
+  GateKeepers: array[0..15] of integer = (30540, 30576, 30134, 30146, 30006,
+    30899, 30059, 30080, 30848, 31275, 30256, 30320, 31964, 31320, 30177, 30233);
+
+  TPDelay = 10 * 1000; // Time to wait after teleporting, change according to your computer
 
 {
 --------------------------------------------------------------------------------
-  Check if the server is locked by trying to move the character.
-  If the character didn't move then unlock the server.
+  Array with all the locations to which the gatekeeper of a city can teleport
+  The gatekeepersString share the same index as it's corresponding city
 --------------------------------------------------------------------------------
 }
-procedure unlockServer;
-var
-  pin: Integer;
-  Moved: Boolean;
-  lastX: Integer;
-  newX: Integer;
-begin
-  Delay (3000); // Wait 3s for the server to load
-  lastX := User.X;
-  newX  := User.X + 5;
-  Engine.MoveTo(newX, User.Y, User.Z);
-  if User.InRange(newX, User.Y, User.z, 3, 10) then Moved := true;
+  GateKeepersStrings: array[0..15] of string = (
+    'gludio,schuttgart,"dark elf village","talking island","elf village","orc village","mithril mines","abandoned coal mines","eastern mining zone","western mining zone"', //dwarven
+    'gludio,schuttgart,"dark elf village","dwarven village","talking island","elf village","immortal plateau","immortal plateau south","fozen waterfall"', //orc
+    'gludio,"dwarven village","talking island","orc village","dark forest","swampland","spider nest","neutral zone"', //darkelven
+    'gludio,"dwarven village","talking island","orc village","elven forest","elven fortress","neutral zone"', //elven
+    'gludin,"dark elf village","dwarven village","elf village","orc village","elven ruins","singing waterfall","northen territory","obelisk of victory"', //talking island
+    'giran,oren,dion,aden,goddard,rune,schuttgart,gludio,"giran harbor","field of silence","field of whispers","alligator island","garden of eva"', //heine
+    'giran,heine,gludio,goddard,rune,schuttgart,aden,oren,"cruma marshland","cruma tower","fortress of resistance","plains of dion","bee hive","tanor canyon"', //dion
+    'oren,heine,dion,goddard,rune,schuttgart,gludio,aden,"giran harbor","hardins private academy","dragon valley","antharas lair","devils isle","breka stronghold"', //giran
+    'goddard,oren,giran,heine,schuttgart,dion,gludio,rune,"hunter village","coliseum","forsaken plains","seal of shilen","forest of mirrors","blazing swamp","field of massacre","ancient battleground","silent valley","tower of insolence"', //aden
+    'gludio,giran,dion,rune,heine,schuttgart,aden,oren,"varka","ketra","hot springs","wall of argos","monastery of silence"', //goddard
+    'schuttgart,heine,aden,oren,dion,goddard,giran,rune,gludin,"elf village","dark elf village","dwarven village","orc village","ruins of agony","ruins of despair","ant nest","windawood manor"', //gludio
+    'gludio,"talking island","elf village","dark elf village","dwarven village","orc village","langk lizardman dwellings","windmill hill","fellmere harvesting grounds","forgotten temple","orc barracks","windy hill",wasteland,"red rock ridge"', //gludin
+    'rune,goddard,aden,oren,heine,giran,dion,gludio,"orc village","dwarven village","den of evil","plunderous plains","frozen labyrinth","crypts of disgrace","pavel ruines"', //schuttgart
+    'goddard,gludio,giran,dion,heine,schuttgart,aden,oren,"wild beast pastues","valley of saints","forest of the dead","swamp of screams","monasterty of silence"', //rune
+    'aden,giran,rune,goddard,heine,dion,schuttgart,gludio,"ivory tower","hunter village","hardins private academy","skyshadow meadow","plains of the lizardmen","outlaw forest","sea of spores"', //oren
+    'aden,oren,"hardins private academy","enchanted valley south","enchanted valley north","forest of mirrors"' //hunter
+  );
 
-  // If it didn't moved it is locked
-  if not Moved then
-  begin
-    //pin := xxxxxx; // TODO: add configuration for pin
-    //Engine.BypassToServer('custom_pin_unlock ' + IntToStr(pin));
-  end;
-end;
+  function  GetCity (shouldGoHome: boolean = true; inCityEvt: boolean = false): TCity;
+  procedure  GoHome (ItemID: integer = -1; skillID: integer = -1; move: boolean = false);
+  procedure  MoveInCity;
+  function  getCityToLocationGK (teleportName: String): integer;
+  function  isRightCity (destination: TCity; shouldGoHome: boolean = true): boolean;
+  function  toRightCity (destination: TCity): boolean;
+  function  TeleportToLocation (destination: String): boolean;
+  function  TeleportTo (destination: String): boolean;
 
-{
---------------------------------------------------------------------------------
-  Different ways to return home
---------------------------------------------------------------------------------
-}
-procedure Unstuck;
-begin
-  //Engine.GoHome(rtclanhall);     // When you die go to clan hall
-  Engine.UseItem(SCROLL_OF_SCAPE);
-  //Engine.EnterText('/unstuck');  // To enter '/ustuck' in chat window
-  Unstuck; // It appears in the script guide but doesn't work
-end;
-
-{
---------------------------------------------------------------------------------
-  Check if the character is dead and go to village
---------------------------------------------------------------------------------
-}
-function isDead: boolean;
-begin
-  isDead := false;
-  if User.Dead then
-  begin
-    Delay(10000); // In case of resurrection
-  end;
-  if User.Dead then
-  begin
-    isDead := true;
-    Engine.FaceControl(0,false);
-    Print('Dead. Pressing to village.');
-    Engine.GoHome;
-    Delay(5000);
-    InFight := false;
-  end;
-end;
-
-{
---------------------------------------------------------------------------------
-  Check if the character needs buffs
---------------------------------------------------------------------------------
-}
-function needsBuffs: boolean;
-var
-  buff: TL2Buff;
-begin
-  needsBuffs := false;
-  // check for any buff that you use
-  if  not User.Buffs.ByID(WIND_WALK, Buff)  or
-    User.Buffs.ById(WIND_WALK, buff)  and  (buff.EndTime < 60 * 1000)  then
-  begin
-    needsBuffs := true;
-  end;
-end;
-
-{
---------------------------------------------------------------------------------
-  Buffs in the server custom's buffer
-  YOU MAY WANT TO CHANGE THIS
---------------------------------------------------------------------------------
-}
-procedure buffing;
-begin
-  Print('Buffing...');
-  Engine.SetTarget(HIRA); // NPC ID
-  Engine.MoveToTarget;
-  Delay(500);
-  Engine.DlgOpen;
-  Delay(500);
-  Engine.DlgSel(1);   //Open buffs
-  Delay(500);
-  {
-    YOU MAY HAVE TO CHANGE THIS
-  }
-  Engine.BypassToServer('Quest 9999_NPCBuffer 107');   //Fighter buffs
-  Delay(500);
-  Engine.BypassToServer('Quest 9999_NPCBuffer 115');   //Heal
-  Delay(500);
-  Print('Buffed.');
-end;
-
-{
---------------------------------------------------------------------------------
-  Make the necessary commands to teleport to the desired location
-  YOU MAY WANT TO CHANGE THIS
-  TODO: CREATE ARRAY OF HUNTING GROUND LOCATIONS
---------------------------------------------------------------------------------
-}
-procedure teleport;
-begin
-  
-end;
-
-{
---------------------------------------------------------------------------------
-  YOU MAY WANT TO CHANGE THIS
-  Make the necessary move commands to arrive to the desired location
-  TODO: CREATE ARRAY OF HUNTING GROUND LOCATIONS
---------------------------------------------------------------------------------
-}
-procedure moveToHuntingGround;
-begin
-  Print('Moving to Ketra Orc zone.');
-  Engine.MoveTo(131535, -72373, -3512);
-  Engine.MoveTo(133448, -72870, -3498);
-  Engine.MoveTo(134215, -75925, -3448);
-  Engine.MoveTo(135100, -80000, -3590);
-  Engine.MoveTo(136900, -81000, -4301);
-  Engine.LoadConfig('1');
-  Engine.LoadZone('KetraOrc.zmap');
-  inFight := true;
-  Print('Arrived to hunting ground.');
-  Engine.Facecontrol(0,True); // turn on bot interface
-{
-  Print('Moving to Wall of Argos zone.');
-  Engine.MoveTo(188513, -63854, -2800);
-  Engine.MoveTo(189077, -63243, -2784);
-  Engine.MoveTo(189830, -60928, -2888);
-  Engine.MoveTo(187774, -57270, -3157);
-  Engine.LoadConfig('1');
-  Engine.LoadZone('WallOfArgos.zmap');
-}
-end;
+implementation
 
 {
 --------------------------------------------------------------------------------
   Finds the city in which the character is located
 --------------------------------------------------------------------------------
 }
-function GetCity(shouldGoHome: boolean = true; inCityEvt: boolean = false): TCity;
+function  GetCity (shouldGoHome: boolean = true; inCityEvt: boolean = false): TCity;
 var
   City: TCity;
 begin
   City := NON_CITY;
-  if User.InRange(147509,25928,User.Z,5000,10)       then City := ADEN;
-  if User.InRange(11416, 16856,User.Z,5000,10)       then City := DARK_ELVEN;
-  if User.InRange(18591,144708,User.Z,5000,10)       then City := DION;
-  if User.InRange(116569,-179848,User.Z,7000,10)     then City := DWARVEN;
-  if User.InRange(44904, 49800, User.Z, 7000, 10)    then City := ELVEN;
-  if User.InRange(82876,148960,User.Z,5000,10)       then City := GIRAN;
-  if User.InRange(-81311,152663,User.Z,5000,10)      then City := GLUDIN;
-  if User.InRange(-14236,123701,User.Z,5000,10)      then City := GLUDIO;
-  if User.InRange(147713,-56202,User.Z,5000,10)      then City := GODDARD;
-  if User.InRange(111434,220426,User.Z,5000,10)      then City := HEINE;
-  if User.InRange(117144, 76824,User.Z,5000,10)      then City := HUNTER;
-  if User.InRange(-118184, 46024, User.Z, 7000, 10)  then City := KAMAEL;
-  if User.InRange(-45080, -113576, User.Z, 5000, 10) then City := ORC;
-  //oren
-  if User.InRange(9677,-22176,-3722, 5000, 150)      then City := PRIMEVAL_ISLE;
-  if User.InRange(43838,-48222,User.Z,5000,10) or
-     User.InRange(38283,-48102,User.Z,5000,10)       then City := RUNE;
-  if User.InRange(88041,-142502,User.Z,5000,10)      then City := SHTUTTGART;
-  if User.InRange(-83139,243145,User.Z,5000,10)      then City := TALKING_ISLAND;
-  if ( City <> NON_CITY ) then begin
-    // Print('In ' + City.toString);   TODO: fix this
-    Print('Known city');
-  end;
-  if ( City = NON_CITY ) and ( shouldGoHome ) then
+  if User.InRange (147509, 25928, User.Z, 5000, 100)       then City := ADEN;
+  if User.InRange (11416, 16856, User.Z, 5000, 100)        then City := DARK_ELVEN;
+  if User.InRange (18591, 144708, User.Z, 5000, 100)       then City := DION;
+  if User.InRange (116569, -179848, User.Z, 7000, 100)     then City := DWARVEN;
+  if User.InRange (44904, 49800, User.Z, 7000, 100)        then City := ELVEN;
+  if User.InRange (82876, 148960, User.Z, 5000, 100)       then City := GIRAN;
+  if User.InRange (-81311, 152663, User.Z, 5000, 100)      then City := GLUDIN;
+  if User.InRange (-14236, 123701, User.Z, 5000, 100)      then City := GLUDIO;
+  if User.InRange (147713, -56202, User.Z, 5000, 100)      then City := GODDARD;
+  if User.InRange (111434, 220426, User.Z, 5000, 100)      then City := HEINE;
+  if User.InRange (117144, 76824, User.Z, 5000, 100)       then City := HUNTER;
+  if User.InRange (-45080, -113576, User.Z, 5000, 100)     then City := ORC;
+  if User.InRange (81150, 54880, User.Z, 5000, 100)        then City := OREN;
+  if User.InRange (43838, -48222, User.Z, 5000, 100) or
+    User.InRange (38283, -48102, User.Z, 5000, 100)        then City := RUNE;
+  if User.InRange (88041, -142502, User. Z, 5000, 100)     then City := SHTUTTGART;
+  if User.InRange (-83139, 243145, User.Z, 5000, 100)      then City := TALKING_ISLAND;
+
+  // If it isn't in one of the previous locations then goHome and try again
+  if (City = NON_CITY) and (shouldGoHome) then
   begin
-    //GoHome(-1, -1, inCityEvt) // go to one of the configured spots
-    Print('You aren''t in a city');
-    Unstuck;
+    GoHome (-1, -1, inCityEvt);
     City := GetCity;
   end;
   Result := City;
@@ -207,10 +100,64 @@ end;
 
 {
 --------------------------------------------------------------------------------
+  Different ways to return home
+--------------------------------------------------------------------------------
+}
+procedure  GoHome (ItemID: integer = -1; skillID: integer = -1; move: boolean = false);
+var
+  Skill: TL2Skill;
+  Item: TL2Item;
+  Item2: TL2Item;
+  Item3: TL2Item;
+  City: TCity;
+begin
+  if  not User.Dead  then
+  begin
+    Engine.EnterText('/unstuck');
+
+    City := GetCity (false, false);
+    if  City = NON_CITY  then
+	begin
+    // Use the item past as parameter
+    if  (itemID <> -1)  and  Inventory.User.ByID(itemID, Item)  then
+    begin
+      Engine.UseItem (itemID);
+      Delay (User.Cast.EndTime + TPDelay);
+    end;
+
+    // Use skill to teleport if no item past as parameter
+    if  (skillID <> -1)  and  (itemID = -1)  and  SkillList.ByID(skillID, Skill)  then
+    begin
+      Engine.UseSkill(skillID);
+      Delay (User.Cast.EndTime + TPDelay);
+    end;
+
+    // Use SoE if no item or skill provided
+    if  (skillID = -1)  and  (itemID = -1) and  Inventory.User.ByID(SCROLL_OF_SCAPE, Item)  then
+    begin
+      Engine.UseItem (Item);
+      Delay (User.Cast.EndTime + TPDelay);
+    end;
+
+    City := GetCity (false, false);
+    if  City = NON_CITY  then
+    begin
+      Print ('Couldn''t go home');
+      exit;
+    end;
+	end;
+
+    // Go to the Gatekeeper if move = true
+    if  move  then MoveInCity;
+  end;
+end;
+
+{
+--------------------------------------------------------------------------------
   Move from the city respawns to the gatekeeper
 --------------------------------------------------------------------------------
 }
-procedure moveInCity;
+procedure  MoveInCity;
 var
   City: TCity;
   Moved : Boolean;
@@ -218,170 +165,208 @@ var
   NewResp : TStringList;
 begin
   City := GetCity;
-  //-----------------------Aden--------------------------------
-  if CITY = ADEN then begin
-    if User.inrange(146811,27109,-2231,500)  then begin
-      Engine.MoveTo(146811,27109,-2231);
-      Engine.MoveTo(147289,26926,-2229);
-      Engine.MoveTo(147267,26400,-2185);
-      Engine.MoveTo(147266,26195,-2103);
-      Engine.MoveTo(147250,25969,-2039);
-      Engine.MoveTo(147206,25899,-2039);
-      Engine.MoveTo(147138,25906,-2039);
+
+{
+------------------------------------------------------------------------------
+                              Aden
+------------------------------------------------------------------------------
+}
+  if  CITY = ADEN  then begin
+    if  User.InRange (149800, 24000, 2100, 600, 200)  then begin // Bottom of north-east stairs
+      Engine.MoveTo (148611, 24319, -2039); // climb stairs
     end;
-    if User.inrange(146810,28059,-2294,500)  then begin
-      Engine.MoveTo(146810,28059,-2294);
-      Engine.MoveTo(146847,27874,-2294);
-      Engine.MoveTo(147004,27611,-2294);
-      Engine.MoveTo(147004,27611,-2294);
-      Engine.MoveTo(147004,27611,-2232);
-      Engine.MoveTo(147244,26822,-2230);
-      Engine.MoveTo(147267,26400,-2185);
-      Engine.MoveTo(147266,26195,-2103);
-      Engine.MoveTo(147250,25969,-2039);
-      Engine.MoveTo(147206,25899,-2039);
-      Engine.MoveTo(147138,25906,-2039);
+    if  User.InRange (148611, 24319, -2039, 500, 200)  then begin // Top of east stairs
+      Engine.MoveTo (148437, 25683, -2008); // church corner
     end;
-    if User.inrange(145686,21112,-2167,500)  then begin
-      Engine.MoveTo(145686,21112,-2167);
-      Engine.MoveTo(145697,21616,-2167);
-      Engine.MoveTo(145050,22609,-2167);
-      Engine.MoveTo(145218,23947,-2167);
-      Engine.MoveTo(146377,24455,-2039);
-      Engine.MoveTo(146484,25685,-2039);
-      Engine.MoveTo(147130,25700,-2039);
-      Engine.MoveTo(147112,25921,-2039);
+    if  User.InRange (148437, 25683, -2008, 500, 200)  then begin
+      Print ('You are in the south-east church''s corner');
+      Engine.MoveTo (147604, 25774, -2008); // top of central stairs
     end;
-    if User.inrange(148076,27069,-2231,500)  then begin
-      Engine.MoveTo(148076,27069,-2231);
-      Engine.MoveTo(147666,27110,-2230);
-      Engine.MoveTo(147308,26954,-2230);
-      Engine.MoveTo(147267,26400,-2185);
-      Engine.MoveTo(147266,26195,-2103);
-      Engine.MoveTo(147250,25969,-2039);
-      Engine.MoveTo(147206,25899,-2039);
-      Engine.MoveTo(147138,25906,-2039);
+    if  User.InRange (146400, 25500, -2000, 500, 200)  then begin
+      Print ('You are in the south-west church''s corner');
+      Engine.MoveTo (146600, 25692, -2008);
+      Print ('Turning the corner');
+      Engine.MoveTo (147044, 25732, -2039);
+      Print ('Moving close to the gatekeeper');
     end;
-    if User.inrange(148949,21125,-2167,500)  then begin
-      Engine.MoveTo(148949,21125,-2167);
-      Engine.MoveTo(146122,21227,-2167);
-      Engine.MoveTo(145697,21616,-2167);
-      Engine.MoveTo(145050,22609,-2167);
-      Engine.MoveTo(145218,23947,-2167);
-      Engine.MoveTo(146377,24455,-2039);
-      Engine.MoveTo(146484,25685,-2039);
-      Engine.MoveTo(147130,25700,-2039);
-      Engine.MoveTo(147112,25921,-2039);
+    if  User.InRange (150000, 27600, -2270, 500, 200)  then begin // East
+      Engine.MoveTo (148385, 27571, -2256);  // move to east of the central square
     end;
-    if User.inrange(144549,22828,-2167,500)  then begin
-      Engine.MoveTo(144549,22828,-2167);
-      Engine.MoveTo(145697,21616,-2167);
-      Engine.MoveTo(145050,22609,-2167);
-      Engine.MoveTo(145218,23947,-2167);
-      Engine.MoveTo(146377,24455,-2039);
-      Engine.MoveTo(146484,25685,-2039);
-      Engine.MoveTo(147130,25700,-2039);
-      Engine.MoveTo(147112,25921,-2039);
+    if  User.InRange (148000, 27550, -2300, 450, 200)  then begin// right of central square
+      Engine.MoveTo (147707, 26581, -2200); // move to the base of the central stairs
     end;
-    if User.inrange(144543,24666,-2167,500)  then begin
-      Engine.MoveTo(144543,24666,-2167);
-      Engine.MoveTo(145279,24307,-2167);
-      Engine.MoveTo(146377,24455,-2039);
-      Engine.MoveTo(146484,25685,-2039);
-      Engine.MoveTo(147130,25700,-2039);
-      Engine.MoveTo(147112,25921,-2039);
+    if  User.InRange (147707, 26581, -2200, 500, 200)  then begin // from the bottom of the central stairs
+      Engine.MoveTo (147604, 25774, -2008); // move to top of central stairs
     end;
-    if User.inrange(146497,30582,-2487,500)  then begin
-      Engine.MoveTo(146497,30582,-2487);
-      Engine.MoveTo(147058,30323,-2487);
-      Engine.MoveTo(147427,29959,-2487);
-      Engine.MoveTo(147427,29339,-2295);
-      Engine.MoveTo(147373,28351,-2294);
-      Engine.MoveTo(147100,27643,-2294);
-      Engine.MoveTo(147246,26930,-2230);
-      Engine.MoveTo(147267,26400,-2185);
-      Engine.MoveTo(147266,26195,-2103);
-      Engine.MoveTo(147250,25969,-2039);
-      Engine.MoveTo(147206,25899,-2039);
-      Engine.MoveTo(147138,25906,-2039);
+    if  User.InRange (146811, 27109, -2231, 500)  then begin
+      Engine.MoveTo (146811, 27109, -2231);
+      Engine.MoveTo (147289, 26926, -2229);
+      Engine.MoveTo (147267, 26400, -2185);
+      Engine.MoveTo (147266, 26195, -2103);
+      Engine.MoveTo (147250, 25969, -2039);
+      Engine.MoveTo (147206, 25899, -2039);
+      Engine.MoveTo (147138, 25906, -2039);
     end;
-    if User.inrange(144648,29158,-2487,500)  then begin
-      Engine.MoveTo(144648,29158,-2487);
-      Engine.MoveTo(144966,28868,-2487);
-      Engine.MoveTo(145110,27659,-2295);
-      Engine.MoveTo(146220,27622,-2231);
-      Engine.MoveTo(147108,27272,-2231);
-      Engine.MoveTo(147224,26929,-2230);
-      Engine.MoveTo(147267,26400,-2185);
-      Engine.MoveTo(147266,26195,-2103);
-      Engine.MoveTo(147250,25969,-2039);
-      Engine.MoveTo(147206,25899,-2039);
-      Engine.MoveTo(147138,25906,-2039);
+    if  User.InRange (146810, 28059, -2294, 500)  then begin
+      Engine.MoveTo (146810, 28059, -2294);
+      Engine.MoveTo (146847, 27874, -2294);
+      Engine.MoveTo (147004, 27611, -2294);
+      Engine.MoveTo (147004, 27611, -2294);
+      Engine.MoveTo (147004, 27611, -2232);
+      Engine.MoveTo (147244, 26822, -2230);
+      Engine.MoveTo (147267, 26400, -2185);
+      Engine.MoveTo (147266, 26195, -2103);
+      Engine.MoveTo (147250, 25969, -2039);
+      Engine.MoveTo (147206, 25899, -2039);
+      Engine.MoveTo (147138, 25906, -2039);
     end;
-    if User.inrange(150247,29109,-2487,500)  then begin
-      Engine.MoveTo(150247,29109,-2487);
-      Engine.MoveTo(149921,28836,-2487);
-      Engine.MoveTo(149859,28063,-2339);
-      Engine.MoveTo(149776,27675,-2295);
-      Engine.MoveTo(148731,27683,-2231);
-      Engine.MoveTo(148224,27383,-2231);
-      Engine.MoveTo(147306,26932,-2230);
+    if  User.InRange (145686, 21112, -2167, 500)  then begin
+      Engine.MoveTo (145686, 21112, -2167);
+      Engine.MoveTo (145697, 21616, -2167);
+      Engine.MoveTo (145050, 22609, -2167);
+      Engine.MoveTo (145218, 23947, -2167);
+      Engine.MoveTo (146377, 24455, -2039);
+      Engine.MoveTo (146484, 25685, -2039);
+      Engine.MoveTo (147130, 25700, -2039);
+      Engine.MoveTo (147112, 25921, -2039);
     end;
-    if User.inrange(147848,30309,-2487,500)  then begin
-      Engine.MoveTo(147848,30309,-2487);
-      Engine.MoveTo(147677,30089,-2487);
-      Engine.MoveTo(147462,29870,-2447);
-      Engine.MoveTo(147462,29413,-2295);
-      Engine.MoveTo(147335,28272,-2294);
-      Engine.MoveTo(147108,27664,-2294);
-      Engine.MoveTo(147194,26961,-2229);
-      Engine.MoveTo(147267,26400,-2185);
-      Engine.MoveTo(147266,26195,-2103);
-      Engine.MoveTo(147250,25969,-2039);
-      Engine.MoveTo(147206,25899,-2039);
-      Engine.MoveTo(147138,25906,-2039);
+    if  User.InRange (148076, 27069, -2231, 500)  then begin
+      Engine.MoveTo (148076, 27069, -2231);
+      Engine.MoveTo (147666, 27110, -2230);
+      Engine.MoveTo (147308, 26954, -2230);
+      Engine.MoveTo (147267, 26400, -2185);
+      Engine.MoveTo (147266, 26195, -2103);
+      Engine.MoveTo (147250, 25969, -2039);
+      Engine.MoveTo (147206, 25899, -2039);
+      Engine.MoveTo (147138, 25906, -2039);
     end;
-    if User.inrange(144651,26680,-2295,500)  then begin
-      Engine.MoveTo(144651,26680,-2295);
-      Engine.MoveTo(144681,27050,-2294);
-      Engine.MoveTo(144936,27135,-2295);
-      Engine.MoveTo(145145,27605,-2295);
-      Engine.MoveTo(146182,27682,-2231);
-      Engine.MoveTo(146921,27360,-2231);
-      Engine.MoveTo(147218,26948,-2229);
-      Engine.MoveTo(147267,26400,-2185);
-      Engine.MoveTo(147266,26195,-2103);
-      Engine.MoveTo(147250,25969,-2039);
-      Engine.MoveTo(147206,25899,-2039);
-      Engine.MoveTo(147138,25906,-2039);
+    if  User.InRange (148949, 21125, -2167, 500)  then begin
+      Engine.MoveTo (148949, 21125, -2167);
+      Engine.MoveTo (146122, 21227, -2167);
+      Engine.MoveTo (145697, 21616, -2167);
+      Engine.MoveTo (145050, 22609, -2167);
+      Engine.MoveTo (145218, 23947, -2167);
+      Engine.MoveTo (146377, 24455, -2039);
+      Engine.MoveTo (146484, 25685, -2039);
+      Engine.MoveTo (147130, 25700, -2039);
+      Engine.MoveTo (147112, 25921, -2039);
     end;
-    if User.inrange(148557,30461,-2487,500)  then begin
-      Engine.MoveTo(148557,30461,-2487);
-      Engine.MoveTo(148114,30076,-2487);
-      Engine.MoveTo(147453,30049,-2487);
-      Engine.MoveTo(147474,29710,-2368);
-      Engine.MoveTo(147397,28461,-2294);
-      Engine.MoveTo(147044,27389,-2231);
-      Engine.MoveTo(147242,26823,-2230);
-      Engine.MoveTo(147267,26400,-2185);
-      Engine.MoveTo(147266,26195,-2103);
-      Engine.MoveTo(147250,25969,-2039);
-      Engine.MoveTo(147206,25899,-2039);
-      Engine.MoveTo(147138,25906,-2039);
+    if  User.InRange (144549, 22828, -2167, 500)  then begin
+      Engine.MoveTo (144549, 22828, -2167);
+      Engine.MoveTo (145697, 21616, -2167);
+      Engine.MoveTo (145050, 22609, -2167);
+      Engine.MoveTo (145218, 23947, -2167);
+      Engine.MoveTo (146377, 24455, -2039);
+      Engine.MoveTo (146484, 25685, -2039);
+      Engine.MoveTo (147130, 25700, -2039);
+      Engine.MoveTo (147112, 25921, -2039);
     end;
-    if User.inrange(147971,27982,-2294,500)  then begin
-      Engine.MoveTo(147971,27982,-2294);
-      Engine.MoveTo(147846,27354,-2231);
-      Engine.MoveTo(147265,26878,-2230);
-      Engine.MoveTo(147267,26400,-2185);
-      Engine.MoveTo(147266,26195,-2103);
-      Engine.MoveTo(147250,25969,-2039);
-      Engine.MoveTo(147206,25899,-2039);
-      Engine.MoveTo(147138,25906,-2039);
+    if  User.InRange (144543, 24666, -2167, 500)  then begin
+      Engine.MoveTo (144543, 24666, -2167);
+      Engine.MoveTo (145279, 24307, -2167);
+      Engine.MoveTo (146377, 24455, -2039);
+      Engine.MoveTo (146484, 25685, -2039);
+      Engine.MoveTo (147130, 25700, -2039);
+      Engine.MoveTo (147112, 25921, -2039);
     end;
-    if User.InRange(147138,25906,-2039,250,150) then Moved := true;
+    if  User.InRange (146497, 30582, -2487, 500)  then begin
+      Engine.MoveTo (146497, 30582, -2487);
+      Engine.MoveTo (147058, 30323, -2487);
+      Engine.MoveTo (147427, 29959, -2487);
+      Engine.MoveTo (147427, 29339, -2295);
+      Engine.MoveTo (147373, 28351, -2294);
+      Engine.MoveTo (147100, 27643, -2294);
+      Engine.MoveTo (147246, 26930, -2230);
+      Engine.MoveTo (147267, 26400, -2185);
+      Engine.MoveTo (147266, 26195, -2103);
+      Engine.MoveTo (147250, 25969, -2039);
+      Engine.MoveTo (147206, 25899, -2039);
+      Engine.MoveTo (147138, 25906, -2039);
+    end;
+    if User.InRange (144648, 29158, -2487, 500)  then begin
+      Engine.MoveTo (144648, 29158, -2487);
+      Engine.MoveTo (144966, 28868, -2487);
+      Engine.MoveTo (145110, 27659, -2295);
+      Engine.MoveTo (146220, 27622, -2231);
+      Engine.MoveTo (147108, 27272, -2231);
+      Engine.MoveTo (147224, 26929, -2230);
+      Engine.MoveTo (147267, 26400, -2185);
+      Engine.MoveTo (147266, 26195, -2103);
+      Engine.MoveTo (147250, 25969, -2039);
+      Engine.MoveTo (147206, 25899, -2039);
+      Engine.MoveTo (147138, 25906, -2039);
+    end;
+    if User.InRange (150247, 29109, -2487, 500)  then begin
+      Engine.MoveTo (150247, 29109, -2487);
+      Engine.MoveTo (149921, 28836, -2487);
+      Engine.MoveTo (149859, 28063, -2339);
+      Engine.MoveTo (149776, 27675, -2295);
+      Engine.MoveTo (148731, 27683, -2231);
+      Engine.MoveTo (148224, 27383, -2231);
+      Engine.MoveTo (147306, 26932, -2230);
+    end;
+    if  User.InRange (147848, 30309, -2487, 500)  then begin
+      Engine.MoveTo (147848, 30309, -2487);
+      Engine.MoveTo (147677, 30089, -2487);
+      Engine.MoveTo (147462, 29870, -2447);
+      Engine.MoveTo (147462, 29413, -2295);
+      Engine.MoveTo (147335, 28272, -2294);
+      Engine.MoveTo (147108, 27664, -2294);
+      Engine.MoveTo (147194, 26961, -2229);
+      Engine.MoveTo (147267, 26400, -2185);
+      Engine.MoveTo (147266, 26195, -2103);
+      Engine.MoveTo (147250, 25969, -2039);
+      Engine.MoveTo (147206, 25899, -2039);
+      Engine.MoveTo (147138, 25906, -2039);
+    end;
+    if  User.InRange (144651, 26680, -2295, 500)  then begin
+      Engine.MoveTo (144651, 26680, -2295);
+      Engine.MoveTo (144681, 27050, -2294);
+      Engine.MoveTo (144936, 27135, -2295);
+      Engine.MoveTo (145145, 27605, -2295);
+      Engine.MoveTo (146182, 27682, -2231);
+      Engine.MoveTo (146921, 27360, -2231);
+      Engine.MoveTo (147218, 26948, -2229);
+      Engine.MoveTo (147267, 26400, -2185);
+      Engine.MoveTo (147266, 26195, -2103);
+      Engine.MoveTo (147250, 25969, -2039);
+      Engine.MoveTo (147206, 25899, -2039);
+      Engine.MoveTo (147138, 25906, -2039);
+    end;
+    if  User.InRange (148557, 30461, -2487, 500)  then begin
+      Engine.MoveTo (148557, 30461, -2487);
+      Engine.MoveTo (148114, 30076, -2487);
+      Engine.MoveTo (147453, 30049, -2487);
+      Engine.MoveTo (147474, 29710, -2368);
+      Engine.MoveTo (147397, 28461, -2294);
+      Engine.MoveTo (147044, 27389, -2231);
+      Engine.MoveTo (147242, 26823, -2230);
+      Engine.MoveTo (147267, 26400, -2185);
+      Engine.MoveTo (147266, 26195, -2103);
+      Engine.MoveTo (147250, 25969, -2039);
+      Engine.MoveTo (147206, 25899, -2039);
+      Engine.MoveTo (147138, 25906, -2039);
+    end;
+    if  User.InRange ( 147971, 27982, -2294, 500)  then begin
+      Engine.MoveTo( 147971, 27982, -2294);
+      Engine.MoveTo( 147846, 27354, -2231);
+      Engine.MoveTo( 147265, 26878, -2230);
+      Engine.MoveTo( 147267, 26400, -2185);
+      Engine.MoveTo( 147266, 26195, -2103);
+      Engine.MoveTo( 147250, 25969, -2039);
+      Engine.MoveTo( 147206, 25899, -2039);
+    end;
+    if  User.InRange (147604, 25774, -2008, 600, 200)  then begin // top of the stairs
+      Engine.MoveTo (147138, 25906, -2039); // go from top of central stairs to gatekeeper
+      Moved := true;
+    end;
   end;
-  //-----------------------Dion--------------------------------
+
+  {
+  ------------------------------------------------------------------------------
+                                   Dion
+  ------------------------------------------------------------------------------
+  }
   if City = DION then begin
     if User.InRange(19134,144847,-3096, 250, 150) then begin
       Engine.MoveTo(19134,144847,-3096);
@@ -455,7 +440,12 @@ begin
     end;
     if User.InRange(15628,142920,-2704, 250, 150) then Moved := true;
   end;
-  //-----------------------Giran--------------------------------
+
+{
+------------------------------------------------------------------------------
+                                 Giran
+------------------------------------------------------------------------------
+}
   if CITY = giran then begin
     if User.InRange(81376,148095,-3464, 250, 150) then begin
       Engine.MoveTo(81376,148095,-3464);
@@ -543,7 +533,12 @@ begin
     end;
     if User.InRange(83402,147946,-3403,250,150) then Moved := true;
   end;
-  //-----------------------Gludin--------------------------------
+
+{
+------------------------------------------------------------------------------
+                                Gludin
+------------------------------------------------------------------------------
+}
   if CITY = GLUDIN then begin
     if User.InRange(-82909,150357,-3120, 250, 150) then begin
       Engine.MoveTo(-82909,150357,-3120);
@@ -621,8 +616,22 @@ begin
     end;
     if User.InRange(-81073,150110,-3042, 250, 150) then Moved := true;
   end;
-  //-----------------------Gludio--------------------------------
+
+{
+------------------------------------------------------------------------------
+                                 Gludio
+------------------------------------------------------------------------------
+}
   if CITY = GLUDIO then begin
+    // Next to Black Marketeer of Mammon
+    if User.InRange (-12240, 121807, -3010, 250, 150) then begin
+      Engine.MoveTo (-12712, 122189, -2984);
+    end;
+      // Stairs in front of church close to gatekeeper
+      if User.InRange (-12712, 122189, -2984, 250, 150) then begin
+      Engine.MoveTo (-13257, 122669, -3048);
+      Engine.MoveTo (-12782, 122689, -3143);
+    end;
     if User.InRange(-14704,122032,-3056, 250, 150) then begin
       Engine.MoveTo(-14704,122032,-3056);
       Engine.MoveTo(-14538,122671,-3116);
@@ -664,7 +673,12 @@ begin
     end;
     if User.InRange(-14510,124033,-3125, 250, 150) then Moved :=  true;
   end;
-  //-----------------------Goddard--------------------------------
+
+{
+------------------------------------------------------------------------------
+                                Goddard
+------------------------------------------------------------------------------
+}
   if CITY = GODDARD then begin
     if User.InRange(146272, -58176, -2976, 250, 150) then begin // Near storage
       Engine.MoveTo(147593, -58103, -3007);
@@ -697,7 +711,7 @@ begin
       Engine.MoveTo(147936, -55368, -2760);
     end;
     // East stairs
-	if User.InRange(149872, -57424, -2976, 250, 150) then begin //  
+    if User.InRange(149872, -57424, -2976, 250, 150) then begin
       Engine.MoveTo(149897, -56910, -2979);
       Engine.MoveTo(149230, -56412, -2779);
       Engine.MoveTo(147939, -55999, -2772);
@@ -720,10 +734,15 @@ begin
       Engine.MoveTo(147929, -56063, -2807);
       Engine.MoveTo(147936, -55368, -2760);
     end;
-    // North stairs
-    if User.InRange(147680, -58208, -2976, 250, 150) then begin // Bottom of the center stairs
+    if User.InRange(147700, -58400, -2976, 500, 150)  then begin
+      Print ('You are in the bottom of the north stairs of Goddard');
       Engine.MoveTo(147727, -57141, -2807);
-      Engine.MoveTo(147936, -55368, -2760);
+      Print ('Climbing the stairs')
+    end;
+    if User.InRange(147727, -57141, -2807, 250, 150)  then begin
+      Print ('You are in the top of the north stairs of Goddard');
+      Engine.MoveTo(147757, -55301, -2759);
+      Print ('Moving to the church');
     end;
     if User.InRange(148288, -58304, -2976, 250, 150) then begin // Bottom center stairs slightly to the right
       Engine.MoveTo(147738, -58050, -3007);
@@ -758,7 +777,7 @@ begin
     if User.InRange(148560, -55904, -2776, 250, 150) then begin // Area to the right of the stairs
       Engine.MoveTo(147936, -55368, -2760);
     end;
-	// East
+    // East
     if User.InRange(150200, -57100, -2976, 600, 200) then begin
       Engine.MoveTo(149897, -56910, -2979); // go to the base of the stairs
       Engine.MoveTo(149230, -56412, -2779); // climb the stairs
@@ -782,9 +801,17 @@ begin
       Engine.MoveTo(147514, -56003, -2772);
       Engine.MoveTo(147936, -55368, -2760); // Move near gk
     end;
-    if User.InRange(147936, -55368, -2760, 250, 150) then Moved :=  true;
+    if User.InRange (147800, -55300, -2700, 250, 150)  then begin
+      Moved :=  true;
+      Print ('You are in front of the church')
+    end;
   end;
-  //-----------------------Heine--------------------------------
+
+{
+------------------------------------------------------------------------------
+                                 Heine
+------------------------------------------------------------------------------
+}
   if City = HEINE then begin
     if User.InRange(110912,219584,-3664, 250, 150) then begin
       Engine.MoveTo(110912,219584,-3664);
@@ -875,7 +902,12 @@ begin
     end;
     if User.InRange(111387,219387,-3544, 250, 150) then Moved := true;
   end;
-  //-----------------------Oren--------------------------------
+
+{
+------------------------------------------------------------------------------
+                                 Oren
+------------------------------------------------------------------------------
+}
   if CITY = OREN then begin
     if User.InRange(80334,54400,-1552, 250, 150) then begin
       Engine.MoveTo(80334,54400,-1552);
@@ -981,86 +1013,97 @@ begin
     end;
     if User.InRange(82950,53186,-1494, 250, 150) then Moved :=  true;
   end;
-  //-----------------------Rune--------------------------------
-  if CITY = RUNE then begin
-    if User.InRange(38608,-47168,896, 250, 150)
-    or User.InRange(38272,-49008,896, 250, 150)
-    or User.InRange(38752,-47792,896, 250, 150)
-    or User.InRange(38112,-49792,896, 250, 150)
-    or User.InRange(38848,-48640,896, 250, 150) then begin
-      Engine.MoveTo(39113,-48225,898);
-      Engine.MoveTo(38294,-48089,898);
 
-      NpcList.ByID(31698,NPC);
-      Engine.SetTarget(NPC);
-      Engine.DlgOpen;
-      Engine.DlgSel(1);
-      Engine.DlgSel(1);
-      Engine.CancelTarget;
-      Delay(3000);
+{
+------------------------------------------------------------------------------
+                                  Rune
+------------------------------------------------------------------------------
+}
+    if CITY = RUNE then begin
+      if User.InRange(38608,-47168,896, 250, 150)
+          or User.InRange(38272,-49008,896, 250, 150)
+          or User.InRange(38752,-47792,896, 250, 150)
+          or User.InRange(38112,-49792,896, 250, 150)
+          or User.InRange(38848,-48640,896, 250, 150) then
+      begin
+        Engine.MoveTo(39113,-48225,898);
+        Engine.MoveTo(38294,-48089,898);
 
-      Engine.MoveTo(39522,-48234,-784);
-      Engine.MoveTo(41591,-48221,-801);
-      Engine.MoveTo(43323,-48185,-795);
-      Engine.MoveTo(43827,-47698,-794);
+        NpcList.ByID(31698,NPC);
+        Engine.SetTarget(NPC);
+        Engine.DlgOpen;
+        Engine.DlgSel(1);
+        Engine.DlgSel(1);
+        Engine.CancelTarget;
+        Delay(3000);
+
+        Engine.MoveTo(39522,-48234,-784);
+        Engine.MoveTo(41591,-48221,-801);
+        Engine.MoveTo(43323,-48185,-795);
+        Engine.MoveTo(43827,-47698,-794);
+      end;
+      if User.InRange(44368,-50592,-792, 250, 150) then begin
+        Engine.MoveTo(44368,-50592,-792);
+        Engine.MoveTo(43997,-49427,-795);
+        Engine.MoveTo(43831,-48480,-795);
+        Engine.MoveTo(43827,-47698,-794);
+      end;
+      if User.InRange(44864,-47824,-792, 250, 150) then begin
+        Engine.MoveTo(44864,-47824,-792);
+        Engine.MoveTo(44025,-47893,-795);
+        Engine.MoveTo(43827,-47698,-794);
+      end;
+      if User.InRange(43536,-50416,-792, 250, 150) then begin
+        Engine.MoveTo(43536,-50416,-792);
+        Engine.MoveTo(43833,-49293,-795);
+        Engine.MoveTo(43847,-48397,-795);
+        Engine.MoveTo(43827,-47698,-794);
+      end;
+      if User.InRange(45632,-47968,-792, 250, 150) then begin
+        Engine.MoveTo(45632,-47968,-792);
+        Engine.MoveTo(44070,-47930,-795);
+        Engine.MoveTo(43827,-47698,-794);
+      end;
+      if User.InRange(45824,-49056,-792, 250, 150) then begin
+        Engine.MoveTo(45824,-49056,-792);
+        Engine.MoveTo(46022,-48351,-795);
+        Engine.MoveTo(45441,-48000,-795);
+        Engine.MoveTo(44189,-47900,-795);
+        Engine.MoveTo(43827,-47698,-794);
+      end;
+      if User.InRange(44000,-49952,-792, 250, 150) then begin
+        Engine.MoveTo(44000,-49952,-792);
+        Engine.MoveTo(43862,-48669,-795);
+        Engine.MoveTo(43827,-47698,-794);
+      end;
+      if User.InRange(43792,-48928,-792, 250, 150) then begin
+        Engine.MoveTo(43792,-48928,-792);
+        Engine.MoveTo(43827,-47698,-794);
+      end;
+      if User.InRange(45072,-49936,-792, 250, 150) then begin
+        Engine.MoveTo(45072,-49936,-792);
+        Engine.MoveTo(44258,-49647,-795);
+        Engine.MoveTo(43864,-48552,-795);
+        Engine.MoveTo(43827,-47698,-794);
+      end;
+      if User.InRange(43408,-51120,-792, 250, 150) then begin
+        Engine.MoveTo(43408,-51120,-792);
+        Engine.MoveTo(43805,-49830,-795);
+        Engine.MoveTo(43870,-48626,-795);
+        Engine.MoveTo(43827,-47698,-794);
+      end;
+      if User.InRange(43744,-47920,-792, 250, 150) then begin
+        Engine.MoveTo(43744,-47920,-792);
+        Engine.MoveTo(43827,-47698,-794);
+      end;
+      if User.InRange(43827,-47698,-794, 250, 150) then Moved :=  true;
     end;
-    if User.InRange(44368,-50592,-792, 250, 150) then begin
-      Engine.MoveTo(44368,-50592,-792);
-      Engine.MoveTo(43997,-49427,-795);
-      Engine.MoveTo(43831,-48480,-795);
-      Engine.MoveTo(43827,-47698,-794);
-    end;
-    if User.InRange(44864,-47824,-792, 250, 150) then begin
-      Engine.MoveTo(44864,-47824,-792);
-      Engine.MoveTo(44025,-47893,-795);
-      Engine.MoveTo(43827,-47698,-794);
-    end;
-    if User.InRange(43536,-50416,-792, 250, 150) then begin
-      Engine.MoveTo(43536,-50416,-792);
-      Engine.MoveTo(43833,-49293,-795);
-      Engine.MoveTo(43847,-48397,-795);
-      Engine.MoveTo(43827,-47698,-794);
-    end;
-    if User.InRange(45632,-47968,-792, 250, 150) then begin
-      Engine.MoveTo(45632,-47968,-792);
-      Engine.MoveTo(44070,-47930,-795);
-      Engine.MoveTo(43827,-47698,-794);
-    end;
-    if User.InRange(45824,-49056,-792, 250, 150) then begin
-      Engine.MoveTo(45824,-49056,-792);
-      Engine.MoveTo(46022,-48351,-795);
-      Engine.MoveTo(45441,-48000,-795);
-      Engine.MoveTo(44189,-47900,-795);
-      Engine.MoveTo(43827,-47698,-794);
-    end;
-    if User.InRange(44000,-49952,-792, 250, 150) then begin
-      Engine.MoveTo(44000,-49952,-792);
-      Engine.MoveTo(43862,-48669,-795);
-      Engine.MoveTo(43827,-47698,-794);
-    end;
-    if User.InRange(43792,-48928,-792, 250, 150) then begin
-      Engine.MoveTo(43792,-48928,-792);
-      Engine.MoveTo(43827,-47698,-794);
-    end;
-    if User.InRange(45072,-49936,-792, 250, 150) then begin
-      Engine.MoveTo(45072,-49936,-792);
-      Engine.MoveTo(44258,-49647,-795);
-      Engine.MoveTo(43864,-48552,-795);
-      Engine.MoveTo(43827,-47698,-794);
-    end;
-    if User.InRange(43408,-51120,-792, 250, 150) then begin
-      Engine.MoveTo(43408,-51120,-792);
-      Engine.MoveTo(43805,-49830,-795);
-      Engine.MoveTo(43870,-48626,-795);
-      Engine.MoveTo(43827,-47698,-794);
-    end;
-    if User.InRange(43744,-47920,-792, 250, 150) then begin
-      Engine.MoveTo(43744,-47920,-792);
-      Engine.MoveTo(43827,-47698,-794);
-    end;
-    if User.InRange(43827,-47698,-794, 250, 150) then Moved :=  true;
-  end;
-  //-----------------------Schuttgart--------------------------------
+
+{
+------------------------------------------------------------------------------
+                               Schuttgart
+------------------------------------------------------------------------------
+}
   if CITY = SHTUTTGART then begin
     if User.InRange(87184,-140256,-1536, 250, 150) then begin
       Engine.MoveTo(87184,-140256,-1536);
@@ -1157,7 +1200,12 @@ begin
     end;
     if User.InRange(87070,-143418,-1290, 250, 150) then Moved :=  true;
   end;
-  //-----------------------Talking island--------------------------------
+
+{
+------------------------------------------------------------------------------
+                             Talking Island
+------------------------------------------------------------------------------
+}
   if City = TALKING_ISLAND then begin
     if User.InRange(-84376,242824,-3712, 3000, 150) then begin
       Engine.MoveTo(-84184, 243448, -3712);
@@ -1167,150 +1215,223 @@ begin
     end;
     if User.InRange(-84200, 244488, -3728, 500, 150) then Moved := true;
   end;
-  //-----------------------Primeval Isle--------------------------------
+
 {
-  if CITY = PRIMEVAL_ISLE then begin
-    if User.InRange(9677,-22176,-3722, 250, 150)
-        or User.InRange(10916,-24640,-3638, 250, 150)
-        or User.InRange(8487,-23687,-3722, 250, 150) then begin
-      Engine.MoveTo(11888, -24000, -3670);
-      NpcList.ByID(31698,NPC);
-      Engine.SetTarget(NPC);
-      Engine.DlgOpen;
-      Engine.DlgSel(1);
-    end;
-    if User.InRange(11888, -24000, -3670, 250, 150) then Moved :=  true;
-  end;
+------------------------------------------------------------------------------
+                             Dwarven Island
+------------------------------------------------------------------------------
 }
-  // If no movement has taken place in the city.
-  if not Moved then begin
-    //NewResp := TStringList.Create;
-    //if FileExists('File/Script/NewResp.txt') then NewResp.LoadFromFile('File/Script/NewResp.txt');
-    //NewResp.Add(City+':'+IntToStr(User.X)+','+IntToStr(User.Y)+','+IntToStr(User.Z));
-    //NewResp.SaveToFile('File/Script/NewResp.txt');
-    //NewResp.Free;
+  if City = DWARVEN then begin
+    // North entrance
+    if  User.InRange (116499, -183985, -1588, 500, 150)  then begin
+      Engine.MoveTo (116643, -180342, -1360);
+      Engine.MoveTo (116322, -179598, -1104);
+    end;
+    // South entrance
+    if  User.InRange (116514, -183912, -1560, 500, 150)  then begin
+      Engine.MoveTo (116611, -179919, -1152);
+      Engine.MoveTo (116322, -179598, -1104);
+    end;
+    // In the middle
+    if  User.InRange (116666, -179540, -1122, 500, 150)  then begin
+      Engine.MoveTo (115698, -178876, -968);
+      Engine.MoveTo (116322, -179598, -1104);
+    end;
+    if User.InRange (116322, -179598, -1104, 500, 150) then Moved := true;
+  end;
+
+{
+------------------------------------------------------------------------------
+                             Dark Elven
+------------------------------------------------------------------------------
+}
+  if City = DARK_ELVEN then begin
+    // Next to newbie guide
+    if  User.InRange (12094, 16709, -4580, 500, 150)  then begin
+      Engine.MoveTo (11631, 16756, -4656);
+      Engine.MoveTo (10759, 16654, -4608);
+    end;
+    // West entrance
+    if  User.InRange (7439, 17778, -4376, 500, 150)  then begin
+      Engine.MoveTo (10759, 16654, -4608);
+    end;
+    // Last turn to gatekeeper
+    if  User.InRange (10759, 16654, -4608, 500, 150)  then begin
+      Engine.MoveTo (10182, 16799, -4584);
+    end;
+    if  User.InRange (12094, 16709, -4580, 500, 150)  then Moved := true;
+  end;
+
+{
+------------------------------------------------------------------------------
+  If no movement has taken place in the city
+------------------------------------------------------------------------------
+}
+  if  not Moved  then begin
     //GoHome;
-    Print('Unknown respawn.');
+    Print ('Unknown respawn.');
   end;
 end;
 
 {
 --------------------------------------------------------------------------------
-  Whenever the character dies, needs buffs or isn't in combat it goes to village,
-  buffs, teleports and move to the desired hunting ground
+  Returns the position in the array of the corresponding gatekeeper of the
+  destination. Returns -1 if it's not found.
 --------------------------------------------------------------------------------
 }
-procedure continueFarming;
+function  getCityToLocationGK (teleportName: String): integer;
+var
+  i: integer;
 begin
-  inFight := false;
-  unlockServer;
-  while true do
+  Result := -1;
+
+  while  Result = -1  do
   begin
-    if isDead or needsBuffs or not inFight then
+    if  Pos (teleportName, GateKeepersStrings[i]) <> 0  then
     begin
-      Engine.FaceControl(0,false); // turn off bot interface
-      moveInCity;
-      buffing; // always buff. Don't check if buffs needed
-      teleport;
-      moveToHuntingGround;
-      Print('Finished');
+      Result := i;
     end;
   end;
 end;
 
 {
 --------------------------------------------------------------------------------
-  Counts the number of mobs that are attacking you
+  It takes us to a city if we aren't in any. Then in an array of teleport lines
+  we look for our destination, it will be equal to id of the city
+  It returns true if the destination is the city in which we are
 --------------------------------------------------------------------------------
 }
-function countAggroMobsOnUser: Array of TL2Live;
-var
-  i: Integer;
+function  isRightCity (destination: TCity; shouldGoHome: boolean = true): boolean;
 begin
-  SetLength (Result, 0);
-  for  i := 0  to  NpcList.Count-1  do
+  Result := (GetCity(shouldGoHome) = destination);
+end;
+
+{
+--------------------------------------------------------------------------------
+  Give a description of this function
+--------------------------------------------------------------------------------
+}
+function  toRightCity (destination: TCity): boolean;
+var
+  currentCity: TCity;
+begin
+
+  // If we are in our destination return true
+  if  isRightCity (destination)  then
   begin
+    Result := true;
+  end else  // else we get the name of the city in which we are
+  begin
+    currentCity := GetCity;
+
+    // If we aren't in a city we go home
+    if  currentCity = NON_CITY  then  GoHome;
+
+    // We take the ordinal value of the destination from the CityNames array and we teleport there
+    TeleportTo (CityNames[ord(destination)]);
+
+    // We repeat the process until we are in our destination
+    Result := toRightCity (destination);
+  end;
+end;
+
+{
+--------------------------------------------------------------------------------
+  Checks if the destination is actually the city to which we want to go.
+--------------------------------------------------------------------------------
+}
+function  TeleportToLocation (destination: String): boolean;
+begin
+  Result := false;
+  if  toRightCity(TCities[getCityToLocationGK(destination)])  then
+    Result := TeleportTo (destination);
+end;
+
+{
+--------------------------------------------------------------------------------
+  Teleports to the destination
+--------------------------------------------------------------------------------
+}
+function  TeleportTo (destination: String): boolean;
+var
+  City: TCity;
+  gkId: integer;
+  cityIndex: integer;
+  gatekeeper: TL2Live;
+  dialogIndex: integer;
+  teleportIndex: TStringList;
+  rightCity: boolean;
+begin
+  City := GetCity;
+  cityIndex := Ord (City);
+  Result := false;
+
+  // If we are in a city and the length of the destination is not 0 then we continue
+  if  (City <> NON_CITY)  or  (Length(destination) <> 0)  then
+  begin
+    teleportIndex := TStringList.Create;
+    dialogIndex := 0;
+
+    gkId := GateKeepers[cityIndex];  // Get the Gatekeeper ID of our current city
+
     {
-      If the mob is targeting the character and the mob isn't dead and the mob
-      exists, then add the mob to the array of mobs.
+      We specify the way in which the string is divided, in this case by commas.
+      And we assign to teleportIndex the String with the locations of the gatekeeper
+      of the current city
     }
-    if (NpcList.Items(i).Target = User)  and  not NpcList.Items(i).Dead  and
-       (NpcList.Items(i) <> nil)  then
-    begin
-      SetLength(Result, Length(Result) + 1);
-      Result[Length(Result)-1] := NpcList.Items(i);
-    end;
-  end;
-end;
-{
---------------------------------------------------------------------------------
-  Kills the mobs that are attacking you.
---------------------------------------------------------------------------------
-}
-procedure killAggroMobs(mobsArray : Array of TL2Live);
-var
-  i: Integer;
-begin
-  for  i := 0  to  Length(mobsArray)-1  do
-  begin
-    if  mobsArray[i].Dead  and  not User.Dead  then continue;
+    teleportIndex.Delimiter := ',';
+    teleportIndex.DelimitedText := GateKeepersStrings[cityIndex];
 
-    while  not mobsArray[i].Dead  and  not User.Dead  do
+    gatekeeper := nil;
+
+    // search the gaketeeper by id
+    NpcList.ById (gkId, gatekeeper);
+
+    // if it was found we continue
+    if  gatekeeper <> nil  then
     begin
-      Engine.SetTarget(mobsArray[i]);
-      Engine.Attack;
       {
-        if  isMage1  then
-        begin
-          Engine.UseSkill(1177); // TODO: Change for skill name
-        end;
-        if  not isMage1  then
-        begin
-          Engine.Attack;
-        end;
+        We search the string destination in the possible destinations of our gatekeeper
+        and assign it to dialogIndex. indexOf returns -1 if it wasn't found.
+        We add 1 to match the dialog option of the gatekeeper
       }
-    end;
-  end;
-end;
-{
---------------------------------------------------------------------------------
-  Checks the number of mobs that are attacking you and kills them if the number
-  is greater than zero
---------------------------------------------------------------------------------
-}
-procedure killAgroMobsThread;
-var
-  mobsArray: Array of TL2Live;
-begin
-  while Engine.Status = lsOnline do
-  begin
-    mobsArray := countAggroMobsOnUser;
-    if Length(mobsArray) > 0 then
-    begin
-      killAggroMobs(mobsArray);
-    end;
-  Delay(500);
-  end;
-end;
+      rightCity := true;
+      dialogIndex := teleportIndex.indexOf (destination) + 1;
+      if  dialogIndex = 0  then
+      begin
+        dialogIndex := 1;
+          rightCity := false;
+      end;
+      {
+        Checks if we are in the right city or teleport us to the first city of the dialog options
+      }
+      Engine.SetTarget (gatekeeper);
+      Engine.MoveTo (gatekeeper);
+      Engine.DlgOpen;
+      Delay (500);
+      // TODO: Check the gatekeepers that don't have the teleport dialog in the first option
+      if  gatekeeper.ID = ROXXY  then  // if we are in talking island
+        Engine.DlgSel (2)
+      {
+      else
+        Engine.DlgSel (ifThen((Pos(buffer.name, 'Ragara') <> 0), 'Teleport', GkDlg));
+        case buffer.id of
+          30256: Engine.DlgSel(2);
+          30006: Engine.DlgSel(3);
+      }
+      else
+        Engine.DlgSel(1);
+      Delay (500);
+      Engine.DlgSel (dialogIndex);
+      Delay (TPDelay);
+      Result := true;
 
-{
-  When a tutorialwindow appears asking for captcha it plays a sound
-}{
-procedure checkForCaptcha;
-begin
-  while Engine.Status = lsOnline do
-  begin
-    if Engine.tutorialwindow then
-    begin
-      //PlaySound(exepath+'\sounds\'+'PlayerAlarm'+'.wav');
-      PlaySound(exepath+'beep.wav');
+      if  rightCity = false  then
+        TeleportTo (destination);
     end;
-    Delay(30*10000);
+    teleportIndex.Free;
   end;
-end;}
+end;
 
 BEGIN
-  Script.NewThread(@continueFarming);
-  Script.NewThread(@killAgroMobsThread);
-  //Script.NewThread(@checkForCaptcha);
 END.

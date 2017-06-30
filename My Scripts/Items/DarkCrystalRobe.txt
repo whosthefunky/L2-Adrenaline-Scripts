@@ -1,0 +1,108 @@
+{	
+--------------------------------------------------------------------------------
+  Sealed Dark Crystal Helmet Design by Spoil
+  Needle Stakato Soldier (lvl 72) (Rune, Swamp of Screams)
+  1/20 chance, 42s avg. respawn time
+--------------------------------------------------------------------------------
+}
+procedure DarkCrystalHelmetDesign;
+begin
+  if  User.InRange ( , 500, 200);
+    LoadConfig ('KillAgroMobs');
+    Engine.MoveTo (-21369, 77659, -5197);
+    Engine.MoveTo (-21344, 78407, -5199);
+    Engine.MoveTo (-18962, 77643, -5199);
+  end;
+  if  User.InRange (161149, 75635, -3174, 500, 200)  then begin
+    Engine.LoadZone ('HaritLizardmanWarrior2.zmap');
+    Engine.FaceControl (0, true);
+  end;
+end;}
+
+{	
+--------------------------------------------------------------------------------
+  Sealed Dark Crystal Robe Fabric by Spoil
+  Canyon Antelope (lvl 68) (Goddard, Wall of Argos)
+  1/29 chance, 55s avg. respawn time
+--------------------------------------------------------------------------------
+}
+procedure DarkCrystalRobeFabric;
+begin
+  if  User.InRange ( , 500, 200);
+    LoadConfig ('KillAgroMobs');
+    Engine.MoveTo (-21369, 77659, -5197);
+    Engine.MoveTo (-21344, 78407, -5199);
+    Engine.MoveTo (-18962, 77643, -5199);
+  end;
+  if  User.InRange (161149, 75635, -3174, 500, 200)  then begin
+    Engine.LoadZone ('HaritLizardmanWarrior2.zmap');
+    Engine.FaceControl (0, true);
+  end;
+end;}
+
+{	
+--------------------------------------------------------------------------------
+  Sealed Dark Crystal Gloves Design by Spoil
+  Splinter Stakato Soldier (lvl 68) (Rune, Swamp of Screams)
+  1/12 chance, 45s avg. respawn time
+--------------------------------------------------------------------------------
+}
+procedure DarkCrystalGlovesDesign;
+begin
+  if  User.InRange ( , 500, 200);
+    LoadConfig ('KillAgroMobs');
+    Engine.MoveTo (-21369, 77659, -5197);
+    Engine.MoveTo (-21344, 78407, -5199);
+    Engine.MoveTo (-18962, 77643, -5199);
+  end;
+  if  User.InRange (161149, 75635, -3174, 500, 200)  then begin
+    Engine.LoadZone ('HaritLizardmanWarrior2.zmap');
+    Engine.FaceControl (0, true);
+  end;
+end;}
+
+{	
+--------------------------------------------------------------------------------
+  Sealed Dark Crystal Boots Lining by Spoil
+  Raider Of Pastureland (lvl 68) (Rune, Beast Farm)
+  1/12 chance, 28s avg. respawn time
+--------------------------------------------------------------------------------
+}
+procedure DarkCrystalBootsLining;
+begin
+  if  User.InRange ( , 500, 200);
+    LoadConfig ('KillAgroMobs');
+    Engine.MoveTo (-21369, 77659, -5197);
+    Engine.MoveTo (-21344, 78407, -5199);
+    Engine.MoveTo (-18962, 77643, -5199);
+  end;
+  if  User.InRange (161149, 75635, -3174, 500, 200)  then begin
+    Engine.LoadZone ('HaritLizardmanWarrior2.zmap');
+    Engine.FaceControl (0, true);
+  end;
+end;}
+
+{	
+--------------------------------------------------------------------------------
+  Sealed Dark Crystal Shield Fragment by Spoil
+  Bone Grinder (lvl 70) (Rune, Forest of the Dead)
+  1/9 chance, 4m avg. respawn time
+--------------------------------------------------------------------------------
+}
+procedure DarkCrystalShieldFragment;
+begin
+  if  User.InRange ( , 500, 200);
+    LoadConfig ('KillAgroMobs');
+    Engine.MoveTo (-21369, 77659, -5197);
+    Engine.MoveTo (-21344, 78407, -5199);
+    Engine.MoveTo (-18962, 77643, -5199);
+  end;
+  if  User.InRange (161149, 75635, -3174, 500, 200)  then begin
+    Engine.LoadZone ('HaritLizardmanWarrior2.zmap');
+    Engine.FaceControl (0, true);
+  end;
+end;}
+
+BEGIN
+  FullPlateShieldFragment;
+END.

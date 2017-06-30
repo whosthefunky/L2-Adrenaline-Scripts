@@ -1,0 +1,11 @@
+{	
+--------------------------------------------------------------------------------
+  Sealed Tateossian Parts by Spoil
+  Varka Silenos General (lvl 78) (Goddard, Varka)
+  1/5 chance, 1m 49s avg. respawn time
+--------------------------------------------------------------------------------
+}
+
+BEGIN
+  FullPlateShieldFragment;
+END.

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<zone>
+	<externalPoly>
+		<points>
+			<point x="86938" y="-56923"/>
+			<point x="86409" y="-53362"/>
+			<point x="84532" y="-52471"/>
+			<point x="82510" y="-53554"/>
+			<point x="83593" y="-56009"/>
+			<point x="84219" y="-57020"/>
+			<point x="85446" y="-57044"/>
+		</points>
+	</externalPoly>
+	<internalPolies>
+		<poly>
+			<points>
+				<point x="85230" y="-55528"/>
+				<point x="84724" y="-55022"/>
+				<point x="84700" y="-54324"/>
+				<point x="85615" y="-53987"/>
+				<point x="86168" y="-54228"/>
+				<point x="86241" y="-54878"/>
+				<point x="86048" y="-55359"/>
+			</points>
+		</poly>
+		<poly>
+			<points>
+				<point x="84243" y="-55552"/>
+				<point x="84171" y="-55239"/>
+				<point x="84484" y="-55167"/>
+				<point x="84652" y="-55407"/>
+			</points>
+		</poly>
+		<poly>
+			<points>
+				<point x="85515" y="-53598"/>
+				<point x="85470" y="-53444"/>
+				<point x="85619" y="-53398"/>
+				<point x="85673" y="-53556"/>
+			</points>
+		</poly>
+		<poly>
+			<points>
+				<point x="86031" y="-53548"/>
+				<point x="86172" y="-53394"/>
+				<point x="86284" y="-53460"/>
+				<point x="86214" y="-53598"/>
+			</points>
+		</poly>
+	</internalPolies>
+</zone>

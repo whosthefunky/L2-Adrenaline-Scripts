@@ -14,9 +14,9 @@ end;
 
 {
 --------------------------------------------------------------------------------
-Blessed Spiritshot D-Grade Recipe by Spoil
-Turek Orc Supplier (lvl 27) (Gludin Village, Orc Barracks)
-1/29 chance
+  Blessed Spiritshot D-Grade Recipe by Spoil
+  Turek Orc Supplier (lvl 27) (Gludin Village, Orc Barracks)
+  1/29 chance, 33s avg. respawn time
 --------------------------------------------------------------------------------
 }
 function  BlessedSpiritshotDGradeRecipe: boolean;
@@ -25,35 +25,39 @@ end;
 
 {
 --------------------------------------------------------------------------------
-Recipe: Soulshot: C-Grade
-Light Worm lvl 41 (Heine, Garden of Eva)
-Timak Orc Archer lvl 41 (Town of Oren, Timak Outpost)
-Snipe Cohort lvl 42 (Town of Dion, Cruma Tower 1st Floor)
-Crockian Lad Warrior lvl 43 (Heine, Aligator Island)
-Zaken's Elitte Pikeman lvl 43 (Town of Giran Teleport or swim from Giran Harbor, inside the Devil's Isle)
+  Recipe: Soulshot: C-Grade
+  Crockian Lad Warrior (lvl 43) (Heine, Aligator Island)
+  1/140 chance, 1m avg. respawn time
 --------------------------------------------------------------------------------
 }
+function  SoulshotCGradeRecipe: boolean;
+begin
+end;
 
 {
 --------------------------------------------------------------------------------
-Recipe: Blessed Spiritshot C
-Dire Wyrm lvl 42 (Town of Oren, Sea of Spores)
-Enchanted Stone Golem lvl 42, (Town of Oren, Ivory Tower - inside the crater)
-Timak Orc Warrior lvl 43 (Town of Oren, Timak Outpost)
+  Recipe: Blessed Spiritshot C
+  Timak Orc Warrior (lvl 43) (Town of Oren, Timak Outpost)
+  1/252 chance, 1m avg. respawn time
 --------------------------------------------------------------------------------
 }
+function  BlessedSpiritshotCGradeRecipe: boolean;
+begin
+  //same location as a plated leather part
+  PlatedLeatherArmorRecipe;
+end;
 
 {
 --------------------------------------------------------------------------------
 Recipe: Soulshot: B-Grade
-Crimson Doll Blader lvl 53 (Town of Giran Teleport or swim from Giran Harbor, inside the Devil's Isle)
-Oel Mahum lvl 53 (Town of Oren, Outlaw Forest)
-Pobby's Maid lvl 53 (Town of Oren, Outside)
 Connabi lvl 54 (Town of Oren, Skyshadow Meadow)
-Satyr Elder lvl 54 (Hunters Village, South Part of Enchanted Valley)
-Bloody Queen lvl 61 (Town of Aden, Forbidden Gateway / Dragon Valley)
 --------------------------------------------------------------------------------
 }
+function  BlessedSpiritshotCGradeRecipe: boolean;
+begin
+  // same location as sword of valhalla recipe 60%
+  SwordOfValhallaRecipe60;
+end;
 
 {
 --------------------------------------------------------------------------------

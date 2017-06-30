@@ -24,32 +24,19 @@ end;
 
 {
 --------------------------------------------------------------------------------
-  Star Buster Recipe by Drop
-  Freya's White Bear (lvl 57) where is it????
+  Sword Of Valhalla Blade by Drop
+  Hamrut (lvl 58) (Aden, Giants Cave)
+  1/1091 chance, 1m 19s avg. respawn time
 --------------------------------------------------------------------------------
 }
-procedure  StarBusterRecipe;
+procedure  SwordOfValhallaBlade;
 begin
-  if  User.InRange (113869, -108865, -840, 500, 200)  then begin
-  end;
+
 end;
 
 {
 --------------------------------------------------------------------------------
-  Demon Dager Recipe by Drop
-  Grave Predator (lvl 59) (Aden, Devastated Castle)
-  1/22727 chance, 1m 15s avg.respawn time
---------------------------------------------------------------------------------
-}
-procedure  DemonDagerRecipe;
-begin
-  if  User.InRange (113869, -108865, -840, 500, 200)  then begin
-  end;
-end;
-
-{
---------------------------------------------------------------------------------
-  Sword Of Valhalla Recipe by Drop
+  Sword Of Valhalla by Drop
   Bloody Lady (lvl 60) (Giran, Anthara's Lair)
   1/142857 chance, 4m 10s avg. respawn time
 --------------------------------------------------------------------------------
@@ -80,12 +67,38 @@ end;
 
 {
 --------------------------------------------------------------------------------
+  Demon Dager Recipe by Drop
+  Grave Predator (lvl 59) (Aden, Devastated Castle)
+  1/22727 chance, 1m 15s avg.respawn time
+--------------------------------------------------------------------------------
+}
+procedure  DemonDaggerRecipe;
+begin
+  if  User.InRange (113869, -108865, -840, 500, 200)  then begin
+  end;
+end;
+
+{
+--------------------------------------------------------------------------------
   Demon Dager Recipe (60%) by Drop
   Slaughter Bathin (lvl 63) (Aden, Tower of Insolence, floor???)
   1/9709 chance, 3m 20s avg.respawn time
 --------------------------------------------------------------------------------
 }
-procedure  DemonDagerRecipe60;
+procedure  DemonDaggerRecipe60;
+begin
+  if  User.InRange (113869, -108865, -840, 500, 200)  then begin
+  end;
+end;
+
+{
+--------------------------------------------------------------------------------
+  Demon Dager Edge by Spoil
+  Platinum Guardian Archer (71)
+  1/25 chance, 3m 50s avg.respawn time
+--------------------------------------------------------------------------------
+}
+procedure  DemonDaggerEdge;
 begin
   if  User.InRange (113869, -108865, -840, 500, 200)  then begin
   end;
@@ -98,8 +111,120 @@ end;
   1/5319 chance, 5m avg. respawn time
 --------------------------------------------------------------------------------
 }
-function  BlueWolfRecipes: boolean;
+function  SwordOfDamascusRecipe: boolean;
 begin
+  if  User.InRange (, 500, 200)  then begin
+  end;
+end;
+
+{
+--------------------------------------------------------------------------------
+  Sword Of Damascus Blade by Drop
+  Wailing Of Splendor (lvl 67) (Rune, Valley of Saints)
+  1/57 chance, 48s avg. respawn time
+--------------------------------------------------------------------------------
+}
+function  SwordOfDamascusRecipe: boolean;
+begin
+  TeleportTo ('valley of saints');
+  if  User.InRange (, 500, 200)  then begin
+  end;
+end;
+
+{
+--------------------------------------------------------------------------------
+  Guardian Sword Recipe by Drop
+  Lost Gargoyle (lvl 55) (Schuttgart, Frozen Labyrinth)
+  1/27778 chance, 1m avg. respawn time
+--------------------------------------------------------------------------------
+}
+function  GuardianSwordRecipe: boolean;
+begin
+  TeleportTo ('valley of saints');
+  if  User.InRange (, 500, 200)  then begin
+  end;
+end;
+
+{
+--------------------------------------------------------------------------------
+  Guardian Sword Blade by Drop
+  Cave Howler (lvl 65) (Schuttgart, Frozen Labyrinth)
+  1/559 chance, 4m, 20s avg. respawn time
+--------------------------------------------------------------------------------
+}
+function  GuardianSwordBlade: boolean;
+begin
+  TeleportTo ('frozen labyrinth');
+  if  User.InRange (, 500, 200)  then begin
+  end;
+end;
+
+{
+--------------------------------------------------------------------------------
+  Bow of Peril Recipe by Spoil
+  Death Wave (lvl 62) (Giran, Anthara's Lair)
+  1/230 chance, 4m 10s avg. respawn time
+--------------------------------------------------------------------------------
+}
+function  BowOfPerilRecipe: boolean;
+begin
+  TeleportTo ('antharas lair');
+  if  User.InRange (, 500, 200)  then begin
+  end;
+end;
+
+{
+--------------------------------------------------------------------------------
+  Bow of Peril Shaft by Spoil
+  Splinter Stakato (lvl 66) (Rune, Swamp of Screams)
+  1/70 chance, 50s avg. respawn time
+--------------------------------------------------------------------------------
+}
+function  BowOfPerilShaft: boolean;
+begin
+  TeleportTo ('antharas lair');
+  if  User.InRange (, 500, 200)  then begin
+  end;
+end;
+
+{
+--------------------------------------------------------------------------------
+  Deadman's Glory Recipe by Spoil (Aden, The Giant Cave)
+  Hamrut (lvl 58) 1/17544 chance, 1m 19s avg. respawn time
+  Beast Guardian (lvl 59) 1/10417 chance, 2m 30s avg. respawn time
+--------------------------------------------------------------------------------
+}
+function  DeadmanGloryRecipe: boolean;
+begin
+  TeleportTo ('antharas lair');
+  if  User.InRange (, 500, 200)  then begin
+  end;
+end;
+
+{
+--------------------------------------------------------------------------------
+  Deadman's Glory Stone by Spoil
+  Sacrificed Man (lvl 67) (Rune, Forest of the Dead)
+   1/68 chance, 4m avg. respawn time
+--------------------------------------------------------------------------------
+}
+function  DeadmanGloryStone: boolean;
+begin
+  TeleportTo ('antharas lair');
+  if  User.InRange (, 500, 200)  then begin
+  end;
+end;
+
+{
+--------------------------------------------------------------------------------
+  Star Buster Recipe by Spoil
+  Freya's White Bear (lvl 57) (where ???)
+  1/68 chance, 4m avg. respawn time
+--------------------------------------------------------------------------------
+}
+function  DeadmanGloryStone: boolean;
+begin
+  TeleportTo ('antharas lair');
   if  User.InRange (, 500, 200)  then begin
   end;
 end;

@@ -13,11 +13,6 @@ type
 	end;
 	
 const
-
-{
-  IDs of the different classes to determine the buffs needed
-  https://l2network.eu/forums/index.php?/topic/1121-l2-class-id/
-}
 	CLASS_TYPE : array[0..136] of TClassType = (
 	(isMage: false; secondClass: FIGHTER), //0
 	(isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: WARRIOR), (isMage: false; secondClass: WARRIOR), (isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: KNIGHT), (isMage: false; secondClass: KNIGHT), (isMage: false; secondClass: FIGHTER), (isMage: false; secondClass: ROGUE), (isMage: false; secondClass: ROGUE), //1 => 9

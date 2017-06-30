@@ -1,0 +1,15 @@
+{
+--------------------------------------------------------------------------------
+  Arcana Mace Head by Spoil
+  Deinonychus (lvl 80)
+  1/48 chance, 1 m avg. respawn time
+--------------------------------------------------------------------------------
+}
+function  MaestroMoldRecipe (quantity: integer = 1): boolean;
+var
+  recipe: TL2Item;
+begin
+  Result := false;
+  //TeleportTo ('dion');
+  if  User.InRange (15627, 142909, -2696, 1000, 200)  then begin
+    Engine.MoveTo (15728, 143823, -2880);

@@ -45,7 +45,8 @@ begin
         and (User.MP > 5) and (User.HP > 15) then
     begin
       Engine.SetTarget('Moon Howler');
-      Engine.UseSkill(1401); // Major heal the pet
+      //Engine.UseSkill (1401); // Major heal the pet
+      Engine.UseSkill (1217); //Greater heal
     end;
 
     if (petlist.count > 0) and (Petlist.items(0).Dead)

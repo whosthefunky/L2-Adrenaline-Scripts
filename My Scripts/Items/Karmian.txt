@@ -7,7 +7,7 @@
 }
 procedure  KarmianStockingsBootsRecipes;
 begin
-  //Load
+  Engine.LoadConfig ('KillAggroMobs');
   //goToGardenOfEva (1); // Indicate Level
 end;
 
@@ -20,7 +20,7 @@ end;
 
 {
 --------------------------------------------------------------------------------
-  Karmian Boots and Stockings Recipe Spoiling
+  Karmian Boots and Stockings Recipe by Spoil
   1/143 chance, 23s avg. respawn time
 --------------------------------------------------------------------------------
 }

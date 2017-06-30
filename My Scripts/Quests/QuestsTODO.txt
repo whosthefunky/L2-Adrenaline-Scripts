@@ -1,0 +1,36 @@
+About recipes A and S:
+1st: they dont drop
+2nd: there's no 100% recipes for A and S, they exist in the database, but in the game they cant be obtained
+3rd: there are multiple quests for those, such as: 
+
+A Grade Recipes:
+
+Whisper in Dreams (Giran) (robes)
+Kali's Magic Coin (Hunters Village) (weapons)
+Exploration of the Giant's Cave (Giant's Cave) (Armors)
+Legacy of Insolence (Aden) (Glove/Helm/Boots)
+A Powerful Primeval Creature  (weapons)
+
+S Grade Recipes
+
+Imperial Tomb, Relics of the Old Empire (S grade weapon)
+After you get 1k relics, take Four Goblets quest and go 4 sepulchers. After 4s you'll be teleported in a room,
+Pilgrims Room where's a npc wich will give you what S weapon recipe you want. 
+
+Forge of the Gods, Gather the Flames (S grade weapon):
+Every mob has a chance to drop a "Torch" (the quest item), some mobs drop 2 in a time.
+When you get 1000 you can exchange for a random recipe of a S Grade Weapon.
+When you get 1200 you can exchange for a S Grade Weapon recipe of your choice.
+
+Take Alliance with ketra or varka quest. I'll suggest you to take Alliance with Ketra, so you can fight in Varka, because in Varka are a lots of great spots and mobs are easier.
+To reach the part where you can take S recipes you'll need Ally Mark lvl 5 with Ketra.
+Ally 1 : 100 soldiers ; Ally 2 : 200 soldiers and 100 captains;
+Ally 3 : 300 soldiers, 200 captains, 100 generals;
+Ally 4 : 300 soldiers, 300 captains, 200 generals and take another quest from Hierarch Kadun Zu who's in ketra, a quest called : Prove Your Courage; After you take this quest go kill a RB in Varka called Shadith.
+You need to be in last hit party, so you can take a quest item called Totem
+Of Valor. Return to Wahkan (ketra) and you'll have ally 4 with ketra orcs.
+Ally 5 : 400 Soldiers, 400 captains, 200 generals and take another quest
+from Hierarch Kadun Zu again, a quest called : Slay the enemy commander; After you take this quest go kill a RB in Varka called Varka's Commander Mos. You need to be in last hit party, so you can take a quest item called 1 Totem Of Wisdom. Return to Wahkan and you'll have ally 5.
+When you have ally 5 you'll be able to buy Purple and Red bags wich will give you random S armor recipes. You need 2500 Varka's Manes to take a Purple Bag. If you double click it, there's a chance to get main armor recipes or adena ; 80% chance S armor rec; 20% chance adena.
+Last time i clicked on one of those i'd got Recipe Draconic Leather Armor 60%.
+You need 750 Varka's Manes to take a Red Bag. If you double click it, there's a chance to get S boots/gloves/helm/shield recipes or adena ; 85% chance to get a recipe and 15% to get adena. 

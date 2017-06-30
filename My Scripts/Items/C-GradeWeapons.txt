@@ -22,9 +22,45 @@ end;
 
 {
 --------------------------------------------------------------------------------
-  Samurai Long Sword Recipe by Spoil 1/336 chance, 36s avg. respawn time
+  Homunkulus Sword Recipe by Spoil
+  Archer Of Greed (lvl 46) (Aden, East of the city)
+  1/266 chance, 23s avg. respawn time
+--------------------------------------------------------------------------------
+}
+function  HomunkulusSwordRecipe: boolean;
+begin
+  Engine.MoveTo (148493, 25683, -2008);
+  Engine.MoveTo (148694, 24280, -2039);
+  Engine.MoveTo (149879, 24521, -2136);
+  Engine.MoveTo (150116, 25062, -2167);
+  Engine.MoveTo (152448, 25292, -2167);
+  Engine.MoveTo (153550, 25866, -2216);
+  Engine.MoveTo (154781, 23522, -3070);
+  Engine.MoveTo (154844, 20772, -3648);
+  Engine.MoveTo (156381, 19812, -3688);
+  Engine.MoveTo (160750, 21337, -3738);
+  //
+  {Engine.MoveTo (154781, 23522, -3070);
+  Engine.MoveTo (154781, 23522, -3070);
+  Engine.MoveTo (154781, 23522, -3070);}
+end;
+
+{
+--------------------------------------------------------------------------------
+  Homunkulus Sword Recipe by Spoil
+  Zombie Captain's Spiritual Body (lvl 52) (Heine, Devil Isle)
+  1/32 chance, 3m avg. respawn time
+--------------------------------------------------------------------------------
+}
+function  HomunkulusSwordBlade: boolean;
+begin
+end;
+
+{
+--------------------------------------------------------------------------------
+  Samurai Long Sword Recipe by Spoil (Giran, Dragon Valley NorthWest)
   Yaksa Mace Recipe by Drop 1/8929 chance, 36s avg. respawn time
-  Royal Cave Servant (lvl 51) (Giran, Dragon Valley NorthWest)
+  Royal Cave Servant (lvl 51) 1/336 chance, 36s avg. respawn time
 --------------------------------------------------------------------------------
 }
 function  SamuraiLongSwordRecipe: boolean;
@@ -93,7 +129,7 @@ end;
   Horrifying Ginzu Golem VIII (54) (Schuttgart, Archaic Laboratory SouthEast)
 --------------------------------------------------------------------------------
 }
-function  YaksaMaceHead;
+function  YaksaMaceHead: boolean;
 begin
 end;
 
@@ -104,9 +140,10 @@ end;
   1/7813 chance, 1m avg. respawn time
 --------------------------------------------------------------------------------
 }
-function  DwarvenHammerRecipe;
+function  DwarvenHammerRecipe: boolean;
 begin
 end;
 
 BEGIN
+  HomunkulusSwordRecipe
 END.

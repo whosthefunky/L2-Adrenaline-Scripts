@@ -1,0 +1,18 @@
+{
+--------------------------------------------------------------------------------
+  Draconic Bow Shaft by Spoil
+  Varka's Head Magus (78) (Goddard, Varka)
+  1/55  chance, 1m 43s avg. respawn time
+--------------------------------------------------------------------------------
+}
+function  DraconicBowShaft (quantity: integer = 1): boolean;
+var
+  recipe: TL2Item;
+begin
+  Result := false;
+  //TeleportTo ('hunter village');
+  if  User.InRange (117000, 76900, -2700, 500, 200)  then begin
+    Print ('Moving from Gatekeeper to hunting ground');
+    Engine.MoveTo (118056, 75755, -2688);
+  end;
+end;
