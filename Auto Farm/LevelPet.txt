@@ -40,11 +40,11 @@ begin
       if User.Target <> nil then
         previousTarget := User.Target;
         
-      Engine.SetTarget('Moon Howler');
-      Engine.MoveToTarget (-500);
-      //Engine.UseAction(53); // Move action (ID 53)
-      //Engine.UseAction(21); // Change movement mode);
-      Engine.SetTarget(previousTarget);
+      Engine.SetTarget(User);
+      //Engine.MoveToTarget (-500);
+      Engine.UseAction(53); // Move action (ID 53)
+      Engine.UseAction(21); // Change movement mode of the pet, for it to follow you
+      //Engine.SetTarget(previousTarget);
       delay(3 * 1000);
     end;
     delay(500);
@@ -116,4 +116,7 @@ end;
  
 
 BEGIN
+  script.newThread(@petHeal);
+  script.newThread(@petRangeProtect);
+  script.newThread(@tpContoller);
 END.

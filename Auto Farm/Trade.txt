@@ -11,7 +11,7 @@ begin
   while  true  do
   begin
     Engine.EnterText ('+WTS Fangs of Stakato. 100 Fangs = 9 gold');
-    Delay (5 * 60 * 1000);
+    Delay (30 * 1000);
   end;
 end;
 

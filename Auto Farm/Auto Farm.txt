@@ -269,6 +269,6 @@ end;}
 BEGIN
   Script.NewThread(@continueFarming);
   Script.NewThread(@killAgroMobsThread);
-  Script.NewThread(@Trade);
+  //Script.NewThread(@Trade);
   //Script.NewThread(@checkForCaptcha);
 END.

@@ -5,6 +5,7 @@ interface
 uses  TeleportModule, SettingsModule;
 
 procedure  Ketra;
+procedure  StakatoNest;
 
 implementation
 
@@ -60,5 +61,82 @@ begin
   Engine.Facecontrol (0, true); // turn on bot interface
 end;
 
+procedure  StakatoNest;
+var
+  i: Integer;
+  thereAreMobs: Boolean;
+  chamber: Integer;
+begin
+  if  not User.InRange (89701, -44683, -2136, 20000, 20000)  then begin
+    TeleportTo ('swamp of screams');
+  end;
+  if  User.InRange (89701, -44683, -2136, 500, 200)  then begin
+    Engine.LoadConfig ('KillAgroMobs');
+    Engine.FaceControl (0, true);
+    Engine.MoveTo (90403, -44036, -2128);
+    Engine.MoveTo (91394, -43167, -2488);
+    Engine.MoveTo (92013, -43255, -2600);
+    Engine.MoveTo (92379, -43699, -2712);
+    Engine.MoveTo (92363, -44397, -2864);
+    Engine.MoveTo (92015, -44672, -2925);
+    Engine.MoveTo (90830, -44802, -3224);
+    Engine.MoveTo (90595, -44595, -3296);
+    Engine.MoveTo (89915, -43429, -3792);
+    Engine.MoveTo (89367, -43063, -3944);
+    Engine.MoveTo (88065, -43056, -4128);
+    Engine.MoveTo (86126, -42462, -4132);
+    Engine.MoveTo (85004, -42461, -4616);
+    Engine.MoveTo (83320, -42637, -4640);
+    Engine.MoveTo (81410, -42634, -5128);
+    Engine.MoveTo (80919, -43162, -5160);
+    Engine.MoveTo (80828, -43738, -5128);
+  end;
+  if  User.InRange (80828, -43738, -5128, 20000, 8000)  then
+  begin
+    Engine.LoadConfig (User.Name);
+    if  (User.DistTo (79915, -48867, -5120) < User.DistTo (79915, -44800, -5120))  then
+      chamber := 2
+    else chamber := 1;
+    while  Engine.Status = lsOnline  do
+    begin
+      if  ( chamber = 1 )  then
+      begin
+        Engine.LoadZone (exepath + 'Zmaps\StakatoNest1st.zmap');
+        thereAreMobs := true;
+        while  thereAreMobs  do begin
+          for  i := 0  to  NpcList.Count-1  do begin
+            if  NpcList.Items(i).Attackable  then begin
+              continue;
+              thereAreMobs := false;
+            end;
+          end;
+        end;
+        Print ('moving to second chamber');
+        Engine.MoveTo (79428, -46165, -5129);
+        Engine.MoveTo (79284, -46526, -5128);
+        Engine.MoveTo (79373, -47022, -5160);
+      end;
+      Engine.LoadZone (exepath + 'Zmaps\StakatoNest2nd.zmap');
+      thereAreMobs := true;
+      while  thereAreMobs  do begin
+        for  i := 0  to  NpcList.Count-1  do begin
+          if  NpcList.Items(i).Attackable  then begin
+            continue;
+            thereAreMobs := false;
+          end else begin 
+            //Print ('Stay in the second chamber');
+            Delay (3 * 1000);
+          end;
+        end;
+      end;
+      Print ('moving to first chamber');
+      Engine.MoveTo (79373, -47022, -5160);
+	    Engine.MoveTo (79284, -46526, -5128);
+      Engine.MoveTo (79428, -46165, -5129);
+    end;
+  end else  Print ('You aren''t in the nest');
+end;
+
 BEGIN
+  StakatoNest;
 END.

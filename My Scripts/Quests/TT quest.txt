@@ -1,0 +1,228 @@
+{
+  change Engine.BypassToServer to your server or use Engine.DlgSel
+}
+
+const
+ Jeremy = 31521;
+ Beolin = 31547;
+ Kuber = 31546;
+ Crocus = 31545;
+ Naff = 31544;
+ Pulin = 31543;
+ First_delay = 10 * 1000;
+ Second_delay = 2 * 1000;
+ 
+begin
+while true do begin
+  if  User.InRange (149551, -112649, -2064, 500, 200)  then begin
+    //Engine.SetTarget (Jeremy);
+    Engine.DlgOpen;
+    Engine.DlgSel ('Quest');
+    //Delay (First_delay);
+    //Engine.DlgSel ('Egg Delivery');
+    //Delay (Second_delay);
+    //Engine.bypasstoserver ('Quest 621_EggDelivery 31521-1.htm');
+  end;
+  
+  if  User.InRange (149551, -112649, -2064, 500, 200)  then begin
+    Engine.MoveTo (149180, -112487, -2090);
+    Engine.MoveTo (147817, -113160, -2104);
+    Engine.MoveTo (147562, -113278, -2112);
+    
+	  PlaySound (exepath + '\sounds\beep.wav');
+	  Engine.SetTarget (Beolin);
+    Engine.DlgOpen;
+    Engine.DlgSel ('Quest');
+    Delay (500);
+    exit;
+    //Engine.DlgSel ('Liquor');
+    //Delay (First_delay);
+    //engine.bypasstoserver ('Quest 621_Liquor 31547-1.htm');
+    //Delay (Second_delay);
+  end;
+  
+  if  User.InRange (147562, -113278, -2112, 500, 200)  then begin  
+    Engine.MoveTo (147541, -113293, -2112);
+    Engine.MoveTo (147511, -112734, -2144);
+    Engine.MoveTo (146069, -111869, -2408);
+    Engine.MoveTo (144964, -110983, -3488);
+    Engine.MoveTo (141672, -109450, -3584);
+    
+    PlaySound (exepath + '\sounds\beep.wav');
+    Engine.SetTarget (Kuber);
+    Engine.DlgOpen;
+    Engine.DlgSel ('Quest');
+    Delay (500);
+    exit;
+    //Engine.DlgSel ('Liquor');
+    //Delay (First_delay);
+    //Engine.bypasstoserver ('Quest 621_Liquor 31546-1.htm');
+    //Delay (Second_delay);
+  end;
+  
+  if  User.InRange (141672, -109450, -3584, 500, 200)  then begin
+    Engine.MoveTo (141637, -108895, -3576);
+    Engine.MoveTo (141319, -108302, -3560);
+    Engine.MoveTo (140663, -105814, -3608);
+    Engine.MoveTo (140660, -105523, -3632);
+    
+    PlaySound (exepath + '\sounds\beep.wav');
+    Engine.SetTarget(Crocus);
+    Engine.DlgOpen;
+    Engine.DlgSel('Quest');
+    Delay(500);
+    exit;
+    //Engine.DlgSel('Liquor');
+    //Delay(First_delay);
+    //engine.bypasstoserver('Quest 621_Liquor 31545-1.htm');
+    //Delay(Second_delay);
+  end;
+  
+  if  User.InRange (140660, -105523, -3632, 500, 200)  then begin
+    Engine.MoveTo (144297, -103071, -3584);
+    Engine.MoveTo (144763, -100705, -3272);
+    Engine.MoveTo (148394, -100895, -2968);
+    Engine.MoveTo (150485, -101237, -2880);
+    Engine.MoveTo (152728, -101598, -2888);
+    Engine.MoveTo (152999, -101778, -2760);
+    Engine.MoveTo (153874, -102680, -2960);
+    Engine.MoveTo (154900, -104555, -2768);
+    Engine.MoveTo (155612, -105732, -2752);
+    
+    PlaySound (exepath + '\sounds\beep.wav');
+    Engine.SetTarget (Naff);
+    Engine.DlgOpen;
+    Engine.DlgSel ('Quest');
+    Delay (500);
+    exit;
+    //Engine.DlgSel ('Liquor');
+    //Delay (First_delay);
+    //Engine.bypasstoserver ('');
+    //Delay (Second_delay);
+  end;
+  
+  if  User.InRange (155612, -105732, -2752, 500, 200)  then begin  
+    Engine.MoveTo (154980, -107065, -2680);
+    Engine.MoveTo (153341, -110607, -2696);
+    Engine.MoveTo (151961, -111661, -2416);
+    Engine.MoveTo (150264, -112966, -2272);
+    Engine.MoveTo (150512, -115052, -1704);
+    Engine.MoveTo (151378, -115185, -1576);
+    Engine.MoveTo (154096, -115000, -1544);
+    Engine.MoveTo (155035, -115160, -1568);
+    Engine.MoveTo (157406, -115495, -1888);
+    Engine.MoveTo (157611, -115371, -1904);
+    
+    PlaySound (exepath + '\sounds\beep.wav');
+    Engine.SetTarget (Pulin);
+    Engine.DlgOpen;
+    Engine.DlgSel ('Quest');
+    Delay (500);
+    exit;
+    //Engine.DlgSel ('Liquor');
+    //Delay (First_delay);
+    //Engine.bypasstoserver ('Quest 621_Liquor 31544-1.htm');
+    //Delay(Second_delay);
+  end;
+  
+  if  User.InRange (157611, -115371, -1904, 500, 200)  then begin
+    Engine.MoveTo (157626, -114953, -1896);
+    Engine.MoveTo (157178, -113217, -1791);
+    Engine.MoveTo (156758, -112787, -1736);
+    Engine.MoveTo (156714, -112605, -1744);
+    Engine.MoveTo (156506, -111563, -2384);
+    Engine.MoveTo (156130, -110565, -2592);
+    Engine.MoveTo (156503, -107137, -2648);
+    Engine.MoveTo (155865, -105984, -2760);  // Arreglar este
+    Engine.MoveTo (155612, -105732, -2752);
+    
+    PlaySound (exepath + '\sounds\beep.wav');
+    Engine.SetTarget (Naff);
+    Engine.DlgOpen;
+    Engine.DlgSel ('Quest');
+    Delay (500);
+    exit;
+    //Engine.DlgSel ('Egg Delivery');
+    //Delay (First_delay);
+    //Engine.bypasstoserver ('');
+    //Delay (Second_delay);
+  end;
+  
+  if  User.InRange (157611, -115371, -1904, 500, 200)  then begin
+    Engine.MoveTo (154900, -104555, -2768);
+    Engine.MoveTo (153874, -102680, -2960);
+    Engine.MoveTo (153236, -102017, -2744);
+    Engine.MoveTo (152728, -101598, -2888);
+    Engine.MoveTo (150485, -101237, -2880);
+    Engine.MoveTo (148394, -100895, -2968); 
+    Engine.MoveTo (144763, -100705, -3272);  
+    Engine.MoveTo (144297, -103071, -3584);
+    Engine.MoveTo (140660, -105523, -3632);
+    
+    PlaySound (exepath + '\sounds\beep.wav');
+    Engine.SetTarget(Crocus);
+    Engine.DlgOpen;
+    Engine.DlgSel('Quest');
+    Delay(500);
+    exit;
+    //Engine.DlgSel('Egg Delivery');
+    //Delay(First_delay);
+    //engine.bypasstoserver('Quest 621_EggDelivery 31545-1.htm');
+    //Delay(Second_delay);
+  end;
+  
+  if  User.InRange (140660, -105523, -3632, 500, 200)  then begin
+    Engine.MoveTo (140660, -105523, -3632);
+    Engine.MoveTo (140663, -105814, -3608);
+    Engine.MoveTo (141319, -108302, -3560);
+    Engine.MoveTo (141637, -108895, -3576);
+    Engine.MoveTo (141672, -109450, -3584);
+    
+    PlaySound (exepath + '\sounds\beep.wav');
+    Engine.SetTarget (Kuber);
+    Engine.DlgOpen;
+    Engine.DlgSel ('Quest');
+    Delay (500);
+    exit;
+    //Engine.DlgSel ('Egg Delivery');
+    //Delay (First_delay);
+    //Engine.bypasstoserver ('Quest 621_EggDelivery 31546-1.htm');
+    //Delay (Second_delay);
+  end;
+  
+  if  User.InRange (141672, -109450, -3584, 500, 200)  then begin
+    Engine.MoveTo (146544, -108973, -3504);
+    Engine.MoveTo (148248, -108878, -2720);
+    Engine.MoveTo (149205, -109232, -2512);
+    Engine.MoveTo (149714, -112041, -2144);
+    Engine.MoveTo (147817, -113160, -2104);
+    Engine.MoveTo (147562, -113278, -2112);
+    
+    PlaySound (exepath + '\sounds\beep.wav');
+    Engine.SetTarget (Beolin);
+    Engine.DlgOpen;
+    Engine.DlgSel ('Quest');
+    Delay (500);
+    exit;
+    //Engine.DlgSel ('Egg Delivery');
+    //Delay (First_delay);
+    //engine.bypasstoserver ('Quest 621_EggDelivery 31547-1.htm');
+    //Delay (Second_delay);
+  end;
+  
+  if  User.InRange (147562, -113278, -2112, 500, 200)  then begin 
+    Engine.MoveTo (147562, -113278, -2112);
+    Engine.MoveTo (147817, -113160, -2104);	
+    Engine.MoveTo (149180, -112487, -2090);
+    
+	  PlaySound (exepath + '\sounds\beep.wav');
+    Engine.SetTarget (Jeremy);
+    Engine.DlgOpen;
+    Engine.DlgSel ('Quest');
+    //Delay (First_delay);
+    //Engine.DlgSel ('Egg Delivery');
+    //Delay (Second_delay);
+    //Engine.bypasstoserver ('Quest 621_EggDelivery 31521-1.htm');
+  end;
+end;  
+end.
