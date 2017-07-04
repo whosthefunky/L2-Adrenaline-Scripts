@@ -1,0 +1,153 @@
+{
+  Into the Flame
+  Start lvl: 60
+  NPC: Watcher of Valakas Klein
+  Type: Solo / One time only
+  Rewards: Floating Stone to allow you to meet Valakas.
+}
+
+const
+  Klein = 31540;
+{
+2. He will ask you to get him a Vacualite Vacualite from Blacksmith Hilda in Goddard. He need it to create Floating Stone Floating Stone for you to get through the Hall of Flames.
+
+3. Meet Blacksmith Hilda in Goddard, and she will tell you to bring her Vacualite Ore Vacualite Ore.
+She will send you to hunt in the Garden of Wild Beasts the following mobs (they are easy - 1/2 HP):
+
+    Kookaburra Kookaburra location on the map
+    Bandersnatch Bandersnatch location on the map
+    Grendel Grendel location on the map
+
+Bring back 50 Vacualite Ore.
+
+4. Give the 50 quest items to Blacksmith Hilda in Goddart. She'll make the Vacualite Vacualite. Now you can return with it to Klein Klein location on the map in Forge of the Gods.
+
+5. Speak again with Klein Klein location on the map and he will turn the Vacualite the Floating Stone. After that, you can port to the small hallway above the lava flow that you can see behind Klein, and the Floating Stone disappears.
+
+Note: after you get the Floating Stone from Klein, talk to him and pick up the quest again.
+}
+
+procedure  IntoTheFlames;
+begin
+  // 1. Teleport from Goddard to the entrance of the Forge of the Gods.
+  //TeleportTo ('forge of gods');
+{
+  Go down and cross the bridge. Take the first left and after that take every right turn,
+  and stick to the right. Soon you will see Watcher of Valakas Klein Klein location on the map.
+  Speak with him.
+}
+  if  User.InRange (170209, -116238, -2079, 500, 200)  then begin
+    Engine.MoveTo (171469, -116228, -2144);
+  end;
+  if  User.InRange (171469, -116228, -2144, 500, 200)  then begin
+    Engine.MoveTo (171564, -116190, -2183);
+  end;
+  if  User.InRange (171564, -116190, -2183, 500, 200)  then begin
+    Engine.MoveTo (171795, -116124, -2816);
+  end;
+  if  User.InRange (171795, -116124, -2816, 500, 200)  then begin
+    Engine.MoveTo (172498, -116436, -3216);
+  end;
+  if  User.InRange (172498, -116436, -3216, 500, 200)  then begin
+    Engine.MoveTo (173368, -116102, -3592);
+  end;
+  if  User.InRange (173368, -116102, -3592, 500, 200)  then begin
+    Engine.MoveTo (173603, -115475, -3760);
+  end;
+  if  User.InRange (173603, -115475, -3760, 500, 200)  then begin
+    Engine.MoveTo (175187, -115767, -3784);
+  end;
+  if  User.InRange (175187, -115767, -3784, 500, 200)  then begin
+    Engine.MoveTo (175669, -116001, -3810);
+  end;
+  if  User.InRange (175669, -116001, -3810, 500, 200)  then begin
+    Engine.MoveTo (177391, -116482, -3688);
+  end;
+  if  User.InRange (177391, -116482, -3688, 500, 200)  then begin
+    Engine.MoveTo (178245, -116805, -3600);
+  end;
+  if  User.InRange (178245, -116805, -3600, 500, 200)  then begin
+    Engine.MoveTo (179030, -117037, -3633);
+  end;
+  if  User.InRange (179030, -117037, -3633, 500, 200)  then begin
+    Engine.MoveTo (179956, -117974, -3641);
+  end;
+  if  User.InRange (179956, -117974, -3641, 500, 200)  then begin
+    Engine.MoveTo (178864, -118398, -3824);
+  end;
+  if  User.InRange (178864, -118398, -3824, 500, 200)  then begin
+    Engine.MoveTo (177473, -118801, -4112);
+  end;
+  if  User.InRange (177473, -118801, -4112, 500, 200)  then begin
+    Engine.MoveTo (177011, -119858, -4112);
+  end;
+  if  User.InRange (177011, -119858, -4112, 500, 200)  then begin
+    Engine.MoveTo (177225, -120569, -4142);
+  end;
+  if  User.InRange (177225, -120569, -4142, 500, 200)  then begin
+    Engine.MoveTo (177787, -121050, -4056);
+  end;
+  if  User.InRange (177787, -121050, -4056, 500, 200)  then begin
+    Engine.MoveTo (179275, -120980, -3824);
+  end;
+  if  User.InRange (179275, -120980, -3824, 500, 200)  then begin
+    Engine.MoveTo (180162, -120630, -3680);
+  end;
+  if  User.InRange (180162, -120630, -3680, 500, 200)  then begin
+    Engine.MoveTo (180479, -120475, -3701);
+  end;
+  if  User.InRange (180479, -120475, -3701, 500, 200)  then begin
+    Engine.MoveTo (181461, -119376, -3608);
+  end;
+  if  User.InRange (181461, -119376, -3608, 500, 200)  then begin
+    Engine.MoveTo (181652, -118364, -3360);
+  end;
+  if  User.InRange (181652, -118364, -3360, 500, 200)  then begin
+    Engine.MoveTo (182228, -117269, -3336);
+  end;
+  if  User.InRange (182228, -117269, -3336, 500, 200)  then begin
+    Engine.MoveTo (181886, -116809, -3328);
+  end;
+  if  User.InRange (181886, -116809, -3328, 500, 200)  then begin
+    Engine.MoveTo (182182, -115114, -3336);
+  end;
+  if  User.InRange (182182, -115114, -3336, 500, 200)  then begin
+    Engine.MoveTo (183656, -114906, -3336);
+  end;
+  // Talk to Klein
+  //Engine.Target
+  // GoHome
+  // Move from gatekeeper to Blacksmith Hilda
+  // Move from Hilda to hunting zone
+  if  User.InRange (146457, -58751, -2968, 500, 200)  then begin
+    Engine.MoveTo (146708, -58882, -2968);
+  end;
+  if  User.InRange (146708, -58882, -2968, 500, 200)  then begin
+    Engine.MoveTo (146780, -58723, -3000);
+  end;
+  if  User.InRange (146780, -58723, -3000, 500, 200)  then begin
+    Engine.MoveTo (146609, -58629, -3007);
+  end;
+  if  User.InRange (146609, -58629, -3007, 500, 200)  then begin
+    Engine.MoveTo (146648, -58504, -3007);
+  end;
+  if  User.InRange (146648, -58504, -3007, 500, 200)  then begin
+    Engine.MoveTo (144802, -57522, -2976);
+  end;
+  if  User.InRange (144802, -57522, -2976, 500, 200)  then begin
+    Engine.MoveTo (144408, -57788, -2976);
+  end;
+  if  User.InRange (144408, -57788, -2976, 500, 200)  then begin
+    Engine.MoveTo (144136, -57975, -3016);
+  end;
+  if  User.InRange (144136, -57975, -3016, 500, 200)  then begin
+    Engine.MoveTo (143031, -58736, -3448);
+  end;
+  if  User.InRange (143031, -58736, -3448, 500, 200)  then begin
+    Engine.MoveTo (141468, -58654, -3232);
+  end;
+end;
+
+BEGIN
+  IntoTheFlames;
+END.

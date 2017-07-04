@@ -13,24 +13,34 @@ const
  Pulin = 31543;
  First_delay = 10 * 1000;
  Second_delay = 2 * 1000;
- 
+
+procedure  TTQuest;
 begin
 while true do begin
-  if  User.InRange (149551, -112649, -2064, 500, 200)  then begin
+  if  User.InRange (149051, -112424, -2071, 500, 200)  then begin
+    Engine.MoveTo (149551, -112649, -2064);
     Engine.SetTarget (Jeremy);
     Engine.DlgOpen;
-    Engine.DlgSel ('Quest');
-    Delay (First_delay);
-    //Engine.DlgSel ('Egg Delivery');
-    //Delay (Second_delay);
-    //Engine.bypasstoserver ('Quest 621_EggDelivery 31521-1.htm');
+Engine.DlgSel ('Quest');
+Delay (500);
+Engine.bypasstoserver ('npc_268465435_Quest 621_EggDelivery');
+Delay (500);
+Engine.bypasstoserver ('Quest 621_EggDelivery 31521-1.htm');
+Delay (500);
+Engine.DlgOpen;
+Engine.DlgSel ('Quest');
+Delay (500);
+Engine.bypasstoserver ('npc_268465435_Quest 622_SpecialtyLiquorDelivery');
+Delay (500);
+Engine.bypasstoserver ('Quest 622_SpecialtyLiquorDelivery 31521-1.htm');
+Delay (500);
 
     Engine.MoveTo (149180, -112487, -2090);
     Engine.MoveTo (147817, -113160, -2104);
     Engine.MoveTo (147562, -113278, -2112);
-    
-	  PlaySound (exepath + '\sounds\beep.wav');
-	  Engine.SetTarget (Beolin);
+
+    PlaySound (exepath + '\sounds\beep.wav');
+    Engine.SetTarget (Beolin);
     Engine.DlgOpen;
     Engine.DlgSel ('Quest');
     Delay (500);
@@ -38,7 +48,7 @@ while true do begin
     Delay (First_delay);
     //engine.bypasstoserver ('Quest 621_Liquor 31547-1.htm');
     //Delay (Second_delay);
-  
+
     Engine.MoveTo (147541, -113293, -2112);
     Engine.MoveTo (147511, -112734, -2144);
     Engine.MoveTo (146069, -111869, -2408);
@@ -102,12 +112,14 @@ while true do begin
     Engine.MoveTo (157611, -115371, -1904);
     
     PlaySound (exepath + '\sounds\beep.wav');
+    Delay (500);
+    PlaySound (exepath + '\sounds\beep.wav');
     Engine.SetTarget (Pulin);
     Engine.DlgOpen;
     Engine.DlgSel ('Quest');
     Delay (500);
     //Engine.DlgSel ('Liquor');
-    Delay (First_delay);
+    Delay (2 * First_delay);
     //Engine.bypasstoserver ('Quest 621_Liquor 31544-1.htm');
     //Delay(Second_delay);
 
@@ -187,17 +199,27 @@ while true do begin
     Engine.MoveTo (147562, -113278, -2112);
     Engine.MoveTo (147817, -113160, -2104);	
     Engine.MoveTo (149180, -112487, -2090);
-    
-	  PlaySound (exepath + '\sounds\beep.wav');
+
+    PlaySound (exepath + '\sounds\beep.wav');
     Engine.SetTarget (Jeremy);
     Engine.DlgOpen;
     Engine.DlgSel ('Quest');
-    //Delay (First_delay);
-    //Engine.DlgSel ('Egg Delivery');
-    //Delay (Second_delay);
-    //Engine.bypasstoserver ('Quest 621_EggDelivery 31521-1.htm');
-
-    GoHome;
+    Delay (500);
+    Engine.EnterText ('/unstuck');
   end;
-end;  
-end.
+
+  {
+    Possible respawns for Goddard
+  }
+  // if in front of the warehouse
+  if  User.InRange (146099, -58083, -3002, 600, 200)  then begin
+    Engine.MoveTo (146182, -57949, -2976);
+    Engine.MoveTo (147562, -113278, -2112);
+  end;
+  Delay (20 * 1000);
+  end;
+end;
+
+BEGIN
+  TTQuest;
+END.

@@ -1612,34 +1612,6 @@ begin
 end;
 
 {
-  if  User.InRange (172000, -17600, -4900, 500, 200)  then
-    Print ('Moving to Disciples Necro hunting ground.');
-    Engine.SetTarget (ZIGGURAT);
-    Engine.MoveToTarget;
-    Engine.DlgOpen;
-    Delay (500);
-    Engine.DlgSel (1);
-    Delay (2 * 1000);
-    Engine.MoveTo (172636, -17426, -4896);
-    Engine.MoveTo (172700, -16465, -4896);
-    Engine.MoveTo (173168, -15825, -4896);
-    Engine.MoveTo (174644, -14357, -4896);
-    Engine.MoveTo (175134, -13758, -4896);
-    Engine.MoveTo (176120, -12775, -4896);
-    Engine.MoveTo (176558, -12969, -4896);
-    Engine.MoveTo (177260, -12656, -4896);
-    Engine.MoveTo (177264, -14727, -4900);
-    Engine.LoadZone ('Disciples.zmap');  
-
-  Print ('Moving to Wall of Argos hunting ground.');
-  Engine.MoveTo (188513, -63854, -2800);
-  Engine.MoveTo (189077, -63243, -2784);
-  Engine.MoveTo (189830, -60928, -2888);
-  Engine.MoveTo (187774, -57270, -3157);
-  Engine.LoadZone ('WallOfArgos.zmap');
-}
-
-{
 --------------------------------------------------------------------------------
   When a tutorial window appears it plays a sound
 --------------------------------------------------------------------------------

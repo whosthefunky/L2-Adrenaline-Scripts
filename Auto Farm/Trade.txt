@@ -10,10 +10,21 @@ procedure  Trade;
 begin
   while  true  do
   begin
-    Engine.EnterText ('+WTS Fangs of Stakato. 100 Fangs = 9 gold');
-    Delay (30 * 1000);
+    //Engine.EnterText ('+WTS Fangs of Stakato. 100 Fangs = 9 gold');
+    //Engine.EnterText ('+WTT TT earring for ring');
+    Engine.EnterText ('+WTS 12 EAS');
+    Delay (500);
+    Engine.EnterText ('+WTS 15 EWA');
+    Delay (500);
+    Engine.EnterText ('+WTS 6 Gift Box 150g each');
+    Delay (500);
+    Engine.EnterText ('+WTB DC Robe 1kg');
+    Delay (500);
+    Engine.EnterText ('+WTB DC Heavy 1kg');
+    Delay (20 * 1000);
   end;
 end;
 
 BEGIN
+  Trade;
 END.

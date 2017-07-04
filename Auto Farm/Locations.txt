@@ -4,6 +4,9 @@ interface
 
 uses  TeleportModule, SettingsModule;
 
+const
+  Ziggurat = 31101;
+
 procedure  Ketra;
 procedure  StakatoNest;
 
@@ -137,6 +140,68 @@ begin
   end else  Print ('You aren''t in the nest');
 end;
 
+procedure  Disciples;
+begin
+  if  User.InRange (172000, -17600, -4900, 200, 200)  then
+  begin
+    Print ('Moving to Disciples Necro hunting ground.');
+    Engine.SetTarget (Ziggurat);
+    Engine.MoveToTarget;
+    Engine.DlgOpen;
+    Delay (500);
+    Engine.DlgSel (1);
+    Delay (2 * 1000);
+  end;
+  if  User.InRange (172255, -17587, -4898, 500, 200)  then
+  begin
+    Engine.LoadConfig ('KillAggroMobs');
+    Engine.MoveTo (172636, -17426, -4896);
+    Engine.MoveTo (172700, -16465, -4896);
+    Engine.MoveTo (173168, -15825, -4896);
+    Engine.MoveTo (174644, -14357, -4896);
+    Engine.MoveTo (175134, -13758, -4896);
+    Engine.MoveTo (176120, -12775, -4896);
+    Engine.MoveTo (176558, -12969, -4896);
+    Engine.MoveTo (177260, -12656, -4896);
+    Engine.MoveTo (177264, -14727, -4900);
+    Engine.LoadZone ('Disciples.zmap');
+	  Engine.LoadConfig (User.Name);
+	  Engine.FaceControl (0, true);
+  end;	
+end;
+
+procedure  DisciplesDeep;
+begin
+  if  User.InRange (172000, -17600, -4900, 200, 200)  then
+  begin
+    Print ('Moving to Disciples Necro hunting ground.');
+    Engine.SetTarget (Ziggurat);
+    Engine.MoveToTarget;
+    Engine.DlgOpen;
+    Delay (500);
+    Engine.DlgSel (1);
+    Delay (2 * 1000);
+  end;
+  if  User.InRange (172255, -17587, -4898, 500, 200)  then
+  begin
+    Engine.LoadConfig ('KillAggroMobs');
+    Engine.MoveTo (172636, -17426, -4896);
+    Engine.MoveTo (172700, -16465, -4896);
+    Engine.MoveTo (173168, -15825, -4896);
+    Engine.MoveTo (173148, -15141, -4896);
+    Engine.MoveTo (172654, -12993, -4925);
+    Engine.MoveTo (173465, -12972, -4927);
+    Engine.MoveTo (176236, -12669, -4896);
+    Engine.MoveTo (176240, -13001, -4896);
+    Engine.MoveTo (178336, -12987, -4896);
+    Engine.MoveTo (178354, -11894, -4896);
+    Engine.MoveTo (178350, -10292, -4927);
+    Engine.LoadZone ('DisciplesDeep.zmap');
+    Engine.LoadConfig (User.Name);
+    Engine.FaceControl (0, true);
+  end;	
+end;
+
 BEGIN
-  StakatoNest;
+  Disciples;
 END.

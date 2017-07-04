@@ -5,7 +5,61 @@
   1/5 chance, 1m 49s avg. respawn time
 --------------------------------------------------------------------------------
 }
+procedure  ImperialTomb;
+begin
+  if  User.InRange (187119, -75478, -2843, 500, 200)  then begin
+    Engine.MoveTo (186316, -75563, -2744);
+  end;
+  if  User.InRange (186316, -75563, -2744, 500, 200)  then begin
+    Engine.MoveTo (185057, -75714, -2728);
+  end;
+  if  User.InRange (185057, -75714, -2728, 500, 200)  then begin
+    Engine.MoveTo (184567, -78694, -2728);
+  end;
+  if  User.InRange (184567, -78694, -2728, 500, 200)  then begin
+    Engine.MoveTo (182428, -78670, -2728);
+  end;
+  if  User.InRange (182428, -78670, -2728, 500, 200)  then begin
+    Engine.MoveTo (181407, -77592, -2728);
+  end;
+  if  User.InRange (181407, -77592, -2728, 500, 200)  then begin
+    Engine.MoveTo (181292, -75321, -2728);
+  end;
+  if  User.InRange (181292, -75321, -2728, 500, 200)  then begin
+    Engine.MoveTo (178255, -75332, -2728);
+  end;
+  if  User.InRange (178255, -75332, -2728, 500, 200)  then begin
+    Engine.MoveTo (177927, -75840, -2728);
+  end;
+  if  User.InRange (177927, -75840, -2728, 500, 200)  then begin
+    Engine.MoveTo (177924, -78645, -3376);
+  end;
+  if  User.InRange (177924, -78645, -3376, 500, 200)  then begin
+    Engine.MoveTo (177955, -80609, -4024);
+  end;
+  if  User.InRange (177955, -80609, -4024, 500, 200)  then begin
+    Engine.MoveTo (178471, -81011, -4024);
+  end;
+  if  User.InRange (178471, -81011, -4024, 500, 200)  then begin
+	Engine.MoveTo (181305, -81020, -4672);
+  end;
+  if  User.InRange (181305, -81020, -4672, 500, 200)  then begin
+    Engine.MoveTo (184170, -80973, -5312);
+  end;
+  if  User.InRange (184170, -80973, -5312, 500, 200)  then begin
+    Engine.MoveTo (187038, -80994, -5960);
+  end;
+  if  User.InRange (187038, -80994, -5960, 500, 200)  then begin
+    Engine.MoveTo (189005, -81006, -6608);
+  end;
+  if  User.InRange (189005, -81006, -6608, 500, 200)  then begin
+    Engine.MoveTo (189413, -81409, -6608);
+  end;
+  if  User.InRange (189413, -81409, -6608, 500, 200)  then begin
+	Engine.MoveTo (189414, -83256, -5976);
+  end;
+end;
 
 BEGIN
-  FullPlateShieldFragment;
+  ImperialTomb;
 END.

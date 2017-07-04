@@ -166,7 +166,7 @@ begin
     if isDead or needsBuffs or not inFight then
     begin
       Engine.FaceControl(0,false); // turn off bot interface
-      moveInCity;
+      //moveInCity;
       buffing; // always buff. Don't check if buffs needed
       //teleport;
       moveToHuntingGround;
