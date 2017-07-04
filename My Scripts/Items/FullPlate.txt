@@ -25,7 +25,8 @@ begin
     Engine.MoveTo (175314, 17300, -3248);
   end;
   if  User.InRange (175314, 17300, -3248, 1000, 200)  or  User.InRange (172911, 18506, -3280, 500, 200) then begin
-    Engine.LoadZone ('FullPlateArmorTemper.zmap');
+    Engine.LoadZone (exepath + 'Zmaps\FullPlateArmorTemper.zmap');
+    Engine.FaceControl (0, true);
   end;
 end;
 
@@ -259,8 +260,8 @@ end;
 }
 procedure FullPlateShieldFragment;
 begin
-  if  User.InRange (-21738, 77402, -5172);
-    LoadConfig ('KillAgroMobs');
+  if  User.InRange (-21738, 77402, -5172, 500, 200)  then begin
+    Engine.LoadConfig ('KillAgroMobs');
     Engine.MoveTo (-21369, 77659, -5197);
     Engine.MoveTo (-21344, 78407, -5199);
 
@@ -286,5 +287,5 @@ if  User.InRange (157187, 78612, -3336, 500, 200)  then begin
 end;}
 
 BEGIN
-  FullPlateShieldFragment;
+  FullPlateArmorTemper;
 END.
