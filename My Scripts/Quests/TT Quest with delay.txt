@@ -12,7 +12,7 @@ const
  Naff = 31544;
  Pulin = 31543;
  Lietta = 31267;
- Valentina = 30177;
+ Valentine = 31584;
 
 procedure  MoveIntoTheWarehouse;
 begin
@@ -36,9 +36,9 @@ end;
 procedure  MoveOutOfTheWarehouse;
 begin
   // If in the warehouse
-  if  User.InRange (147562, -113278, -2112, 600, 200)  then begin
+  if  User.InRange (146405, -57556, -2960, 600, 200)  then begin
     Engine.MoveTo (146182, -57949, -2976);
-    Engine.MoveTo (146099, -58083, -3002);
+    Engine.MoveTo (146185, -57951, -3007);
   end;
 end;
 
@@ -52,7 +52,7 @@ begin
   
   // If in the Magic Shop
   if  User.InRange (149338, -57463, -2968, 200, 200)  then begin
-    Engine.SetTarget (Valentina);
+    Engine.SetTarget (Valentine);
     Engine.DlgOpen;
 	  Delay (500);
     Engine.DlgSel ('Quest');
@@ -107,6 +107,7 @@ begin
   MoveIntoTheWarehouse;
   MoveOutOfTheWarehouse;
   MoveToBottomOfWestStairs;
+  PlaySound (exepath + '\sounds\beep.wav');
 end;
 
 procedure  MoveFromWarehouseToMagicShop;
@@ -138,6 +139,7 @@ begin
   MoveIntoTheMagicShop;
   MoveOutOfTheMagicShop;
   MoveToBottomOfEastStairs;
+  PlaySound (exepath + '\sounds\beep.wav');
 end;
 
 procedure  TTQuest;
@@ -197,7 +199,6 @@ while  true  do begin
     Engine.MoveTo (140663, -105814, -3608);
     Engine.MoveTo (140660, -105523, -3632);
     
-    PlaySound (exepath + '\sounds\beep.wav');
     Engine.SetTarget(Crocus);
     Engine.DlgOpen;
     Delay (500);
@@ -206,6 +207,7 @@ while  true  do begin
     Engine.BypassToServer ('npc_268472322_Quest 622_SpecialtyLiquorDelivery');
     Delay(500);
     Engine.BypassToServer ('Quest 622_SpecialtyLiquorDelivery 31545-1.htm');
+    PlaySound (exepath + '\sounds\beep.wav');
  
     Engine.MoveTo (144297, -103071, -3584);
     Engine.MoveTo (144763, -100705, -3272);  // Fix this
@@ -217,7 +219,6 @@ while  true  do begin
     Engine.MoveTo (154900, -104555, -2768);
     Engine.MoveTo (155612, -105732, -2752);
     
-    PlaySound (exepath + '\sounds\beep.wav');
     Engine.SetTarget (Naff);
     Engine.DlgOpen;
     Delay (500);
@@ -226,6 +227,7 @@ while  true  do begin
     Engine.BypassToServer ('npc_268465439_Quest 622_SpecialtyLiquorDelivery');
     Delay (500);
     Engine.BypassToServer ('Quest 622_SpecialtyLiquorDelivery 31544-1.htm');
+    PlaySound (exepath + '\sounds\beep.wav');
   
     Engine.MoveTo (154980, -107065, -2680);
     Engine.MoveTo (153341, -110607, -2696);
@@ -284,7 +286,6 @@ while  true  do begin
     Engine.MoveTo (144297, -103071, -3584);
     Engine.MoveTo (140660, -105523, -3632);
     
-    PlaySound (exepath + '\sounds\beep.wav');
 	Delay (1500);
     Engine.SetTarget (Crocus);
     Engine.DlgOpen;
@@ -294,6 +295,7 @@ while  true  do begin
     Engine.BypassToServer ('npc_268472322_Quest 621_EggDelivery');
     Delay (500);
     Engine.BypassToServer ('Quest 621_EggDelivery 31545-1.htm');
+    PlaySound (exepath + '\sounds\beep.wav');
  
     Engine.MoveTo (140660, -105523, -3632);
     Engine.MoveTo (140663, -105814, -3608);
@@ -301,7 +303,6 @@ while  true  do begin
     Engine.MoveTo (141637, -108895, -3576);
     Engine.MoveTo (141672, -109450, -3584);
     
-    PlaySound (exepath + '\sounds\beep.wav');
     Engine.SetTarget (Kuber);
     Engine.DlgOpen;
     Delay (500);
@@ -310,6 +311,7 @@ while  true  do begin
     Engine.BypassToServer ('npc_268465440_Quest 621_EggDelivery');
     Delay (500);
     Engine.BypassToServer ('Quest 621_EggDelivery 31546-1.htm');
+    PlaySound (exepath + '\sounds\beep.wav');
  
     Engine.MoveTo (146544, -108973, -3504);
     Engine.MoveTo (148248, -108878, -2720);
@@ -330,8 +332,10 @@ while  true  do begin
     Engine.MoveTo (147562, -113278, -2112);
     Engine.MoveTo (147817, -113160, -2104);
     Engine.MoveTo (149180, -112487, -2090);
+    Engine.MoveTo (149551, -112649, -2064);
 
     Engine.EnterText ('/unstuck');
+    Delay (2000);
     Engine.SetTarget (Jeremy);
     Engine.DlgOpen;
     Delay (500);
@@ -348,7 +352,7 @@ while  true  do begin
     Engine.bypasstoserver ('npc_268465435_Quest 622_SpecialtyLiquorDelivery');
     Delay (500);
     Engine.bypasstoserver ('Quest 622_SpecialtyLiquorDelivery 31521-3.htm');
-	Delay (20 * 1000);
+    Delay (20 * 1000);
   end;
 
   {
@@ -368,6 +372,12 @@ while  true  do begin
     Engine.MoveTo (145816, -57769, -2976);
     Engine.MoveTo (146209, -57940, -2976); // in front of the warehouse
     GoingFirstToWarehouse;	
+  end;
+  
+  // Top of east stairs
+  if  User.InRange (148650, -56042, -2807, 600)  then begin
+    Engine.MoveTo (149279, -56451, -2776);
+    Engine.MoveTo (150239, -57171, -3002);
   end;
 
   // Bottom of east stairs
