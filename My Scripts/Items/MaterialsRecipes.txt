@@ -652,7 +652,7 @@ begin
     Engine.MoveTo (15728, 143823, -2880);
   end;
   if  User.InRange (14823, 136184, -3384, 2000, 200)  then begin
-    Engine.LoadZone (exepath + '\Zmaps\SteelMoldRecipe.zmap');
+    Engine.LoadZone (exepath + '\Zmaps\DeathPass.zmap');
     Engine.LoadConfig ('Spoiling'); // Load config that only targets Arachnid Tracker
     Engine.FaceControl (0, true);
     // Wait 1 minute while we haven't get the items
