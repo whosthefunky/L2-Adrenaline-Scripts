@@ -1,13 +1,12 @@
 begin
   while  true  do
   begin
-    Engine.EnterText ('+I want academy for 4 pjs 40kk each');
-    Delay (5 * 1000);
+    Engine.EnterText ('+WTB  Forgotten Blade pm price');
+    Delay (10 * 1000);
     //Engine.EnterText ('+WTS Fangs of Stakato. 100 Fangs = 9 gold');
     //Engine.EnterText ('+WTT TT earring for ring');
     {Engine.EnterText ('+WTS 12 EAS offer');
     Delay (1000);
-    Engine.EnterText ('+WTS 15 EWA offer');
     Delay (1000);
     Engine.EnterText ('+WTS 6 Gift Box 150g each');
     Delay (1000);
