@@ -13,12 +13,14 @@ const
  Pulin = 31543;
  Lietta = 31267;
  Valentine = 31584;
+ Strider = 4424;
 
 {
     Possible respawns for Goddard
 }
-procedure  MoveFromMiddleOfSquare;
+procedure  MoveInCity;
 begin
+  // Middle of square
   if  User.InRange (147716, -56286, -2775, 500, 200)  then begin
     Engine.MoveTo (147716, -57290, -2776);
     Engine.MoveTo (147700, -58510, -2976);
@@ -26,33 +28,42 @@ begin
     Engine.MoveTo (149186, -57833, -2968); // in front of the Magic Shop
     GoingFirstToMagicShop;
   end;
-end;
   
-procedure  MoveFromBottomOfWestStairs;
-begin
+  // Bottom of west stairs
   if  User.InRange (145307, -57007, -2980, 500, 200)  then begin
     Engine.MoveTo (145816, -57769, -2976);
     Engine.MoveTo (146209, -57940, -2976); // in front of the warehouse
     GoingFirstToWarehouse;	
   end;
-end;
 
-procedure  MoveFromBottomOfEastStairs;
-begin
+  // Bottom of east stairs
   if  User.InRange (150239, -57171, -3002, 500, 200)  then begin
     Engine.MoveTo (149272, -58041, -3007);
     Engine.MoveTo (149176, -57815, -2968); // in front of the Magic Shop
     GoingFirstToMagicShop;
   end;
-end;
-  
-procedure  MoveFromBottomOfNorthStairs;
-begin
+
+  // Bottom of north stairs
   if  User.InRange (147759, -58324, -3002, 500, 200)  then begin
     Engine.MoveTo (149211, -57896, -3007);
     Engine.MoveTo (149176, -57815, -2968); // in front of the Magic Shop
     GoingFirstToMagicShop;
   end;
+end;
+
+procedure  Teleport;
+begin
+  Engine.SetTarget(31124);
+  Engine.MoveToTarget;
+  Engine.DlgOpen;
+  Delay(500);
+  Engine.DlgSel('Server Areas');
+  Delay(500);
+  Engine.DlgSel('Areas Of Goddard');
+  Delay(500);
+  Engine.DlgSel('Hot Springs');
+  Print('Teleported.');
+  Delay(5*1000);
 end;
 
 procedure  MoveIntoTheWarehouse;
@@ -71,6 +82,31 @@ begin
     Engine.DlgSel ('Quest');
     Delay (500);
     Engine.bypasstoserver ('Quest 622_SpecialtyLiquorDelivery 31267-2.htm');
+  end;
+end;
+
+procedure  MoveFromWarehouseToMagicShop;
+begin
+  if  User.InRange (146421, -57551, -2993, 200, 200)  then begin
+    Engine.MoveTo (146159, -57982, -2976);
+    Engine.MoveTo (146448, -58248, -3007);
+    Engine.MoveTo (147735, -58393, -3007);
+    Engine.MoveTo (149211, -57896, -3007);
+    Engine.MoveTo (149176, -57815, -2968);
+    MoveIntoTheMagicShop;
+  end;
+end;
+
+procedure  MoveFromMagicShopToGatekeeper;
+begin
+  if  User.InRange (149338, -57463, -2968, 200, 200)  then begin
+    Engine.MoveTo (149079, -57632, -2968);
+    Engine.MoveTo (149216, -57893, -2976);
+    Engine.MoveTo (148329, -58121, -2976);
+    Engine.MoveTo (147780, -58050, -3007);
+    Engine.MoveTo (147525, -55929, -2760);
+    Engine.MoveTo (147620, -55356, -2728);
+    Engine.MoveTo (147934, -55266, -2759);
   end;
 end;
 
@@ -101,6 +137,20 @@ begin
     Engine.MoveTo (148876, -58353, -3007);
     Engine.MoveTo (146792, -58436, -2976);
     Engine.MoveTo (146182, -57953, -3007);
+    MoveIntoTheWarehouse;
+  end;
+end;
+
+procedure  MoveFromWarehouseToGatekeeper;
+begin
+  if  User.InRange (146421, -57551, -2993, 200, 200)  then begin
+    Engine.MoveTo (146159, -57982, -2976);
+    Engine.MoveTo (145773, -57721, -2976);
+    Engine.MoveTo (145554, -56910, -2976);
+    Engine.MoveTo (146085, -56536, -2792);
+    Engine.MoveTo (147525, -55929, -2760);
+    Engine.MoveTo (147620, -55356, -2728);
+    Engine.MoveTo (147934, -55266, -2759);
   end;
 end;
 
@@ -120,18 +170,8 @@ procedure  GoingFirstToMagicShop;
 begin
   MoveIntoTheMagicShop;
   MoveFromMagicShopToWarehouse;
-  PlaySound (exepath + '\sounds\beep.wav');
-end;
-
-procedure  MoveFromWarehouseToMagicShop;
-begin
-  if  User.InRange (146421, -57551, -2993, 200, 200)  then begin
-    Engine.MoveTo (146159, -57982, -2976);
-    Engine.MoveTo (146448, -58248, -3007);
-    Engine.MoveTo (147735, -58393, -3007);
-    Engine.MoveTo (149211, -57896, -3007);
-    Engine.MoveTo (149176, -57815, -2968);
-  end;
+  MoveFromWarehouseToGatekeeper;
+  Teleport;
 end;
 
 procedure  MoveToBottomOfEastStairs;
@@ -150,17 +190,32 @@ procedure  GoingFirstToWarehouse;
 begin
   MoveIntoTheWarehouse;
   MoveFromWarehouseToMagicShop;
-  PlaySound (exepath + '\sounds\beep.wav');
+  MoveFromMagicShopToGatekeeper;
+  Teleport;
 end;
 
 procedure  TTQuest;
+var
+  DragonTrumpet: TL2Item;
 begin
 while  true  do begin
-  if  User.InRange (149051, -112424, -2071, 500, 200)  then begin
+  if  User.InRange (149051, -112424, -2071, 200, 200)  then begin
+    Engine.MoveTo (149551, -112649, -2064);
+  end;
+  
+  if  User.InRange (149630, -112418, -2055, 200, 200)  then begin
     Engine.MoveTo (149551, -112649, -2064);
   end;
   
   if  User.InRange (149551, -112649, -2064, 200, 200)  then begin
+    // Mount
+    if  Inventory.User.ByID(Strider, DragonTrumpet)  then  begin
+      Engine.UseItem (DragonTrumpet);
+      Delay (8 * 1000);
+      Engine.UseAction(38);
+      break;
+    end;
+	
     Engine.SetTarget (Jeremy);
     Engine.DlgOpen;
     Delay (500);
@@ -287,7 +342,7 @@ while  true  do begin
     Engine.BypassToServer ('npc_268465439_Quest 621_EggDelivery');
     Delay (500);
     Engine.BypassToServer ('Quest 621_EggDelivery 31544-1.htm');
-
+ 
     Engine.MoveTo (154900, -104555, -2768);
     Engine.MoveTo (153874, -102680, -2960);
     Engine.MoveTo (153236, -102017, -2744);
@@ -297,7 +352,7 @@ while  true  do begin
     Engine.MoveTo (144763, -100705, -3272);  
     Engine.MoveTo (144297, -103071, -3584);
     Engine.MoveTo (140660, -105523, -3632);
-
+    
     Delay (1000);
     Engine.SetTarget (Crocus);
     Engine.DlgOpen;
@@ -369,12 +424,15 @@ while  true  do begin
     Engine.bypasstoserver ('Quest 622_SpecialtyLiquorDelivery 31521-3.htm');
     Engine.EnterText ('/unstuck');
     Delay (20 * 1000);
+	
+	// Dismount
+    if  Inventory.User.ByID(DragonTrumpetID, DragonTrumpet)  then  begin
+      Engine.UseAction(38);
+      break;
+    end;
   end;
-  
-  MoveFromMiddleOfSquare;
-  MoveFromBottomOfWestStairs;
-  MoveFromBottomOfEastStairs;
-  MoveFromBottomOfNorthStairs;
+
+  MoveInCity;
   
   Delay (2 * 1000);
   end;
