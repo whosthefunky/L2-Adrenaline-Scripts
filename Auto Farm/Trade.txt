@@ -1,20 +1,15 @@
 begin
   while  true  do
   begin
-    Engine.EnterText ('+WTB  Forgotten Blade pm price');
+    Engine.EnterText ('+WTS 14 eas 200g');
     Delay (10 * 1000);
-    //Engine.EnterText ('+WTS Fangs of Stakato. 100 Fangs = 9 gold');
-    //Engine.EnterText ('+WTT TT earring for ring');
-    {Engine.EnterText ('+WTS 12 EAS offer');
-    Delay (1000);
-    Delay (1000);
-    Engine.EnterText ('+WTS 6 Gift Box 150g each');
-    Delay (1000);
-    Engine.EnterText ('+WTB DC Robe Set 1kg');
-    Delay (1000);
-    Engine.EnterText ('+WTB DC Heavy Set 1kg');
-    Delay (1000);
-    Engine.EnterText ('+WTB AM 1kg');
-    Delay (20 * 1000);}
+    Engine.EnterText ('+WTS 8 gift box 150g each');
+    Delay (10 * 1000);
+    {Engine.EnterText ('+WTB Forgotten Blade pm price');
+    Delay (10 * 1000);
+    Engine.EnterText ('+WTB Blue Crystal 12');
+    Delay (10 * 1000);
+    Engine.EnterText ('+WTB Gren Crystal 13');
+    Delay (10 * 1000);}
   end;
 end.
