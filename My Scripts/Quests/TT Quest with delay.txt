@@ -209,9 +209,9 @@ begin
 end;
 
 procedure  TTQuest;
-var
-  DragonTrumpetID: integer;
-  DragonTrumpet: TL2Item;
+//var
+  //DragonTrumpetID: integer;
+  //DragonTrumpet: TL2Item;
 begin
 while  true  do begin
   if  User.InRange (149051, -112424, -2071, 200, 200)  then begin
@@ -224,12 +224,15 @@ while  true  do begin
   
   if  User.InRange (149551, -112649, -2064, 200, 200)  then begin
     // Mount
-    {if  Inventory.User.ByID(DragonTrumpetID, DragonTrumpet)  then  begin
-      Engine.UseItem (DragonTrumpet);
-      Delay (8 * 1000);
-      Engine.UseAction(38);
-      break;
-    end;}
+	{for  DragonTrumpetID := 4422  to  4424  then begin
+       if  Inventory.User.ByID(DragonTrumpetID, DragonTrumpet)  then  begin
+        Engine.UseItem (DragonTrumpet);
+        Delay (8 * 1000);
+        Engine.UseAction(38);
+        break;
+      end;
+	end;
+	}
 	
     Engine.SetTarget (Jeremy);
     Engine.DlgOpen;
@@ -368,7 +371,7 @@ while  true  do begin
     Engine.MoveTo (144297, -103071, -3584);
     Engine.MoveTo (140660, -105523, -3632);
     
-	  Delay (1000);
+    Delay (1000);
     Engine.SetTarget (Crocus);
     Engine.DlgOpen;
     Delay (500);
@@ -441,10 +444,12 @@ while  true  do begin
     Delay (20 * 1000);
 	
 	// Dismount
-    {if  Inventory.User.ByID(DragonTrumpetID, DragonTrumpet)  then  begin
-      Engine.UseAction(38);
-      break;
-    end;}
+    {for  DragonTrumpetID := 4422  to  4424  then begin
+       if  Inventory.User.ByID(DragonTrumpetID, DragonTrumpet)  then  begin
+        Engine.UseAction(38);
+        break;
+      end;
+	end;}
   end;
 
   MoveInCity;
