@@ -1,0 +1,56 @@
+{
+  Path Of A Noblesse Possessor Of A Precious Soul Part 2 - Class Quest
+
+  Level: 60
+  Start Location: Rune Castle Town
+  Start Npc: Master Virgil
+  Races: All
+  Classes: All
+  Repeatable: No (Party)
+  Reward Experience; Ability to become a Noblesse
+  Requirements: Subclass Level 60, Completed Path of a Noblesse, Possessor of a Precious Soul - 1
+}
+
+{
+  1. To start the quest speak with Virgil in Rune Castle Town (in Rune temple),
+     he will tell you to speak with Kassandra. She will send you to Ogmar.
+}
+
+{
+  2. Ogmar will send you to Swamp of Screams to meet with Mysterious Dark Knight.
+}
+
+{
+  3. Speak with the Knight and ispect the dead angels to find a single blonde hair.
+}
+
+{
+  4. Speak again with him and he will send you to one witch who owes him a favour - Kalis.
+}
+
+{
+  5. Talk to Kalis and she will ask you for some items in order her spell to work.
+}
+
+{
+  6. Now you have to ask Alchemist Matild for the items. Once you have them return
+     to Kalis Kalis location on the map.
+}
+
+{
+  7. Kalis will make the spell and found the princess but you must hurry,
+     cause the princess is in danger. Go to Valley of Saints
+}
+
+{
+  8. Chek where the yellow thumbtack is. Find the entrance of the cave.
+     Here kill the quest monsters in order to obtain Orb Of Binding.
+     Now you must speak to all the 4 seals and use the orbs to unseal the unicorn.
+     The 4th seal will take all of your orbs of binding. After talk to the unicorn,
+     who comes alive and it turned to be the princess! Now return to Kassandra.
+}
+
+{
+  9. Speak with Virgil and you will recieve Caradine's Letter, which you need to
+     start the next Noblesse Quest. (to start the quest you need level 65 on the sub).
+}

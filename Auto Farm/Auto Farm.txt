@@ -1,4 +1,4 @@
-uses SettingsModule, Classes, TeleportModule, Locations, UserFunctions, Trade;
+uses  SettingsModule, Classes, TeleportModule, Locations, UserFunctions, Trade;
 
 {
 --------------------------------------------------------------------------------
@@ -23,7 +23,7 @@ const
   If the character didn't move then unlock the server.
 --------------------------------------------------------------------------------
 }
-procedure unlockServer;
+procedure  unlockServer;
 var
   pin: Integer;
   Moved: Boolean;
@@ -33,14 +33,14 @@ begin
   Delay (3000); // Wait 3s for the server to load
   lastX := User.X;
   newX  := User.X + 5;
-  Engine.MoveTo(newX, User.Y, User.Z);
-  if User.InRange(newX, User.Y, User.z, 3, 10) then Moved := true;
+  Engine.MoveTo (newX, User.Y, User.Z);
+  if User.InRange (newX, User.Y, User.z, 3, 10) then Moved := true;
 
   // If it didn't moved it is locked
-  if not Moved then
+  if  not Moved  then
   begin
     //pin := xxxxxx; // TODO: add configuration for pin
-    //Engine.BypassToServer('custom_pin_unlock ' + IntToStr(pin));
+    //Engine.BypassToServer ('custom_pin_unlock ' + IntToStr(pin));
   end;
 end;
 
@@ -49,11 +49,11 @@ end;
   Different ways to return home
 --------------------------------------------------------------------------------
 }
-procedure Unstuck;
+procedure  Unstuck;
 begin
-  //Engine.GoHome(rtclanhall);     // When you die go to clan hall
-  Engine.UseItem(SCROLL_OF_SCAPE);
-  //Engine.EnterText('/unstuck');  // To enter '/ustuck' in chat window
+  //Engine.GoHome (rtclanhall);     // When you die go to clan hall
+  Engine.UseItem (SCROLL_OF_SCAPE);
+  //Engine.EnterText ('/unstuck');  // To enter '/ustuck' in chat window
   Unstuck; // It appears in the script guide but doesn't work
 end;
 
@@ -62,20 +62,20 @@ end;
   Check if the character is dead and go to village
 --------------------------------------------------------------------------------
 }
-function isDead: boolean;
+function  isDead: boolean;
 begin
   isDead := false;
-  if User.Dead then
+  if  User.Dead  then
   begin
-    Delay(10000); // In case of resurrection
+    Delay (10000); // In case of resurrection
   end;
-  if User.Dead then
+  if  User.Dead  then
   begin
     isDead := true;
-    Engine.FaceControl(0,false);
-    Print('Dead. Pressing to village.');
+    Engine.FaceControl (0,false);
+    Print ('Dead. Pressing to village.');
     Engine.GoHome;
-    Delay(5000);
+    Delay (5000);
     InFight := false;
   end;
 end;
@@ -85,14 +85,14 @@ end;
   Check if the character needs buffs
 --------------------------------------------------------------------------------
 }
-function needsBuffs: boolean;
+function  needsBuffs: boolean;
 var
   buff: TL2Buff;
 begin
   needsBuffs := false;
   // check for any buff that you use
-  if  not User.Buffs.ByID(WIND_WALK, Buff)  or
-    User.Buffs.ById(WIND_WALK, buff)  and  (buff.EndTime < 60 * 1000)  then
+  if  not User.Buffs.ByID (WIND_WALK, Buff)  or
+    User.Buffs.ById (WIND_WALK, buff)  and  (buff.EndTime < 60 * 1000)  then
   begin
     needsBuffs := true;
   end;
@@ -104,16 +104,16 @@ end;
   YOU MAY WANT TO CHANGE THIS
 --------------------------------------------------------------------------------
 }
-procedure buffing;
+procedure  buffing;
 begin
-  Print('Buffing...');
-  Engine.SetTarget(HIRA); // NPC ID
+  Print ('Buffing...');
+  Engine.SetTarget (HIRA); // NPC ID
   Engine.MoveToTarget;
-  Delay(500);
+  Delay (500);
   Engine.DlgOpen;
-  Delay(500);
-  Engine.DlgSel(1);   //Open buffs
-  Delay(500);
+  Delay (500);
+  Engine.DlgSel (1);   //Open buffs
+  Delay (500);
   {
     YOU MAY HAVE TO CHANGE THIS
   }
@@ -121,10 +121,10 @@ begin
     Engine.BypassToServer ('Quest 9999_NPCBuffer 108')
   else
     Engine.BypassToServer ('Quest 9999_NPCBuffer 107');   //Fighter buffs
-  Delay(500);
-  Engine.BypassToServer('Quest 9999_NPCBuffer 115');   //Heal
-  Delay(500);
-  Print('Buffed.');
+  Delay (500);
+  Engine.BypassToServer ('Quest 9999_NPCBuffer 115');   //Heal
+  Delay (500);
+  Print ('Buffed.');
 end;
 
 {
@@ -134,9 +134,9 @@ end;
   TODO: CREATE ARRAY OF HUNTING GROUND LOCATIONS
 --------------------------------------------------------------------------------
 }{
-procedure teleport;
+procedure  teleport;
 begin
-  
+
 end;}
 
 {
@@ -146,7 +146,7 @@ end;}
   TODO: CREATE ARRAY OF HUNTING GROUND LOCATIONS
 --------------------------------------------------------------------------------
 }
-procedure moveToHuntingGround;
+procedure  moveToHuntingGround;
 begin
   Ketra;
 end;
@@ -157,20 +157,20 @@ end;
   buffs, teleports and move to the desired hunting ground
 --------------------------------------------------------------------------------
 }
-procedure continueFarming;
+procedure  continueFarming;
 begin
   inFight := false;
   unlockServer;
-  while true do
+  while  true  do
   begin
-    if isDead or needsBuffs or not inFight then
+    if  isDead  or  needsBuffs  or  not inFight  then
     begin
-      Engine.FaceControl(0,false); // turn off bot interface
+      Engine.FaceControl (0,false); // turn off bot interface
       //moveInCity;
       buffing; // always buff. Don't check if buffs needed
       //teleport;
       moveToHuntingGround;
-      Print('Finished');
+      Print ('Finished');
     end;
   end;
 end;
@@ -180,7 +180,7 @@ end;
   Counts the number of mobs that are attacking you
 --------------------------------------------------------------------------------
 }
-function countAggroMobsOnUser: Array of TL2Live;
+function  countAggroMobsOnUser: Array of TL2Live;
 var
   i: Integer;
 begin
@@ -194,7 +194,7 @@ begin
     if (NpcList.Items(i).Target = User)  and  not NpcList.Items(i).Dead  and
        (NpcList.Items(i) <> nil)  then
     begin
-      SetLength(Result, Length(Result) + 1);
+      SetLength (Result, Length(Result) + 1);
       Result[Length(Result)-1] := NpcList.Items(i);
     end;
   end;
@@ -204,7 +204,7 @@ end;
   Kills the mobs that are attacking you.
 --------------------------------------------------------------------------------
 }
-procedure killAggroMobs(mobsArray : Array of TL2Live);
+procedure  killAggroMobs (mobsArray : Array of TL2Live);
 var
   i: Integer;
 begin
@@ -235,40 +235,40 @@ end;
   is greater than zero
 --------------------------------------------------------------------------------
 }
-procedure killAgroMobsThread;
+procedure  killAgroMobsThread;
 var
   mobsArray: Array of TL2Live;
 begin
-  while Engine.Status = lsOnline do
+  while  Engine.Status = lsOnline  do
   begin
     mobsArray := countAggroMobsOnUser;
-    if Length(mobsArray) > 0 then
+    if  Length(mobsArray) > 0  then
     begin
-      killAggroMobs(mobsArray);
+      killAggroMobs (mobsArray);
     end;
-  Delay(500);
+  Delay (500);
   end;
 end;
 
 {
-  When a tutorialwindow appears asking for captcha it plays a sound
+  When a tutorial window appears asking for captcha it plays a sound
 }{
-procedure checkForCaptcha;
+procedure  checkForCaptcha;
 begin
-  while Engine.Status = lsOnline do
+  while  Engine.Status = lsOnline  do
   begin
-    if Engine.tutorialwindow then
+    if  Engine.tutorialwindow  then
     begin
-      //PlaySound(exepath+'\sounds\'+'PlayerAlarm'+'.wav');
-      PlaySound(exepath+'beep.wav');
+      //PlaySound (exepath+'\sounds\'+'PlayerAlarm'+'.wav');
+      PlaySound (exepath+'beep.wav');
     end;
-    Delay(30*10000);
+    Delay (30*10000);
   end;
 end;}
 
 BEGIN
-  Script.NewThread(@continueFarming);
-  Script.NewThread(@killAgroMobsThread);
-  //Script.NewThread(@Trade);
-  //Script.NewThread(@checkForCaptcha);
+  Script.NewThread (@continueFarming);
+  Script.NewThread (@killAgroMobsThread);
+  //Script.NewThread (@Trade);
+  //Script.NewThread (@checkForCaptcha);
 END.

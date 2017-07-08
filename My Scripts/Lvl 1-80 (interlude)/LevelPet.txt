@@ -1,110 +1,13 @@
-uses SysUtils, Classes;
-
-procedure tpContoller;
 var
-  buff: TL2Buff;
-begin
-  while Engine.Status = lsOnline do
-  begin
-    if not User.Dead and not User.Buffs.ById(1262, buff) then
-      Engine.UseSkill(1262);
-      
-    delay(1000);
-  end;
-end;
+  i: integer;
 
-procedure petRangeProtect;
-var
-  previousTarget: TL2Live;
+BEGIN
+while  Engine.Status = lsOnline  do
 begin
-  print('[Thread] Summon range check started');
-  while Engine.Status = lsOnline do
-  begin
-    if (petlist.count > 0) and (User.distTo(petlist.items(0)) > 600) then
-    begin
-      if User.Target <> nil then
-        previousTarget := User.Target;
-        
-      Engine.SetTarget('Moon Howler');
-      Engine.MoveToTarget (-500);
-      //Engine.UseAction(53); // Move action (ID 53)
-      //Engine.UseAction(21); // Change movement mode);
-      Engine.SetTarget(previousTarget);
-      delay(3 * 1000);
+    Engine.SetTarget (targetId);
+    if  ( Pet.HP < 90 )  then begin
+      Engine.UseSkill (1401);
     end;
-    delay(500);
+    Delay (500);
   end;
-end;  
-
-procedure petHeal;
-begin
-    print('[Thread] Summon heal thread started');
-  while Engine.Status = lsOnline do
-  begin
-    if (petlist.count > 0) and (Petlist.items(0).HP < 80)
-        and (User.MP > 5) and (User.HP > 15) then
-    begin
-      Engine.SetTarget('Moon Howler');
-      //Engine.UseSkill (1401); // Major heal the pet
-      Engine.UseSkill (1217); //Greater heal
-    end;
-
-    if (petlist.count > 0) and (Petlist.items(0).Dead)
-        and (User.MP > 5) and (User.HP > 15) then
-    begin
-      Engine.SetTarget('Moon Howler');
-      Engine.UseSkill(1016); // Resurrect the pet
-    end;
-  
-    delay(250);
-  end;
-end;
-
-procedure countExpAdena;
-var
-  exp : int64;
-  TxtList : TStringList;
-  today : tdatetime;
-  adena : int64;
-  obj: tl2item;
-begin
-  TxtList := TStringList.Create;
-  exp := User.exp;
-  adena := obj.count;
-  while Engine.Status = lsOnline do begin
-     Inventory.User.ById(57, obj); // move adena (ID 57) to obj
-     
-     if exp < User.exp then begin
-        if fileexists(Script.Path + 'exp.txt') then
-          TxtList.LoadFromFile(Script.Path + 'exp.txt');
-          
-        exp := User.exp - exp;
-        today := now;
-        TxtList.Add('+' + inttostr(exp)+', '+User.Name+', '+datetostr(today)+', '+timetostr(today));
-        TxtList.SaveToFile(Script.Path + 'exp.txt'); 
-        exp := User.exp; 
-     end;
-     if adena < obj.count then
-     begin
-      if fileexists(Script.Path + 'adena.txt') then
-          TxtList.LoadFromFile(Script.Path + 'adena.txt');
-          
-        adena := obj.count - adena;
-        today := now;
-        TxtList.Add('+' + inttostr(adena)+', '+User.Name+', '+datetostr(today)+', '+timetostr(today));
-        TxtList.SaveToFile(Script.Path + 'adena.txt'); 
-        adena := obj.count;
-     end;
-     delay(60 * 5 * 1000);
-   end;
-   TxtList.Free;  
-end;
- 
-
-begin
-  script.newThread(@petHeal);
-  script.newThread(@petRangeProtect);
-  script.newThread(@tpContoller);
-  script.newThread(@countExpAdena);
-  delay(-1);
-end.
+END.

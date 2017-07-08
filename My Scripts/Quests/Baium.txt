@@ -1,15 +1,16 @@
 {
-  Into the Flame
-  Start lvl: 60
-  NPC: Watcher of Valakas Klein
-  Type: Solo / One time only
-  Rewards: Floating Stone to allow you to meet Valakas.
+  An Arrogant Search
+
+  Start Level :60
+  Start Location: Town of Aden
+  Type: Repeatable, Party
+  Rewards: Bloody Fabrics (A piece of cloth soaked in the blood of angels and the Platinum race. Hanellin has told you that in order to challenge Baium, you must wrap this blood-soaked cloth around your body.)
 }
 
 const
   Hanellin = 30864;
   Claudia = 31001;
-  
+
 procedure  TalkToHanellin;
 begin
 //TeleportTo ('aden');
@@ -20,78 +21,79 @@ if  User.InRange (146677, 25794, -2008, 500, 200)  then begin
     Engine.MoveTo (144677, 23948, -2136);
     Engine.MoveTo (144060, 23935, -2120);
     Engine.SetTarget (Hanellin);
-	Engine.DlgOpen;
-	Engine.DlgSel ('Quest');
-	Engine.DlgSel (1);
+    Engine.DlgOpen;
+    Engine.DlgSel ('Quest');
+    Engine.DlgSel (1);
   end;
 end;
-  
+
 procedure  AnArrogantSearch;
 begin
 {
-  1. Go to Dark Elf Guild in Aden to begin the quest
+  1. To start the quest go to Aden Castle Town and talk with Hanellin in Dark Elf Guild
 }
   TalkToHanellin;
-  {
-    2. Go to the bottom inside giant cave and kill lesser giant elder and lesser giant mage
-  }
+{
+  2. She tells you to hunt Lesser elder, or lesser mage giant at Giants Cave to get titan power stone.
+}
   // TeleportTo ('giant cave');
   if  User.InRange (174500, 52700, -4400, 500, 200)  then begin
     Print ('Moving to Giant''s Cave hunting ground.');
     Engine.MoveTo (174287, 52883, -4360);
     Engine.MoveTo (173794, 52994, -4360);
     Engine.MoveTo (173268, 60186, -4352);
-  	Engine.MoveTo (173370, 60780, -4368);
-  	Engine.MoveTo (174645, 61866, -4368);
+    Engine.MoveTo (173370, 60780, -4368);
+    Engine.MoveTo (174645, 61866, -4368);
     Engine.MoveTo (176654, 61701, -4396);
     Engine.MoveTo (181155, 61696, -4272);
     Engine.MoveTo (181475, 61694, -3992);
-  	Engine.MoveTo (182879, 62642, -3992);
-  	Engine.MoveTo (183182, 62639, -4019);
+    Engine.MoveTo (182879, 62642, -3992);
+    Engine.MoveTo (183182, 62639, -4019);
     Engine.MoveTo (184654, 61830, -4019);
     Engine.MoveTo (185414, 61763, -4152);
     Engine.MoveTo (185615, 60879, -4152);
     Engine.MoveTo (186008, 57882, -4568);
-  	Engine.MoveTo (187528, 62642, -3992);
-  	Engine.MoveTo (187561, 59750, -4976);
+    Engine.MoveTo (187528, 62642, -3992);
+    Engine.MoveTo (187561, 59750, -4976);
     Engine.MoveTo (188419, 60502, -5009);
     Engine.MoveTo (192213, 60508, -6129);
     Engine.MoveTo (192134, 62774, -6096);
-  	Engine.MoveTo (188159, 62761, -6928);
+    Engine.MoveTo (188159, 62761, -6928);
     Engine.LoadZone (exepath + 'Zmaps\LesserGiantElder.zmap');
   end;
-  
-  {
-    3. Get back to Hanellin
-  }
+
+{
+  3. When you are ready speak with Hanellin again.
+}
   // TeleportTo ('aden');
   TalkToHanellin;
   Engine.SetTarget (Hanellin);
   Engine.DlgOpen;
   Engine.DlgSel ('Quest');
-  
-  {
-    4. Go talk to Claudia Athebaldt
-  }
+
+{
+  4. Now speak with Athebalt (near the Aden castle)
+}
   if  User.InRange (144101, 23680, -2146, 500, 200)  then begin
     Print ('Going to Claudia');
     Engine.MoveTo (143959, 23604, -2146);
     Engine.MoveTo (143967, 23301, -2136);
     Engine.MoveTo (147459, 20259, -2060);
-  	Engine.MoveTo (148680, 16880, -1552);
+    Engine.MoveTo (148680, 16880, -1552);
     Engine.SetTarget (Claudia);
     Engine.DlgOpen;
     Engine.DlgSel ('Quest');
   end;
-  
-  {
-    5. Go to kill an angel.
-  }
+
+{
+  5. Talk to Holy Ark Of Secrecy2 in the Cemetary.  Kill the angel that appear and
+     talk to the chest again. After return to Athebalt.
+}
   if  User.InRange (148680, 16880, -1552, 500, 200)  then begin
     Engine.MoveTo (143959, 23604, -2146);
     Engine.MoveTo (143967, 23301, -2136);
     Engine.MoveTo (147459, 20259, -2060);
-  	Engine.MoveTo (148680, 16880, -1552);
+    Engine.MoveTo (148680, 16880, -1552);
   end;
 end;
 

@@ -1,5 +1,6 @@
 {
   Into the Flame
+
   Start lvl: 60
   NPC: Watcher of Valakas Klein
   Type: Solo / One time only

@@ -1,0 +1,77 @@
+unit  Noblesse1;
+
+interface
+
+uses  TeleportModule;
+
+procedure  Noblesse1;
+
+implementation;
+
+{
+  Path Of A Noblesse Possessor Of A Precious Soul Part 1
+
+  Level: 50
+  Start Location: Tower of Aden
+  Start Npc: Talien
+  Races: All
+  Classes: All
+  Repeatable: No (Party)
+  Reward: Experience; Ability to become a Noblesse
+  Prerequisite: Subclass Level 50
+  Required materials: 1 Hellfire Oil, 5 Lunaragents (from Supplier of Reagents quest).
+}
+procedure  Noblesse1;
+begin
+{
+  Start the quest at Talien, who is on the east side of the stairs leading up to Aden Church. He's on the staircase.
+}
+
+{
+  Teleport to Giran. Speak to Gabrielle, who is on the South side of the town square
+}
+
+{
+  Go to the entrance to Dragon Valley and speak to Gilmore. (If it is Seven Signs rewards week, you can port there if your side won).
+}
+
+{
+  Teleport to Dion. Teleport to the beehive. Go slightly to the northeast of the port location. You will find a cave with the Quest Monsters you have to kill. If you can't find the cave, open up your map and look at the yellow thumbtack. If you are right on top of the thumbtack and can't see the monsters, you are on the hill above the cave and need to go to the south to find the entrance to the cave. Kill the medusa looking quest monster and get the quest item.
+}
+
+{
+  Teleport to Aden. Speak to Talien. Teleport to Saints Necropolis. SOE to Heine. Go to the Magic Trader and speak to the Melody Maestro dwarf there.
+}
+
+{
+  Teleport to Giran. Teleport to Dragon Valley. Run west. Kill Malruk Succubus and Malruk Succubus Tauren until you get 10 talons. You have to kill a lot to get the 10 talons, the quest item drop rate for this quest is very low. It is not a last hit required quest, the drop rate just sucks. Return to Heine and speak with that dwarf again.
+}
+
+{
+  Teleport back up to Aden. Talk to Talien. (I forget if he send you to HV here or not). Teleport to Rune. Teleport to the Rune Castle Town Temple. Run through the temple to find Virgil, one of the three NPCs on a balcony. Get to know them well because they're all about these Noblesse Quests. Talk to him, he'll have you talk to the other two NPCs, one of which is his GrandDaughter.
+}
+
+{
+  Teleport to Rune Castle Town Guild. Run in and talk to the NPC there (I forget his name). Teleport back to Rune Castle Town Store, which will put you next to the GK.
+}
+
+{
+  Teleport to the Western Entrance of the Swamp of Screams. Kill Splinter Stakato Drones, which are matk resist and archer resist. They bleed. You will not be able to do this part of the quest alone at level 50. Everything here is social and aggressive. It is not a last hit required quest, the drop rate just sucks. You will obtain crimson moss. When you have 5, return to the NPC in the Rune Guild, who makes the medecine.
+}
+
+{
+  Teleport back to the Temple. Speak to the girl. She's happy and cured. Yay. Talk to Virgil again. He'll send you to Goddard to talk to Caradine. Teleport there. She's to the Northeast of the GK on the outer edge of town.
+}
+
+{
+  Speak to Caradine and she'll send you to the blacksmith two shops over. He'll tell he needs one hellfire oil and 5 lunaragents (Supplier of Reagents quest in IT). Get them, go back to the blacksmith then back to Caradine and finish the quest. You'll receive experience, and Virgil's Letter. Which tells you that Virgil needs your help RIGHT AWAY! OH NO!
+}
+
+{
+  Congratulations, you've now completed Part 1. Only 3 Parts to go. Go see Virgil to start Part 2.
+}
+end;
+
+BEGIN
+  Noble;
+END.

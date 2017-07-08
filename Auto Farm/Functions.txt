@@ -1,33 +1,32 @@
-unit Functions;
+unit  Functions;
 
 interface
 
-uses 
-	SysUtils, Classes;
+uses  SysUtils, Classes;
 
 type
-	DimensionArray = array of array of integer;
-	IntArr = array of integer;
-	CardArr = array of cardinal;
-	ITEM_TYPE = (WEAPON, ARMOR, ACCESSORY);
-	
-	procedure  writeToArray (var iArray: array of integer; val1, val2, val3: integer);
-	function   getClosestLoc (arr: DimensionArray): integer;
-	function   distanceBetween (x1, y1, z1, x2, y2, z2: int64): extended;
-	function   inRange (obj: TL2Spawn; x1, y1, z1: integer; range: integer): boolean; overload;
-	function   inRange (obj: TL2Spawn; iArray: array of integer; range: integer): boolean; overload;
-	function   moveTo (iArray: array of integer): boolean;
-	function   moveToLoc (coordHolder: DimensionArray): boolean;
-    procedure  MoveAndWait (x, y, z: integer);
-	function   revertArray (arr: DimensionArray): DimensionArray;
-	function   ifThen (bool: boolean; valTrue: integer; valFalse: integer): integer; overload;
-	function   ifThen (bool: boolean; valTrue: string; valFalse: string): string; overload;
-	function   ifThen (bool: boolean; valTrue: IntArr; valFalse: IntArr): IntArr; overload;
-	function   ifThen (bool: boolean; valTrue: DimensionArray; valFalse: DimensionArray): DimensionArray; overload;
+  DimensionArray = array of array of integer;
+  IntArr = array of integer;
+  CardArr = array of cardinal;
+  ITEM_TYPE = (WEAPON, ARMOR, ACCESSORY);
+
+  procedure  writeToArray (var iArray: array of integer; val1, val2, val3: integer);
+  function   getClosestLoc (arr: DimensionArray): integer;
+  function   distanceBetween (x1, y1, z1, x2, y2, z2: int64): extended;
+  function   inRange (obj: TL2Spawn; x1, y1, z1: integer; range: integer): boolean; overload;
+  function   inRange (obj: TL2Spawn; iArray: array of integer; range: integer): boolean; overload;
+  function   moveTo (iArray: array of integer): boolean;
+  function   moveToLoc (coordHolder: DimensionArray): boolean;
+  procedure  MoveAndWait (x, y, z: integer);
+  function   revertArray (arr: DimensionArray): DimensionArray;
+  function   ifThen (bool: boolean; valTrue: integer; valFalse: integer): integer; overload;
+  function   ifThen (bool: boolean; valTrue: string; valFalse: string): string; overload;
+  function   ifThen (bool: boolean; valTrue: IntArr; valFalse: IntArr): IntArr; overload;
+  function   ifThen (bool: boolean; valTrue: DimensionArray; valFalse: DimensionArray): DimensionArray; overload;
 
 implementation
 
-function getClosestLoc;
+function  getClosestLoc;
 var
   i: integer;
   prelimResult: integer;
@@ -38,28 +37,28 @@ begin
   for i:=0 to Length(arr)-1 do
   begin
     if  (Trunc(distanceBetween(User.X, User.Y, User.Z,
-                  arr[i, 0], arr[i, 1], arr[i, 2])) < prelimLength)  then
-       begin
-        prelimLength := Trunc(distanceBetween(User.X, User.Y, User.Z,
-                  arr[i, 0], arr[i, 1], arr[i, 2]));
-        prelimResult := i;          
-       end;
+      arr[i, 0], arr[i, 1], arr[i, 2])) < prelimLength)  then
+    begin
+      prelimLength := Trunc(distanceBetween(User.X, User.Y, User.Z,
+        arr[i, 0], arr[i, 1], arr[i, 2]));
+      prelimResult := i;
+    end;
   end;
   Result := prelimResult;
 end;
 
 function  distanceBetween;
 begin
-	 Result := sqrt(((x2 - x1)*(x2 - x1)) + ((y2 - y1)*(y2 - y1)) + ((z2 - z1)*(z2 - z1)));
+  Result := sqrt(((x2 - x1)*(x2 - x1)) + ((y2 - y1)*(y2 - y1)) + ((z2 - z1)*(z2 - z1)));
 end;
 
 function  inRange;
 begin
-  Result := (distanceBetween(obj.X, obj.Y, obj.Z, x1, y1, z1) < range); 
+  Result := (distanceBetween(obj.X, obj.Y, obj.Z, x1, y1, z1) < range);
 end;
 
 function  moveToLoc;
-var                                                                 
+var
   i: integer;
   _index: integer;
 begin
@@ -71,9 +70,9 @@ begin
     begin
       if not (Engine.MoveTo(coordHolder[i, 0], coordHolder[i, 1], coordHolder[i, 2])) then
         continue;
-    end;  
+    end;
   end;
-  Result := true;       
+  Result := true;
 end;
 
 function  inRange;
@@ -83,7 +82,7 @@ begin
     Result := false;
     exit;
   end;
-  Result := inRange(obj, iArray[0], iArray[1], iArray[2], range); 
+  Result := inRange(obj, iArray[0], iArray[1], iArray[2], range);
 end;
 
 function  moveTo;
@@ -95,7 +94,7 @@ begin
   end;
 
   Result := Engine.MoveTo(iArray[0], iArray[1], iArray[2]);
-  
+
 end;
 
 procedure  MoveAndWait;
@@ -106,55 +105,55 @@ end;
 
 function  revertArray;
 var
-	i: integer;
+  i: integer;
 begin
-	SetLength(Result, Length(arr), 3);
-	for i:=0 to Length(Result)-1 do
-	begin
-		Result[i, 0] := arr[Length(arr)-1 - i, 0];
-		Result[i, 1] := arr[Length(arr)-1 - i, 1];
-		Result[i, 2] := arr[Length(arr)-1 - i, 2];
-	end;
+  SetLength(Result, Length(arr), 3);
+  for i:=0 to Length(Result)-1 do
+  begin
+    Result[i, 0] := arr[Length(arr)-1 - i, 0];
+    Result[i, 1] := arr[Length(arr)-1 - i, 1];
+    Result[i, 2] := arr[Length(arr)-1 - i, 2];
+  end;
 end;
 
 
 procedure  writeToArray;
 begin
-	iArray[0] := val1;
-	iArray[1] := val2;
-	iArray[2] := val3;	
+  iArray[0] := val1;
+  iArray[1] := val2;
+  iArray[2] := val3;
 end;
 
 function  ifThen;
 begin
-	if bool then
-		Result := valTrue
-	else
-		Result := valFalse;
+  if bool then
+    Result := valTrue
+  else
+    Result := valFalse;
 end;
 
 function  ifThen;
 begin
-	if bool then
-		Result := valTrue
-	else
-		Result := valFalse;
+  if bool then
+    Result := valTrue
+  else
+    Result := valFalse;
 end;
 
 function  ifThen;
 begin
-	if bool then
-		Result := valTrue
-	else
-		Result := valFalse;
+  if bool then
+    Result := valTrue
+  else
+    Result := valFalse;
 end;
 
 function  ifThen;
 begin
-	if bool then
-		Result := valTrue
-	else
-		Result := valFalse;
+  if bool then
+    Result := valTrue
+  else
+    Result := valFalse;
 end;
 
 BEGIN

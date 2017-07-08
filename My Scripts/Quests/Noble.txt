@@ -1,8 +1,0 @@
-procedure  Noble;
-begin
-
-end;
-
-BEGIN
-
-END.

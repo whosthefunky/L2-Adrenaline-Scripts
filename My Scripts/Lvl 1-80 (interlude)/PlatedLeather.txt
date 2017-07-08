@@ -1,0 +1,120 @@
+{
+--------------------------------------------------------------------------------
+  Plated Leather Armor Recipe by Spoil
+  Timak Orc Archer (lvl 41) (Oren, Timak Outpost)
+  1/36 chance, 40s avg. respawn time
+--------------------------------------------------------------------------------
+}
+
+{	
+--------------------------------------------------------------------------------
+  Plated Leather Fragment by Spoil
+  Horrifying Cannon Golem IV (lvl 48) (Schuttgart, Pavel Ruins)
+  1/15 chance, 1m avg. respawn time
+  Vanor Silenos Warrior (lvl 48) (lvl 41) (Aden, West of the City)
+  1/16 chance, 30s avg. respawn time
+--------------------------------------------------------------------------------
+}
+
+{	
+--------------------------------------------------------------------------------
+  Plated Leather Gloves Recipe by Drop  (lvl 43)
+  1% chance, 1m avg. respawn time
+--------------------------------------------------------------------------------
+}
+procedure  PlatedLeatherGlovesRecipe;
+begin
+  // teleportTo ('alligator island');
+  if  User.InRange (126438, 174785, -3074, 500, 200)  then begin
+    Engine.MoveTo (125406, 175937, -3352);
+  end;
+  if  User.InRange (125406, 175937, -3352, 500, 200)  then begin
+    Engine.MoveTo (122550, 177468, -3472);
+  end;
+  if  User.InRange (122550, 177468, -3472, 500, 200)  then begin
+    Engine.MoveTo (119338, 177971, -3768);
+  end;
+  if  User.InRange (119338, 177971, -3768, 500, 200)  then begin
+    Engine.MoveTo (119338, 117368, 179803, -3544);
+  end;
+  if  User.InRange (119338, 117368, 179803, -3544, 500, 200)  then begin
+    Engine.MoveTo (115675, 182753, -3808);
+    // Engine.LoadConfig ('Target Crokian Lad Warrior');
+    Engine.LoadZone ('PlatedLeatherGlovesRecipe.zmap');
+  end;
+end;
+
+{
+--------------------------------------------------------------------------------
+Plate Leather Gloves Design
+Forest Of Mirrors Ghost (lvl 48) 1/12 chance (Hunters Village, The Forest of Mirrors)
+Theeder Piker (48) 1/8 (Heine, Garden of Eva)
+Dragon Bearer Chief (49) 1/9 (Giran, Dragon Valley)
+
+--------------------------------------------------------------------------------
+}
+  Plated Leather Boots Drop (lvl 44)
+  1/4287 chance, 45s avg. respawn time
+--------------------------------------------------------------------------------
+}
+
+{
+--------------------------------------------------------------------------------
+  Plated Leather Boots Recipe Spoiling (lvl 44)
+  1/143 chance, 23s avg. respawn time
+--------------------------------------------------------------------------------
+}
+procedure  PlatedLeatherBootsRecipe;
+var
+  Boots: Obj;
+  inventary: TlItemList;
+begin
+  // teleportTo (hunters);
+  if  User.InRange (150500, 86000, -2700, 500, 200)  then begin
+    Print ('Moving from respawn to hunting ground');
+    Engine.MoveTo (147365, 87920, -3496);
+    Engine.MoveTo (143181, 83144, -3552);
+    Engine.MoveTo (143254, 82519, -3520);
+    Engine.MoveTo (142441, 80543, -3176);
+    Engine.MoveTo (142935, 78988, -3120);
+    Engine.MoveTo (142678, 78312, -3192);
+    Engine.MoveTo (142803, 77442, -3200);
+    Engine.MoveTo (143010, 76373, -3336);
+    Engine.MoveTo (143719, 75680, -3359);
+  end;
+  if  User.InRange (143700, 75680, -3360, 1000, 200)  then begin
+    Engine.LoadZone ('PlatedLeatherBootsSpoil.zmap');
+    {
+    // Finish when you get the recipe
+    while  not inventary.ByID(bootsID??, Boots)  do begin
+      Delay (10 * 1000);
+    end;
+    }
+  end;
+end;
+
+{	
+--------------------------------------------------------------------------------
+  Plate Leather Boot Lining by Drop (lvl 44)
+  Krator 1/162 chance (Cruma tower, end of right hand first floor)
+  Snipe 1.03% chance, 45s avg. respawn time
+--------------------------------------------------------------------------------
+}
+procedure  PlateLeatherBootLining;
+begin
+  // teleportTo ('cruma tower');
+  // TODO: write this procedure
+  {if  User.InRange (150500, 86000, -2700, 500, 200)  then begin
+    Print ('Moving from respawn to hunting ground');
+    Engine.MoveTo (147365, 87920, -3496);
+    Engine.MoveTo (143181, 83144, -3552);
+
+  end;
+  if  User.InRange (143700, 75680, -3360, 1000, 200)  then begin
+    Engine.LoadZone ('PlatedLeatherBootsSpoil.zmap');
+  end;}
+end;
+
+BEGIN
+  PlatedLeatherGlovesRecipe;
+END.

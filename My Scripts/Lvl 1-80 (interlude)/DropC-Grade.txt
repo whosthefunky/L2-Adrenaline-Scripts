@@ -1,0 +1,53 @@
+procedure  KarmianStockingsBootsRecipes;
+begin
+if  User.InRange (117000, 76900, -2700, 500, 200)  then begin
+  Print ('Moving from Gatekeeper to hunting ground');
+  Engine.MoveTo (118056, 75755, -2688);
+  Engine.MoveTo (118412, 73809, -2339);
+  Engine.MoveTo (118371, 73273, -2256);
+  Engine.MoveTo (119344, 70452, -2937);
+end;
+if  User.InRange (119344, 70452, -2937, 100, 100)  then begin
+  Engine.MoveTo (119857, 70458, -2952);
+end;
+if  User.InRange (119857, 70458, -2952, 500, 100)  then begin
+  Print ('First bridge');
+  Engine.MoveTo (123296, 70570, -2888);
+  Engine.MoveTo (126571, 73452, -2816);
+  Engine.MoveTo (126340, 76455, -2152);
+  Engine.MoveTo (126558, 77572, -2048);
+  Engine.LoadZone ('KarmianStockingsRecipe.zmap');
+end;
+  // When item achieved
+  // Stop bot interface
+  Engine.MoveTo (125773, 77830, -2408);
+  Engine.MoveTo (125708, 77828, -2455);
+  Engine.MoveTo (125488, 77591, -2456);
+if  User.InRange (125488, 77591, -2456, 50, 100)  then begin
+  Print ('Second Bridge');
+  Engine.MoveTo (124212, 76217, -2504);
+  Engine.MoveTo (123883, 77862, -2016);
+  Engine.MoveTo (123676, 78855, -2040);
+  Engine.MoveTo (122717, 80530, -2432);
+  Engine.MoveTo (122082, 81555, -2784);
+  Engine.LoadZone ('KarmianBootsRecipe.zmap');
+  // Start bot interface
+end;
+end;
+
+{	
+--------------------------------------------------------------------------------
+  Karmian Stockings and Boots Recipes (lvl 41-43)
+  Stockings: 1/14 chance, 1m 34s avg. respawn time
+  Boots: 1/8 chance, 1m 34s avg. respawn time
+--------------------------------------------------------------------------------
+}
+procedure  KarmianStockingsBootsRecipes2;
+begin
+  //LoadBotInterface
+  //goToGardenOfEva (1); // Indicate Level 
+end;
+
+BEGIN
+  KarmianStockingsBootsRecipes;
+END.

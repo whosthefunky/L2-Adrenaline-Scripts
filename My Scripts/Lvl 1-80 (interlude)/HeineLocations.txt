@@ -1,0 +1,137 @@
+function  goToGardenOfEva (FloorLevel: Integer = 1): Boolean;  // TODO: fix this
+begin
+  // DoTeleportTo ('garden of eva');
+  if  User.InRange (85998, 231070, -3595, 500, 100) then begin
+    Print ('Moving to Garden of Eva');
+    Engine.MoveTo (85619, 231367, -3528);
+  end;
+  if  User.InRange (85619, 231367, -3528, 500, 100) then begin
+    Engine.MoveTo (84525, 235012, -3751);
+  end;
+  if  User.InRange (84525, 235012, -3751, 500, 200) then begin
+    Print ('Moving to Garden of Eva');
+    Engine.MoveTo (85166, 238905, -4416);
+  end;
+  if  User.InRange (85166, 238905, -4416, 500, 200) then begin
+    Engine.MoveTo (85166, 238905, -4416);
+  end;
+  if  User.InRange (85139, 242047, -4742, 500, 100) then begin
+    Print ('Going down');
+    Engine.MoveTo (85023, 242090, -4814);
+  end;
+  if  User.InRange (85023, 242090, -4814, 500, 100) then begin
+    Engine.MoveTo (84670, 241968, -7130);
+  end;
+  if  User.InRange (84670, 241968, -7130, 500, 100) then begin
+    Engine.MoveTo (84184, 241691, -7152);
+  end;
+  if  User.InRange (84184, 241691, -7152, 500, 100) then begin
+    Engine.MoveTo (84184, 241691, -7152);
+  end;
+  if  User.InRange (84184, 241691, -7152, 500, 100) then begin
+    Print ('Going inside');
+    Engine.MoveTo (83376, 241711, -6898);
+  end;
+  if  User.InRange (83376, 241711, -6898, 500, 100) then begin
+    Engine.MoveTo (82748, 241738, -6712);
+  end;
+
+  if  (FloorLevel = 1)  or  (FloorLevel = 2)  or  (FloorLevel = 3)  or
+      (FloorLevel = 4)  or  (FloorLevel = 5) then
+  begin
+    if  User.InRange (82748, 241738, -6712, 500, 100) then begin
+      Print('Going to First Level');
+      Engine.MoveTo (82757, 244738, -7160);
+    end;
+    if  User.InRange (82757, 244738, -7160, 500, 100) then begin
+      Engine.MoveTo (86289, 244752, -7672);
+    end;
+    if  User.InRange (86289, 244752, -7672, 500, 100) then begin
+      Engine.MoveTo (86184, 244314, -7672);
+    end;
+    if  User.InRange (86184, 244314, -7672, 500, 100) then begin
+      Engine.MoveTo (82732, 244391, -8184);
+    end;
+    if  User.InRange (82732, 244391, -8184, 500, 100) then begin
+      Engine.MoveTo (82625, 245488, -8748);
+    end;
+    if  User.InRange (82625, 245488, -8748, 500, 100) then begin
+      Engine.MoveTo (84549, 245444, -8848);
+    end;
+    if  User.InRange (84549, 245444, -8848, 500, 100) then begin
+      Engine.MoveTo (86380, 246645, -8823);
+    end;
+
+    if  User.InRange (86380, 246645, -8823)  and
+      ((FloorLevel = 2)  or  (FloorLevel = 3)  or  (FloorLevel = 4)  or  (FloorLevel = 5))  then
+    begin
+      if  User.InRange (86380, 246645, -8823, 500, 100) then
+      begin
+        Print ('Moving in front of the arc');
+        Engine.MoveTo (86319, 246917, -8824);
+        while  not Engine.MoveTo (86104, 247220, -8847)  do
+        begin
+          Print ('Waiting for it to open');
+          Delay (10 * 1000);
+        end;
+        Engine.MoveTo (86942, 247817, -9311);
+      end;
+      if  User.InRange (86942, 247817, -9311, 500, 100) then begin
+        Print ('Second level');
+      end;
+
+      if  User.InRange (86942, 247817, -9311, 500, 100)  and
+        ((FloorLevel = 3)  or  (FloorLevel = 4)  or  (FloorLevel = 5))  then
+      begin
+          Engine.MoveTo (87659, 248808, -9336);
+          Engine.MoveTo (88106, 250266, -9365);
+          while  not Engine.MoveTo (87721, 250458, -9328)  do
+          begin
+            Print ('Waiting for it to open');
+            Delay (10 * 1000);
+          end;
+          Engine.MoveTo (88066, 251495, -9848);
+        end;
+        if  User.InRange (88066, 251495, -9848, 500, 100) then begin
+          Print ('Third Level');
+        end;
+
+        if  User.InRange (88066, 251495, -9848, 500, 100)  and  ((FloorLevel = 4)
+        or  (FloorLevel = 5))  then
+        begin
+          Engine.MoveTo (87182, 253432, -9877);
+          while  not Engine.MoveTo (86843, 253339, -9840) do
+          begin
+            Print ('Waiting for it to open');
+            Delay (10 * 1000);
+          end;
+          Engine.MoveTo (87135, 252357, -10336);
+        end;
+        if  User.InRange (87135, 252357, -10336, 500, 100) then begin
+          Print ('Fourth Level');
+        end;
+
+        if  User.InRange (87135, 252357, -10336, 500, 100)  and  (FloorLevel = 5)  then
+        begin
+          Engine.MoveTo (87008, 252252, -10389);
+          Engine.MoveTo (86384, 253252, -10389);
+          while  not Engine.MoveTo (86079, 253159, -10389) do
+          begin
+            Print ('Waiting for it to open');
+            Delay (10 * 1000);
+          end;
+          Engine.MoveTo (83428, 252654, -10680);
+        if  User.InRange (83428, 252654, -10680, 200, 100) then begin
+          Print ('Fith Level');
+          Engine.MoveTo (82933, 252441, -10618);
+          Engine.MoveTo (81973, 252445, -10592);
+          Print ('You''ve arrived to Garden of Eva');
+        end;
+      end;
+    end;
+  end;
+end;
+
+BEGIN
+  goToGardenOfEva (3);
+END;

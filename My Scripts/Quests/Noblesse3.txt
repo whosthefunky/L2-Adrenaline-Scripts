@@ -1,0 +1,32 @@
+{
+  Path Of A Noblesse Possessor Of A Precious Soul Part 3 - Class Quest
+
+  Level 65
+  Start Location: Goddard Castle Town
+  Start Npc: Caradine
+  Races: All
+  Classes: All
+  Repeatable No (Party)
+  Reward Experience; Ability to become a Noblesse
+  Requirements: Subclass Level 65; Path of a Noblesse, Possessor of a Precious Soul - Part 1 & Part 2
+}
+
+{
+  1. To start this part of the quest speak with Caradine in Goddard Castle Town. He will tell you that the princess needs some items to unseal her magical powers.
+}
+
+{
+  2. Speak with Ossian. He will ask you to hunt Pilgrim Of Splendor Pilgrim Of Splendor location on the map and Judge Of Splendor Judge Of Splendor location on the map in Valley of Saints. Hunt then until you get Ring Of Goddess: Waterbinder Ring Of Goddess: Waterbinder and Necklace Of Goddess: EverGreen Necklace Of Goddess: EverGreen
+}
+
+{
+  3. Go back to Ossian with the items. Now you need to kill raid boss - Flame Of Splendor Barakiel Flame Of Splendor Barakiel location on the map in Valley of Saints. Only the people in the party who gets last hit on the raid boss will receive the quest item.
+}
+
+{
+  4. Return to Ossian, he will give you one box. You must bring the box to Magister Ladd in Ivory Tower.
+}
+
+{
+  5. Magister Ladd is at 3th floor. He will give you Caradine's Letter Caradine's Letter where is written that you must go back and speak with her when you reach 75 level of your subclass. Congratulations! Now you need just few more levels and you can start the fourth and final Noblesse Quest ! 
+}

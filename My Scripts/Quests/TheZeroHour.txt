@@ -1,4 +1,4 @@
-procedure GoToStackatoNest;
+procedure  GoToStackatoNest;
 begin
   Engine.MoveTo (89801, -44647, -2168);
   Engine.MoveTo (90433, -44047, -2120);
@@ -24,7 +24,8 @@ begin
     Engine.MoveTo (73602, -51840, -3166);
   end;
   if  User.InRange (73602, -51840, -3166, 200, 200)  then begin
-  	Engine.LoadZone ('TheZeroHour');
+    Engine.LoadZone ('TheZeroHour');
+    Engine.FaceControl (0, true);
   end;
   while  Inventory.byId(7248).Count < 100  then begin
     Delay (10 * 1000);
@@ -43,10 +44,12 @@ begin
   Engine.DlgOpen;
   Engine.DlgSel ('Quest');
   Engine.DlgSel (1);
-  // TODO: Go to stackato nest
+
+  GoToStackatoNest;
   // TODO: talk to the corpse in the entrance
   // GoHome;
   // TeleportTo ('swamp of screams');
+
   Engine.SetTarget ('Pierce');
   Engine.DlgOpen;
   Engine.DlgSel (1);
@@ -59,10 +62,10 @@ begin
   Engine.DlgSel (1);
   Engine.DlgSel (3);
   Engine.DlgSel (1);
-  
-  // TODO: Go to stackato nest
+
+  GoToStackatoNest;
 end;
 
 BEGIN
-  GoToStackatoNest;
+  TheZeroHour;
 END.

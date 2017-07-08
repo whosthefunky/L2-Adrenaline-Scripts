@@ -1,3 +1,7 @@
+{
+  Get A Pet
+}
+
 BEGIN
 	talk to Martin Gludin
 	kill monsters based on class
