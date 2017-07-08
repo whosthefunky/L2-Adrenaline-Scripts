@@ -1,9 +1,7 @@
 begin
   while  true  do
   begin
-    Engine.EnterText ('+WTS 14 eas 200g');
-    Delay (10 * 1000);
-    Engine.EnterText ('+WTS 8 gift box 150g each');
+    Engine.EnterText ('+WTB Green Crystal 13 700g');
     Delay (10 * 1000);
     {Engine.EnterText ('+WTB Forgotten Blade pm price');
     Delay (10 * 1000);

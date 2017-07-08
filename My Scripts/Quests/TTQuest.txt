@@ -1,6 +1,7 @@
+
 {
   change Engine.BypassToServer to your server or use Engine.DlgSel
-
+ 
   The script must begin from Jeremy
 }
  
@@ -13,7 +14,7 @@ const
  Pulin = 31543;
  Lietta = 31267;
  Valentine = 31584;
-
+ 
 {
     Possible respawns for Goddard
 }
@@ -32,9 +33,9 @@ begin
   if  User.InRange (145307, -57007, -2980, 500, 200)  then begin
     Engine.MoveTo (145816, -57769, -2976);
     Engine.MoveTo (146209, -57940, -2976); // in front of the warehouse
-    GoingFirstToWarehouse;	
+    GoingFirstToWarehouse;
   end;
-
+ 
   // Top of east stairs
   if  User.InRange (148682, -56094, -2776, 500, 200)  then begin
     Engine.MoveTo (149278, -56459, -2807);
@@ -43,28 +44,28 @@ begin
     Engine.MoveTo (149194, -57898, -3007); // in front of the Magic Shop
     GoingFirstToMagicShop;
   end;
-
+ 
   // Bottom of east stairs
   if  User.InRange (150239, -57171, -3002, 500, 200)  then begin
     Engine.MoveTo (149272, -58041, -3007);
     Engine.MoveTo (149176, -57815, -2968); // in front of the Magic Shop
     GoingFirstToMagicShop;
   end;
-
+ 
   // Bottom of north stairs
   if  User.InRange (147759, -58324, -3002, 500, 200)  then begin
     Engine.MoveTo (149211, -57896, -3007);
     Engine.MoveTo (149176, -57815, -2968); // in front of the Magic Shop
     GoingFirstToMagicShop;
   end;
-
+ 
   // In front of warehouse
   if  User.InRange (146107, -58092, -3002, 500, 200)  then begin
     Engine.MoveTo (146209, -57940, -2976); // in front of the warehouse
     GoingFirstToWarehouse;
   end;
 end;
-
+ 
 procedure  Teleport;
 begin
   Engine.SetTarget(31124);
@@ -79,7 +80,7 @@ begin
   Print('Teleported.');
   Delay(5*1000);
 end;
-
+ 
 procedure  MoveIntoTheWarehouse;
 begin
   // If in front of the warehouse
@@ -92,13 +93,13 @@ begin
   if  User.InRange (146405, -57556, -2960, 200, 200)  then begin
     Engine.SetTarget (Lietta);
     Engine.DlgOpen;
-	  Delay (500);
+ Delay (500);
     Engine.DlgSel ('Quest');
     Delay (500);
     Engine.bypasstoserver ('Quest 622_SpecialtyLiquorDelivery 31267-2.htm');
   end;
 end;
-
+ 
 procedure  MoveFromWarehouseToMagicShop;
 begin
   if  User.InRange (146421, -57551, -2993, 200, 200)  then begin
@@ -110,20 +111,22 @@ begin
     MoveIntoTheMagicShop;
   end;
 end;
-
+ 
 procedure  MoveFromMagicShopToGatekeeper;
 begin
   if  User.InRange (149338, -57463, -2968, 200, 200)  then begin
     Engine.MoveTo (149079, -57632, -2968);
     Engine.MoveTo (149216, -57893, -2976);
     Engine.MoveTo (148329, -58121, -2976);
-    Engine.MoveTo (147780, -58050, -3007);
-    Engine.MoveTo (147525, -55929, -2760);
-    Engine.MoveTo (147620, -55356, -2728);
-    Engine.MoveTo (147934, -55266, -2759);
+    Engine.MoveTo (147705, -58055, -2976);
+    Engine.MoveTo (147717, -57351, -2792);
+    Engine.MoveTo (147882, -56349, -2776);
+    Engine.MoveTo (148009, -55933, -2768);
+    Engine.MoveTo (148155, -55627, -2744);
+    Engine.MoveTo (147894, -55298, -2728);
   end;
 end;
-
+ 
 procedure  MoveIntoTheMagicShop;
 begin
   // If in front of the warehouse
@@ -136,13 +139,13 @@ begin
   if  User.InRange (149338, -57463, -2968, 200, 200)  then begin
     Engine.SetTarget (Valentine);
     Engine.DlgOpen;
-	  Delay (500);
+ Delay (500);
     Engine.DlgSel ('Quest');
     Delay (500);
     Engine.bypasstoserver ('Quest 621_EggDelivery 31584-2.htm');
   end;
 end;
-
+ 
 procedure  MoveFromMagicShopToWarehouse;
 begin
   if  User.InRange (149338, -57463, -2968, 200, 200)  then begin
@@ -154,7 +157,7 @@ begin
     MoveIntoTheWarehouse;
   end;
 end;
-
+ 
 procedure  MoveFromWarehouseToGatekeeper;
 begin
   if  User.InRange (146421, -57551, -2993, 200, 200)  then begin
@@ -162,12 +165,14 @@ begin
     Engine.MoveTo (145773, -57721, -2976);
     Engine.MoveTo (145554, -56910, -2976);
     Engine.MoveTo (146085, -56536, -2792);
-    Engine.MoveTo (147525, -55929, -2760);
-    Engine.MoveTo (147620, -55356, -2728);
-    Engine.MoveTo (147934, -55266, -2759);
+    Engine.MoveTo (147235, -56201, -2807);
+    Engine.MoveTo (147882, -56349, -2776);
+    Engine.MoveTo (148009, -55933, -2768);
+    Engine.MoveTo (148155, -55627, -2744);
+    Engine.MoveTo (147894, -55298, -2728);
   end;
 end;
-
+ 
 procedure  MoveToBottomOfWestStairs;
 begin
   // If in front of the warehouse
@@ -179,7 +184,7 @@ begin
     Engine.MoveTo (146216, -57899, -2968);   
   end;
 end;
-
+ 
 procedure  GoingFirstToMagicShop;
 begin
   MoveIntoTheMagicShop;
@@ -187,7 +192,7 @@ begin
   MoveFromWarehouseToGatekeeper;
   Teleport;
 end;
-
+ 
 procedure  MoveToBottomOfEastStairs;
 begin
   // If in front of the warehouse
@@ -199,7 +204,7 @@ begin
     Engine.MoveTo (146216, -57899, -2968);   
   end;
 end;
-
+ 
 procedure  GoingFirstToWarehouse;
 begin
   MoveIntoTheWarehouse;
@@ -207,11 +212,11 @@ begin
   MoveFromMagicShopToGatekeeper;
   Teleport;
 end;
-
+ 
 procedure  TTQuest;
-//var
-  //DragonTrumpetID: integer;
-  //DragonTrumpet: TL2Item;
+{var
+  DragonTrumpetID: integer;
+  DragonTrumpet: TL2Item;}
 begin
 while  true  do begin
   if  User.InRange (149051, -112424, -2071, 200, 200)  then begin
@@ -224,16 +229,15 @@ while  true  do begin
   
   if  User.InRange (149551, -112649, -2064, 200, 200)  then begin
     // Mount
-	{for  DragonTrumpetID := 4422  to  4424  then begin
+	{for  DragonTrumpetID := 4422  to  4424  do begin
        if  Inventory.User.ByID(DragonTrumpetID, DragonTrumpet)  then  begin
         Engine.UseItem (DragonTrumpet);
         Delay (8 * 1000);
         Engine.UseAction(38);
         break;
       end;
-	end;
-	}
-	
+	end;}
+ 
     Engine.SetTarget (Jeremy);
     Engine.DlgOpen;
     Delay (500);
@@ -292,16 +296,17 @@ while  true  do begin
     Delay(500);
     Engine.BypassToServer ('Quest 622_SpecialtyLiquorDelivery 31545-1.htm');
     PlaySound (exepath + '\sounds\beep.wav');
-	
+ 
     Engine.MoveTo (144297, -103071, -3584);
-    Engine.MoveTo (144763, -100705, -3272);
-    Engine.MoveTo (148394, -100895, -2968);
+    Engine.MoveTo (144707, -100648, -3272);
+    Engine.MoveTo (147903, -101071, -3096);
     Engine.MoveTo (150485, -101237, -2880);
     Engine.MoveTo (152728, -101598, -2888);
     Engine.MoveTo (152999, -101778, -2760);
     Engine.MoveTo (153874, -102680, -2960);
     Engine.MoveTo (154900, -104555, -2768);
     Engine.MoveTo (155612, -105732, -2752);
+ 
     
     Engine.SetTarget (Naff);
     Engine.DlgOpen;
@@ -312,11 +317,11 @@ while  true  do begin
     Delay (500);
     Engine.BypassToServer ('Quest 622_SpecialtyLiquorDelivery 31544-1.htm');
     PlaySound (exepath + '\sounds\beep.wav');
-
+ 
     Engine.MoveTo (154980, -107065, -2680);
     Engine.MoveTo (153341, -110607, -2696);
-    Engine.MoveTo (151961, -111661, -2416);
-    Engine.MoveTo (150264, -112966, -2272);
+    Engine.MoveTo (151011, -112492, -2248);
+    Engine.MoveTo (150045, -114643, -1848);
     Engine.MoveTo (150512, -115052, -1704);
     Engine.MoveTo (151378, -115185, -1576);
     Engine.MoveTo (154096, -115000, -1544);
@@ -340,7 +345,6 @@ while  true  do begin
     Engine.BypassToServer ('npc_268465438_Quest 621_EggDelivery');
     Delay (500);
     Engine.BypassToServer ('Quest 621_EggDelivery 31543-1.htm');
-	PlaySound (exepath + '\sounds\beep.wav');
  
     Engine.MoveTo (157626, -114953, -1896);
     Engine.MoveTo (157178, -113217, -1791);
@@ -349,9 +353,11 @@ while  true  do begin
     Engine.MoveTo (156506, -111563, -2384);
     Engine.MoveTo (156130, -110565, -2592);
     Engine.MoveTo (156503, -107137, -2648);
-    Engine.MoveTo (155865, -105984, -2760);  // Fix this one
+    Engine.MoveTo (155777, -106026, -2744);
+    Engine.MoveTo (155626, -105945, -2736);
     Engine.MoveTo (155612, -105732, -2752);
-
+ 
+ 
     Engine.SetTarget (Naff);
     Engine.DlgOpen;
     Delay (500);
@@ -366,8 +372,9 @@ while  true  do begin
     Engine.MoveTo (153236, -102017, -2744);
     Engine.MoveTo (152728, -101598, -2888);
     Engine.MoveTo (150485, -101237, -2880);
-    Engine.MoveTo (148394, -100895, -2968); 
-    Engine.MoveTo (144763, -100705, -3272);  
+    Engine.MoveTo (148236, -100836, -3013);
+    Engine.MoveTo (146195, -100873, -3176);
+    Engine.MoveTo (144764, -100801, -3296);
     Engine.MoveTo (144297, -103071, -3584);
     Engine.MoveTo (140660, -105523, -3632);
     
@@ -381,10 +388,12 @@ while  true  do begin
     Delay (500);
     Engine.BypassToServer ('Quest 621_EggDelivery 31545-1.htm');
     PlaySound (exepath + '\sounds\beep.wav');
-
+ 
     Engine.MoveTo (140660, -105523, -3632);
     Engine.MoveTo (140663, -105814, -3608);
-    Engine.MoveTo (141319, -108302, -3560);
+    Engine.MoveTo (141272, -108049, -3592);
+    Engine.MoveTo (141249, -108235, -3560);
+    Engine.MoveTo (141331, -108463, -3592);
     Engine.MoveTo (141637, -108895, -3576);
     Engine.MoveTo (141672, -109450, -3584);
     
@@ -397,14 +406,14 @@ while  true  do begin
     Delay (500);
     Engine.BypassToServer ('Quest 621_EggDelivery 31546-1.htm');
     PlaySound (exepath + '\sounds\beep.wav');
-
+ 
     Engine.MoveTo (146544, -108973, -3504);
     Engine.MoveTo (148248, -108878, -2720);
     Engine.MoveTo (149205, -109232, -2512);
     Engine.MoveTo (149714, -112041, -2144);
     Engine.MoveTo (147822, -113214, -2124);
     Engine.MoveTo (147562, -113278, -2112);
-
+ 
     Engine.SetTarget (Beorin);
     Engine.DlgOpen;
     Delay (500);
@@ -414,16 +423,15 @@ while  true  do begin
     Delay (500);
     Engine.BypassToServer ('Quest 621_EggDelivery 31547-1.htm');
  
-    Engine.MoveTo (147562, -113278, -2112);
-    Engine.MoveTo (147817, -113160, -2104);
+    Engine.MoveTo (147974, -113268, -2120);
     Engine.MoveTo (149180, -112487, -2090);
-
+ 
     if  not User.InRange (149180, -112487, -2090, 200, 200)  then
     begin
       PlaySound (exepath + '\sounds\beep.wav');
       exit;
     end;
-
+ 
     Engine.SetTarget (Jeremy);
     Engine.DlgOpen;
     Delay (500);
@@ -442,22 +450,22 @@ while  true  do begin
     Engine.bypasstoserver ('Quest 622_SpecialtyLiquorDelivery 31521-3.htm');
     Engine.EnterText ('/unstuck');
     Delay (20 * 1000);
-	
-	// Dismount
-    {for  DragonTrumpetID := 4422  to  4424  then begin
+ 
+    // Dismount
+    {for  DragonTrumpetID := 4422  to  4424  do begin
        if  Inventory.User.ByID(DragonTrumpetID, DragonTrumpet)  then  begin
         Engine.UseAction(38);
         break;
       end;
-	end;}
+    end;}
   end;
-
+ 
   MoveInCity;
   
   Delay (2 * 1000);
   end;
 end;
-
+ 
 BEGIN
   TTQuest;
 END.

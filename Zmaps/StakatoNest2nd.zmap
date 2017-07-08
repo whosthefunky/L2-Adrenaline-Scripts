@@ -10,5 +10,30 @@
 			<point x="81443" y="-48720"/>
 		</points>
 	</externalPoly>
-	<internalPolies/>
+	<internalPolies>
+		<poly>
+			<points>
+				<point x="79974" y="-49123"/>
+				<point x="80094" y="-49138"/>
+				<point x="80184" y="-49368"/>
+				<point x="80062" y="-49407"/>
+			</points>
+		</poly>
+		<poly>
+			<points>
+				<point x="80373" y="-49482"/>
+				<point x="80362" y="-49335"/>
+				<point x="80546" y="-49330"/>
+				<point x="80546" y="-49469"/>
+			</points>
+		</poly>
+		<poly>
+			<points>
+				<point x="80699" y="-49441"/>
+				<point x="80696" y="-49292"/>
+				<point x="80795" y="-49283"/>
+				<point x="80795" y="-49433"/>
+			</points>
+		</poly>
+	</internalPolies>
 </zone>

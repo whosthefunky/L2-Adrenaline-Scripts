@@ -2,7 +2,7 @@ unit  Locations;
 
 interface
 
-uses  TeleportModule, SettingsModule;
+uses  TeleportModule, SettingsModule, Functions;
 
 const
   Ziggurat = 31101;
@@ -74,70 +74,74 @@ begin
     TeleportTo ('swamp of screams');
   end;
   if  User.InRange (89701, -44683, -2136, 500, 200)  then begin
-    Engine.LoadConfig ('KillAgroMobs');
+    //Engine.LoadConfig ('KillAgroMobs');
     Engine.FaceControl (0, true);
-    Engine.MoveTo (90403, -44036, -2128);
-    Engine.MoveTo (91394, -43167, -2488);
-    Engine.MoveTo (92013, -43255, -2600);
-    Engine.MoveTo (92379, -43699, -2712);
-    Engine.MoveTo (92363, -44397, -2864);
-    Engine.MoveTo (92015, -44672, -2925);
-    Engine.MoveTo (90830, -44802, -3224);
-    Engine.MoveTo (90595, -44595, -3296);
-    Engine.MoveTo (89915, -43429, -3792);
-    Engine.MoveTo (89367, -43063, -3944);
-    Engine.MoveTo (88065, -43056, -4128);
-    Engine.MoveTo (86126, -42462, -4132);
-    Engine.MoveTo (85004, -42461, -4616);
-    Engine.MoveTo (83320, -42637, -4640);
-    Engine.MoveTo (81410, -42634, -5128);
-    Engine.MoveTo (80919, -43162, -5160);
-    Engine.MoveTo (80828, -43738, -5128);
+    MoveAndWait (90403, -44036, -2128);
+    MoveAndWait (91394, -43167, -2488);
+    MoveAndWait (92013, -43255, -2600);
+    MoveAndWait (92379, -43699, -2712);
+    MoveAndWait (92363, -44397, -2864);
+    MoveAndWait (92015, -44672, -2925);
+    MoveAndWait (90830, -44802, -3224);
+    MoveAndWait (90595, -44595, -3296);
+    MoveAndWait (89915, -43429, -3792);
+    MoveAndWait (89367, -43063, -3944);
+    MoveAndWait (88065, -43056, -4128);
+    MoveAndWait (86126, -42462, -4132);
+    MoveAndWait (85004, -42461, -4616);
+    MoveAndWait (83320, -42637, -4640);
+    MoveAndWait (81410, -42634, -5128);
+    MoveAndWait (80919, -43162, -5160);
+    MoveAndWait (80828, -43738, -5128);
   end;
   if  User.InRange (80828, -43738, -5128, 20000, 8000)  then
   begin
     Engine.LoadConfig (User.Name);
-    if  (User.DistTo (79915, -48867, -5120) < User.DistTo (79915, -44800, -5120))  then
+    if  (User.DistTo (79915, -48867, -5120) < User.DistTo (79857, -44997, -5120))  then
       chamber := 2
     else chamber := 1;
     while  Engine.Status = lsOnline  do
     begin
       if  ( chamber = 1 )  then
       begin
+	    Print ('You are in the first chamber');
         Engine.LoadZone (exepath + 'Zmaps\StakatoNest1st.zmap');
-        thereAreMobs := true;
-        while  thereAreMobs  do begin
-          for  i := 0  to  NpcList.Count-1  do begin
-            if  NpcList.Items(i).Attackable  then begin
-              continue;
-              thereAreMobs := false;
-            end;
-          end;
-        end;
-        Print ('moving to second chamber');
-        Engine.MoveTo (79428, -46165, -5129);
-        Engine.MoveTo (79284, -46526, -5128);
-        Engine.MoveTo (79373, -47022, -5160);
+		Engine.FaceControl (0, true);
+	    Delay (5 * 1000);
+	    if  not User.InCombat  then
+	    begin
+          Print ('moving to second chamber');
+		  if  User.InRange (80554, -45029, -5128, 500, 200)  then begin
+            MoveAndWait (79954, -44746, -5160);
+		  end;
+		  Engine.FaceControl (0, false);
+          MoveAndWait (79428, -46165, -5129);
+          MoveAndWait (79284, -46526, -5128);
+          MoveAndWait (79373, -47022, -5160);
+          MoveAndWait (79696, -47618, -5160);
+		  chamber := 2;
+		end;
       end;
+	  if  ( chamber = 2 )  then
+	  begin
+	  Print ('You are in the second room');
       Engine.LoadZone (exepath + 'Zmaps\StakatoNest2nd.zmap');
-      thereAreMobs := true;
-      while  thereAreMobs  do begin
-        for  i := 0  to  NpcList.Count-1  do begin
-          if  NpcList.Items(i).Attackable  then begin
-            continue;
-            thereAreMobs := false;
-          end else begin 
-            //Print ('Stay in the second chamber');
-            Delay (3 * 1000);
-          end;
-        end;
-      end;
-      Print ('moving to first chamber');
-      Engine.MoveTo (79373, -47022, -5160);
-	    Engine.MoveTo (79284, -46526, -5128);
-      Engine.MoveTo (79428, -46165, -5129);
+	  Engine.FaceControl (0, true);
+	  Delay (5 * 1000);
+	  if  not User.InCombat  then
+	  begin
+	    Engine.FaceControl (0, false);
+        Print ('Moving to first chamber');
+        MoveAndWait (79696, -47618, -5160);
+        MoveAndWait (79373, -47022, -5160);
+        MoveAndWait (79284, -46526, -5128);
+        MoveAndWait (79428, -46165, -5129);
+		chamber := 1;
+	  end;
+	  end;
+	  Delay (3 * 1000);
     end;
-  end else  Print ('You aren''t in the nest');
+  end;
 end;
 
 procedure  Disciples;

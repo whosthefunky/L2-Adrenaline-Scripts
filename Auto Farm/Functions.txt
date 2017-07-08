@@ -10,19 +10,20 @@ type
 	IntArr = array of integer;
 	CardArr = array of cardinal;
 	ITEM_TYPE = (WEAPON, ARMOR, ACCESSORY);
-		
-	procedure writeToArray(var iArray: array of integer; val1, val2, val3: integer);
-	function getClosestLoc(arr: DimensionArray): integer;
-	function distanceBetween(x1, y1, z1, x2, y2, z2: int64): extended;
-	function inRange(obj: TL2Spawn; x1, y1, z1: integer; range: integer): boolean; overload;
-	function inRange(obj: TL2Spawn; iArray: array of integer; range: integer): boolean; overload;
-	function moveTo(iArray: array of integer): boolean;
-	function moveToLoc(coordHolder: DimensionArray): boolean;
-	function revertArray(arr: DimensionArray): DimensionArray;
-	function ifThen(bool: boolean; valTrue: integer; valFalse: integer): integer; overload;
-	function ifThen(bool: boolean; valTrue: string; valFalse: string): string; overload;
-	function ifThen(bool: boolean; valTrue: IntArr; valFalse: IntArr): IntArr; overload;
-	function ifThen(bool: boolean; valTrue: DimensionArray; valFalse: DimensionArray): DimensionArray; overload;
+	
+	procedure  writeToArray (var iArray: array of integer; val1, val2, val3: integer);
+	function   getClosestLoc (arr: DimensionArray): integer;
+	function   distanceBetween (x1, y1, z1, x2, y2, z2: int64): extended;
+	function   inRange (obj: TL2Spawn; x1, y1, z1: integer; range: integer): boolean; overload;
+	function   inRange (obj: TL2Spawn; iArray: array of integer; range: integer): boolean; overload;
+	function   moveTo (iArray: array of integer): boolean;
+	function   moveToLoc (coordHolder: DimensionArray): boolean;
+    procedure  MoveAndWait (x, y, z: integer);
+	function   revertArray (arr: DimensionArray): DimensionArray;
+	function   ifThen (bool: boolean; valTrue: integer; valFalse: integer): integer; overload;
+	function   ifThen (bool: boolean; valTrue: string; valFalse: string): string; overload;
+	function   ifThen (bool: boolean; valTrue: IntArr; valFalse: IntArr): IntArr; overload;
+	function   ifThen (bool: boolean; valTrue: DimensionArray; valFalse: DimensionArray): DimensionArray; overload;
 
 implementation
 
@@ -36,8 +37,8 @@ begin
   prelimLength:= High(integer);
   for i:=0 to Length(arr)-1 do
   begin
-    if (Trunc(distanceBetween(User.X, User.Y, User.Z,
-                  arr[i, 0], arr[i, 1], arr[i, 2])) < prelimLength) then
+    if  (Trunc(distanceBetween(User.X, User.Y, User.Z,
+                  arr[i, 0], arr[i, 1], arr[i, 2])) < prelimLength)  then
        begin
         prelimLength := Trunc(distanceBetween(User.X, User.Y, User.Z,
                   arr[i, 0], arr[i, 1], arr[i, 2]));
@@ -47,17 +48,17 @@ begin
   Result := prelimResult;
 end;
 
-function distanceBetween;
+function  distanceBetween;
 begin
 	 Result := sqrt(((x2 - x1)*(x2 - x1)) + ((y2 - y1)*(y2 - y1)) + ((z2 - z1)*(z2 - z1)));
 end;
 
-function inRange;
+function  inRange;
 begin
   Result := (distanceBetween(obj.X, obj.Y, obj.Z, x1, y1, z1) < range); 
 end;
 
-function moveToLoc;
+function  moveToLoc;
 var                                                                 
   i: integer;
   _index: integer;
@@ -75,7 +76,7 @@ begin
   Result := true;       
 end;
 
-function inRange;
+function  inRange;
 begin
   if Length(iArray) < 3 then
   begin
@@ -85,7 +86,7 @@ begin
   Result := inRange(obj, iArray[0], iArray[1], iArray[2], range); 
 end;
 
-function moveTo;
+function  moveTo;
 begin
   if Length(iArray) < 3 then
   begin
@@ -97,7 +98,13 @@ begin
   
 end;
 
-function revertArray;
+procedure  MoveAndWait;
+begin
+  Engine.MoveTo (x, y, z);
+  Delay (5 * 1000);
+end;
+
+function  revertArray;
 var
 	i: integer;
 begin
@@ -111,14 +118,14 @@ begin
 end;
 
 
-procedure writeToArray;
+procedure  writeToArray;
 begin
 	iArray[0] := val1;
 	iArray[1] := val2;
 	iArray[2] := val3;	
 end;
 
-function ifThen;
+function  ifThen;
 begin
 	if bool then
 		Result := valTrue
@@ -126,7 +133,7 @@ begin
 		Result := valFalse;
 end;
 
-function ifThen;
+function  ifThen;
 begin
 	if bool then
 		Result := valTrue
@@ -134,7 +141,7 @@ begin
 		Result := valFalse;
 end;
 
-function ifThen;
+function  ifThen;
 begin
 	if bool then
 		Result := valTrue
@@ -142,7 +149,7 @@ begin
 		Result := valFalse;
 end;
 
-function ifThen;
+function  ifThen;
 begin
 	if bool then
 		Result := valTrue
