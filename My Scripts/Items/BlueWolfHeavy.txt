@@ -14,8 +14,8 @@ const
   BLUE_WOLF_GLOVES_FABRIC = 4096;
   BLUE_WOLF_BOOTS_RECIPE = 4167;
   BLUE_WOLF_BOOTS_DESIGN = 4090;
-  
-{	
+
+{
 --------------------------------------------------------------------------------
   Blue Wolf Breastplate Recipe by Spoil
   Ice Tarantula (lvl 57) (Schuttgart, Frozen Labyrinth)
@@ -48,7 +48,7 @@ begin
   Result := true;
 end;
 
-{	
+{
 --------------------------------------------------------------------------------
   Blue Wolf Gaiters Material by Spoil
   Alpine Kookaburra (lvl 65) (Rune, Beast Farm)
@@ -69,7 +69,7 @@ begin
   Result := true;
 end;
 
-{	
+{
 --------------------------------------------------------------------------------
   Blue Wolf Boots Recipe by Drop
   Fallen Orc Shaman (lvl 58) (Aden, Forsaken Plains)
@@ -82,7 +82,7 @@ begin
   Result := true;
 end;
 
-{	
+{
 --------------------------------------------------------------------------------
   Blue Wolf Breastplate Part by Spoil
   Spiteful Soul Wizard (lvl 63) (Aden, Devastated Castle)
@@ -130,7 +130,7 @@ begin
   Result := true;
 end;
 
-{	
+{
 --------------------------------------------------------------------------------
   Blue Wolf Gloves Recipe by Drop
   Leogul (lvl 61) ()
@@ -142,7 +142,7 @@ begin
   Result := true;
 end;
 
-{	
+{
 --------------------------------------------------------------------------------
   Blue Wolf Gloves Fabric by Spoil
   Splinter Stakato Worker (lvl 67) (Goddard, Swamp of Screams)
@@ -154,7 +154,7 @@ begin
   Result := true;
 end;
 
-{	
+{
 --------------------------------------------------------------------------------
   Blue Wolf Helmet Recipe by Drop
   Luminun (lvl 58) (Oren, West of the village)
@@ -180,7 +180,7 @@ begin
   Result := true;
 end;
 
-{	
+{
 --------------------------------------------------------------------------------
   Blue Wolf Helmet Design by Spoil
   Kookaburra (lvl 67) (Goddard, East of Castle)
@@ -190,10 +190,10 @@ end;
 function  BlueWolfHelmetDesign: boolean;
 begin
   TeleportTo ('goddard');
-  Result := true;  
+  Result := true;
 end;
 
-{	
+{
 --------------------------------------------------------------------------------
   Blue Wolf Helmet by Drop
   Plando (lvl 64) (Giran, Anthara's Lair)

@@ -43,7 +43,7 @@ if  User.InRange (143700, 75680, -3360, 1000, 200)  then begin
 end;
 end;
 
-{	
+{
 --------------------------------------------------------------------------------
   Karmian Tunic and Gaiters by Drop (lvl 45) and Tunic Recipe by Drop
   Tunic 1/4425 chance, Stockings 1/2762 chance, 23s avg. respawn time
@@ -65,8 +65,7 @@ begin
   end;
 end;
 
-  
-{	
+{
 --------------------------------------------------------------------------------
   Karmian Tunic Recipe by Drop (
   Tunic Recipe 1/295 chance, 1m avg. respawn time

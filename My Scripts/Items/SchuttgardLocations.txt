@@ -1,4 +1,3 @@
-  
   // teleportTo ('frozen labirinth');
   if  User.InRange (113869, -108865, -840, 500, 200)  then begin
     Print ('Path to the Ice Queen Castle');

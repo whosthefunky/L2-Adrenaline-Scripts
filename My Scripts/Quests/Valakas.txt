@@ -10,20 +10,24 @@
 const
   Klein = 31540;
 {
-2. He will ask you to get him a Vacualite Vacualite from Blacksmith Hilda in Goddard. He need it to create Floating Stone Floating Stone for you to get through the Hall of Flames.
+2. He will ask you to get him a Vacualite from Blacksmith Hilda in Goddard.
+   He need it to create Floating Stone for you to get through the Hall of Flames.
 
-3. Meet Blacksmith Hilda in Goddard, and she will tell you to bring her Vacualite Ore Vacualite Ore.
+3. Meet Blacksmith Hilda in Goddard, and she will tell you to bring her Vacualite Ore.
 She will send you to hunt in the Garden of Wild Beasts the following mobs (they are easy - 1/2 HP):
 
-    Kookaburra Kookaburra location on the map
-    Bandersnatch Bandersnatch location on the map
-    Grendel Grendel location on the map
+    Kookaburra Kookaburra
+    Bandersnatch
+    Grendel
 
 Bring back 50 Vacualite Ore.
 
-4. Give the 50 quest items to Blacksmith Hilda in Goddart. She'll make the Vacualite Vacualite. Now you can return with it to Klein Klein location on the map in Forge of the Gods.
+4. Give the 50 quest items to Blacksmith Hilda in Goddart. She'll make the Vacualite.
+   Now you can return with it to Klein in Forge of the Gods.
 
-5. Speak again with Klein Klein location on the map and he will turn the Vacualite the Floating Stone. After that, you can port to the small hallway above the lava flow that you can see behind Klein, and the Floating Stone disappears.
+5. Speak again with Klein and he will turn the Vacualite the Floating Stone.
+   After that, you can port to the small hallway above the lava flow that you can
+   see behind Klein, and the Floating Stone disappears.
 
 Note: after you get the Floating Stone from Klein, talk to him and pick up the quest again.
 }
@@ -34,7 +38,7 @@ begin
   //TeleportTo ('forge of gods');
 {
   Go down and cross the bridge. Take the first left and after that take every right turn,
-  and stick to the right. Soon you will see Watcher of Valakas Klein Klein location on the map.
+  and stick to the right. Soon you will see Watcher of Valakas Klein.
   Speak with him.
 }
   if  User.InRange (170209, -116238, -2079, 500, 200)  then begin

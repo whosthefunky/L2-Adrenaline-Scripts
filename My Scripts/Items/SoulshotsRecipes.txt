@@ -63,6 +63,6 @@ end;
 --------------------------------------------------------------------------------
 Recipe: Blessed Spiritshot B-Grade
 Harit Lizardman Warrior lvl 53 (Hunters Village, Forest of Mirrors near Anghel Waterfall)
-Marluk Succubus lvl 55 (Town of Giran, Gorgon's Flower Garden) 
+Marluk Succubus lvl 55 (Town of Giran, Gorgon's Flower Garden)
 --------------------------------------------------------------------------------
 }

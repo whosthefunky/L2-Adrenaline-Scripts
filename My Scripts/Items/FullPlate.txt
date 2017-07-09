@@ -1,4 +1,4 @@
-{	
+{
 --------------------------------------------------------------------------------
   Full Plate Armor Recipe by Spoil
   Vanor Silenos Chieftain (lvl 50) (Aden, West)
@@ -6,7 +6,7 @@
 --------------------------------------------------------------------------------
 }
 
-{	
+{
 --------------------------------------------------------------------------------
   Full Plate Armor Temper by Spoil
   Soul Of Ruins (lvl 54) (Aden, The Cementery)
@@ -30,7 +30,7 @@ begin
   end;
 end;
 
-{	
+{
 --------------------------------------------------------------------------------
   Full Plate Boots Recipe by Drop
   Fline Elder (lvl 51) (Oren, Enchanted Valley)
@@ -38,7 +38,7 @@ end;
 --------------------------------------------------------------------------------
 }
 
-{	
+{
 --------------------------------------------------------------------------------
   Full Plate Boots Part by Spoil
   Drake (lvl 57) (Giran, Dragon Valley)
@@ -65,10 +65,10 @@ begin
   if  User.InRange (132823, 114423, -3720, 500, 200)  then begin
     Print ('Moving from respawn to hunting zone');
     Engine.MoveTo (129162, 114566, -3752);
-	
-	// TODO: needs some movements
-	Engine.MoveTo (122194, 108325, -2992);
-	Engine.MoveTo (122194, 108325, -2992);
+
+        // TODO: needs some movements
+        Engine.MoveTo (122194, 108325, -2992);
+        Engine.MoveTo (122194, 108325, -2992);
   end;
   if  User.InRange (122194, 108325, -2992, 500, 200)  then begin
     Print ('Moving from respawn to hunting zone');
@@ -79,7 +79,7 @@ begin
   end;
 end;}
 
-{	
+{
 --------------------------------------------------------------------------------
   Full Plate Gauntlets Recipe by Drop
   Garden Guard Leader (50) (Heine, Garden of Eva)
@@ -87,7 +87,7 @@ end;}
 --------------------------------------------------------------------------------
 }
 
-{	
+{
 --------------------------------------------------------------------------------
   Full Plate Gauntlets Part by Spoil
   Paliote (lvl 57) (Aden, The Giant Cave)
@@ -99,7 +99,7 @@ begin
   // teleportTo ('giants cave');
   if  User.InRange (167290, 37124, -4003, 500, 200)  then begin
     Print ('Moving from respawn to hunting zone');
-	// TODO: make this
+        // TODO: make this
   end;
   if  User.InRange (180626, 39767, -3751, 500, 200)  or
     User.InRange (172911, 18506, -3280, 500, 200) then begin
@@ -107,7 +107,7 @@ begin
   end;
 end;
 
-{	
+{
 --------------------------------------------------------------------------------
   Full Plate Helmet Recipe by Drop
   Kaim Vanul Lad (lvl 51) (Giran, Devil's Isle)
@@ -120,24 +120,24 @@ procedure  goToDevilIsle;
 begin
   if  User.InRange (47930, 186762, -3486, 500, 200)  then begin
   Engine.MoveTo (45785, 187239, -3480);
-	Engine.MoveTo (45269, 187513, -3384);
-	Engine.MoveTo (43212, 188372, -3480);
-	Engine.MoveTo (42151, 185865, -3376);
-	Engine.MoveTo (40838, 184134, -3312);
-	Engine.MoveTo (39870, 184048, -3217);
-	Engine.MoveTo (39766, 184041, -3208);
-	Engine.MoveTo (37109, 185309, -3122);
-	Engine.MoveTo (35590, 190287, -3088);
-	Engine.MoveTo (35862, 191200, -3119);
-	Engine.MoveTo (35815, 192153, -3088);
-	Print ('Jump to the water');
+        Engine.MoveTo (45269, 187513, -3384);
+        Engine.MoveTo (43212, 188372, -3480);
+        Engine.MoveTo (42151, 185865, -3376);
+        Engine.MoveTo (40838, 184134, -3312);
+        Engine.MoveTo (39870, 184048, -3217);
+        Engine.MoveTo (39766, 184041, -3208);
+        Engine.MoveTo (37109, 185309, -3122);
+        Engine.MoveTo (35590, 190287, -3088);
+        Engine.MoveTo (35862, 191200, -3119);
+        Engine.MoveTo (35815, 192153, -3088);
+        Print ('Jump to the water');
   end;
   if  User.InRange (42178, 208161, -3783, 500, 200)  then begin
     Print ('Teleported with global gatekeeper');
     Engine.MoveTo (43347, 207016, -3752);
-	  Engine.MoveTo (44043, 207082, -3752);
+          Engine.MoveTo (44043, 207082, -3752);
   end;
-  
+
   if  User.InRange (44043, 207082, -3752, 500, 200)  then begin
     Print ('Next to kitty the cat');
     Engine.MoveTo (44437, 207154, -3752);
@@ -206,7 +206,7 @@ begin
   end;
 end;
 
-{	
+{
 --------------------------------------------------------------------------------
   Full Plate Helmet Design by Spoil
   Baby Panthera (lvl 55) (Shuttgart, Frost Lake)
@@ -239,7 +239,7 @@ begin
   end;
 end;
 
-{	
+{
 --------------------------------------------------------------------------------
   Full Plate Shield Recipe by Drop (ID 3019)
   Tarlk Basilisk (lvl 50) (Oren, Outlaw Forest)
@@ -251,7 +251,7 @@ begin
   Engine.LoadZone ('TarlkBasilisk.zmap');
 end;
 
-{	
+{
 --------------------------------------------------------------------------------
   Full Plate Shield Fragment by Drop
   Elder Lost Watcher (lvl 54) (Shuttgart, Ice Merchant Cahin)
@@ -275,7 +275,7 @@ end;
     Engine.MoveTo (152916, 83435, -3200);
     Engine.MoveTo (157187, 78612, -3336);
   end;
-if  User.InRange (157187, 78612, -3336, 500, 200)  then begin  
+if  User.InRange (157187, 78612, -3336, 500, 200)  then begin
     Engine.MoveTo (157303, 78487, -2920);
     Engine.MoveTo (160775, 76584, -3163);
     Engine.MoveTo (163458, 79749, -2390);

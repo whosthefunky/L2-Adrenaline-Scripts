@@ -1,4 +1,4 @@
-{	
+{
 --------------------------------------------------------------------------------
   Sealed Dark Crystal Helmet Design by Spoil
   Needle Stakato Soldier (lvl 72) (Rune, Swamp of Screams)
@@ -19,7 +19,7 @@ begin
   end;
 end;}
 
-{	
+{
 --------------------------------------------------------------------------------
   Sealed Dark Crystal Robe Fabric by Spoil
   Canyon Antelope (lvl 68) (Goddard, Wall of Argos)
@@ -40,7 +40,7 @@ begin
   end;
 end;}
 
-{	
+{
 --------------------------------------------------------------------------------
   Sealed Dark Crystal Gloves Design by Spoil
   Splinter Stakato Soldier (lvl 68) (Rune, Swamp of Screams)
@@ -61,7 +61,7 @@ begin
   end;
 end;}
 
-{	
+{
 --------------------------------------------------------------------------------
   Sealed Dark Crystal Boots Lining by Spoil
   Raider Of Pastureland (lvl 68) (Rune, Beast Farm)
@@ -82,7 +82,7 @@ begin
   end;
 end;}
 
-{	
+{
 --------------------------------------------------------------------------------
   Sealed Dark Crystal Shield Fragment by Spoil
   Bone Grinder (lvl 70) (Rune, Forest of the Dead)

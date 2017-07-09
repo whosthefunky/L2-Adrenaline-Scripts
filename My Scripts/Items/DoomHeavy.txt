@@ -12,8 +12,8 @@ const
   DOOM_GLOVES_PART = 4091;
   DOOM_BOOTS_RECIPE = 4176;
   DOOM_BOOTS_PART = 4099;
-  
-{	
+
+{
 --------------------------------------------------------------------------------
   Doom Helmet Recipe by Drop
   Doom Guard (lvl 61) (Aden, Devastated Castle)
@@ -26,7 +26,7 @@ begin
   BlueWolfMaterials;
 end;
 
-{	
+{
 --------------------------------------------------------------------------------
   Doom Helmet Pattern by Spoil
   Chimera Piece (lvl 73) (Aden, The Giant Cave)
@@ -47,7 +47,7 @@ begin
   Result := true;
 end;
 
-{	
+{
 --------------------------------------------------------------------------------
   Doom Plate Armor Recipe by Spoil
   Anger Of Splendor (lvl 63) (Rune, Valley of Saints)
@@ -60,7 +60,7 @@ begin
   Result := true;
 end;
 
-{	
+{
 --------------------------------------------------------------------------------
   Doom Plate Armor Temper by Spoil
   Doom Knight (lvl 65) (Aden, Devastated Castle)
@@ -78,7 +78,7 @@ begin
   Result := true;
 end;
 
-{	
+{
 --------------------------------------------------------------------------------
   Doom Gloves Recipe by Drop
   Kranrot (lvl 59) (Aden, Giant Cave)
@@ -90,7 +90,7 @@ begin
   Result := true;
 end;
 
-{	
+{
 --------------------------------------------------------------------------------
   Doom Gloves Part by Spoil
   Splinter Stakato Worker (lvl 67) (Goddard, Swamp of Screams)
@@ -103,7 +103,7 @@ begin
   Result := true;
 end;
 
-{	
+{
 --------------------------------------------------------------------------------
   Doom Boots Recipe by Drop
   Yintzu (lvl 56) (Aden, Giant Cave)
@@ -129,7 +129,7 @@ begin
   Result := true;
 end;
 
-{	
+{
 --------------------------------------------------------------------------------
   Doom Boots Part by Spoil
   Fang Of Splendor (lvl 67) (Rune, Valley of Saints)
@@ -138,7 +138,7 @@ end;
 }
 function  DoomBootsPart: boolean;
 begin
-  Result := true;  
+  Result := true;
 end;
 
 BEGIN

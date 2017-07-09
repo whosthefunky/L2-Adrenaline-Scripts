@@ -28,7 +28,7 @@ begin
     Engine.FaceControl (0, true);
     // Wait 1 minute while we haven't get the items
     while  not Inventory.User.ByID (PLATED_LEATHER_ARMOR_RECIPE, recipe)
-	  or  not Inventory.User.ByID (BLESSED_SPIRITSHOT_C_RECIPE, recipe)  or  (recipe.Count < quantity)  do Delay (60 * 1000);
+      or  not Inventory.User.ByID (BLESSED_SPIRITSHOT_C_RECIPE, recipe)  or  (recipe.Count < quantity)  do Delay (60 * 1000);
     Print ('You''ve found the recipe');
     Engine.FaceControl (0, false);
     while  User.InCombat  do Delay (3 * 1000);
@@ -37,7 +37,7 @@ begin
   end;
 end;
 
-{	
+{
 --------------------------------------------------------------------------------
   Plated Leather Fragment by Spoil
   Horrifying Cannon Golem IV (lvl 48) (Schuttgart, Pavel Ruins)
@@ -47,7 +47,7 @@ end;
 --------------------------------------------------------------------------------
 }
 
-{	
+{
 --------------------------------------------------------------------------------
   Plated Leather Gloves Recipe by Drop  (lvl 43)
   1% chance, 1m avg. respawn time
@@ -123,7 +123,7 @@ begin
   end;
 end;
 
-{	
+{
 --------------------------------------------------------------------------------
   Plate Leather Boot Lining by Drop (lvl 44)
   Krator 1/162 chance (Cruma tower, end of right hand first floor)

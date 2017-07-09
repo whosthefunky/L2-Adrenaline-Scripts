@@ -35,7 +35,7 @@ if  User.InRange (125488, 77591, -2456, 50, 100)  then begin
 end;
 end;
 
-{	
+{
 --------------------------------------------------------------------------------
   Karmian Stockings and Boots Recipes (lvl 41-43)
   Stockings: 1/14 chance, 1m 34s avg. respawn time
@@ -45,7 +45,7 @@ end;
 procedure  KarmianStockingsBootsRecipes2;
 begin
   //LoadBotInterface
-  //goToGardenOfEva (1); // Indicate Level 
+  //goToGardenOfEva (1); // Indicate Level
 end;
 
 BEGIN
