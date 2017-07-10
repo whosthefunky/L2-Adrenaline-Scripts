@@ -97,10 +97,31 @@ begin
 
 end;
 
-procedure  MoveAndWait;
+procedure  MoveAndWait (x, y, z: integer);
+var
+  i: integer;
+  x1, y1, z1: integer;
+  x2, y2, z2: integer;
 begin
   Engine.MoveTo (x, y, z);
-  Delay (5 * 1000);
+  for  i := 0  to  Party.Chars.Count-1  do
+  begin
+    x1 := User.X;  y1 := User.Y;  z1 := User.Z;
+    x2 := Party.Chars.Items(i).X;
+    y2 := Party.Chars.Items(i).Y;
+    z2 := Party.Chars.Items(i).Z;
+
+    if  (distanceBetween (x1, y1, z1, x2, y2, z2) < 1000)  then
+    begin
+      while  not (distanceBetween (x1, y1, z1, x2, y2, z2) < 100)  do
+      begin
+        x2 := Party.Chars.Items(i).X;
+        y2 := Party.Chars.Items(i).Y;
+        z2 := Party.Chars.Items(i).Z;
+        Delay (500);
+      end;
+    end;
+  end;
 end;
 
 function  revertArray;
