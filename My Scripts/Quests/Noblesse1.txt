@@ -4,9 +4,16 @@ interface
 
 uses  TeleportModule;
 
+const
+  Talien = 31739;
+  Gabrielle = 30753;
+  Gilmore = 30754;
+  Kantabilon = 31042;
+  Urn = 31149;
+
 procedure  Noblesse1;
 
-implementation;
+implementation
 
 {
   Path Of A Noblesse Possessor Of A Precious Soul Part 1
@@ -22,56 +29,479 @@ implementation;
   Required materials: 1 Hellfire Oil, 5 Lunaragents (from Supplier of Reagents quest).
 }
 procedure  Noblesse1;
+var
+  i: integer;
 begin
 {
   Start the quest at Talien, who is on the east side of the stairs leading up to Aden Church. He's on the staircase.
 }
-
+  //TeleportTo ('aden');
+  if  User.InRange (146338, 25767, -2013, 500, 200)  then
+  begin  
+    Engine.MoveTo (147482, 25768, -2039);
+  end;
+  if  User.InRange (147482, 25768, -2039, 500, 200)  then
+  begin  
+    Engine.MoveTo (147732, 26356, -2167);
+  end;
+  if  User.InRange (147732, 26356, -2167, 500, 200)  then
+  begin
+    Engine.SetTarget (Talien);
+    Engine.DlgOpen;
+    Delay (500);
+    Engine.DlgSel (1);
+    Delay (500);
+    Engine.DlgSel (1);
+    Delay (500);
+  end;
 {
   Teleport to Giran. Speak to Gabrielle, who is on the South side of the town square
 }
+  //TeleportTo ('giran');
+  if  User.InRange (83384, 147942, -3400, 800, 200)  then
+  begin
+    Engine.MoveTo (82861, 148330, -3464);
+    Engine.MoveTo (82801, 149368, -3464);
+    Engine.MoveTo (81572, 149466, -3495);
+    Engine.MoveTo (81331, 149685, -3464);
+  end;
+  if  User.InRange (81331, 149685, -3464, 500, 200)  then
+  begin
+    Engine.SetTarget (Gabrielle);
+    Engine.DlgOpen;
+    Delay (500);
+    Engine.DlgSel (1);
+    Delay (500);
+    Engine.BypassToServer ('npc_268464828_Quest 241_PossessorOfAPreciousSoul_1');
+    Delay (500);
+    Engine.BypassToServer ('241_PossessorOfAPreciousSoul_1 30753-2.htm');
+    Delay (500);
+  end;
 
 {
   Go to the entrance to Dragon Valley and speak to Gilmore. (If it is Seven Signs rewards week, you can port there if your side won).
 }
+  if  User.InRange (72304, 117754, -3667, 500, 200)  then
+  begin
+    Engine.MoveTo (73164, 118459, -3696);
+    Engine.SetTarget (Gilmore);
+    Engine.DlgOpen;
+    Delay (500);
+    Engine.DlgSel (2);
+    Delay (500);
+    Engine.BypassToServer ('npc_268464801_Quest 241_PossessorOfAPreciousSoul_1');
+    Delay (500);
+    Engine.BypassToServer ('241_PossessorOfAPreciousSoul_1 30754-2.htm');
+    Delay (500);
+  end;
 
 {
-  Teleport to Dion. Teleport to the beehive. Go slightly to the northeast of the port location. You will find a cave with the Quest Monsters you have to kill. If you can't find the cave, open up your map and look at the yellow thumbtack. If you are right on top of the thumbtack and can't see the monsters, you are on the hill above the cave and need to go to the south to find the entrance to the cave. Kill the medusa looking quest monster and get the quest item.
+  Teleport to Dion. Teleport to the beehive. Go slightly to the northeast of the port location. You will find a cave with the Quest Monsters you have to kill.
+  If you can't find the cave, open up your map and look at the yellow thumbtack.
+  If you are right on top of the thumbtack and can't see the monsters, you are on the hill above the cave and need to go to the south to find the entrance to the cave.
+  Kill the medusa looking quest monster and get the quest item.
 }
-
+  //TeleportTo ('bee hive');
+  if  User.InRange (20510, 189036, -3339, 500, 200)  then
+  begin
+    Engine.MoveTo (20467, 187061, -3396);
+    Engine.MoveTo (19703, 185483, -3368);
+    Engine.MoveTo (20896, 184693, -3384);
+  end;
+  if  User.InRange (20896, 184693, -3384, 500, 200)  then
+  begin
+    Engine.LoadZone (exepath + 'Zmaps\noblesse1');
+	Engine.FaceControl (0, true);
+	while  (User.Target = nil)  do
+	  Delay (3333);
+	Delay (20 * 1000);
+	if  (User.Target = nil)  then
+	  GoHome;
+  end;
 {
   Teleport to Aden. Speak to Talien. Teleport to Saints Necropolis. SOE to Heine. Go to the Magic Trader and speak to the Melody Maestro dwarf there.
 }
+  //TeleportTo ('aden');
+  Engine.MoveTo (147732, 26356, -2167);
+  Engine.SetTarget (Talien);
+  Engine.DlgOpen;
+  Delay (500);
+  Engine.DlgSel (1);
+  Delay (500);
+  Engine.DlgSel (1);
+  Delay (500);
+  
+  //TeleportTo ('heine');
+  if  User.InRange (111385, 219357, -3544, 500, 200)  then
+  begin
+    Engine.MoveTo (111364, 219123, -3540);
+    Engine.MoveTo (110271, 219030, -3488);
+    Engine.MoveTo (110075, 218989, -3505);
+    Engine.MoveTo (110080, 217990, -3552);
+    Engine.MoveTo (110032, 217279, -3744);
+    Engine.MoveTo (108880, 217539, -3712);
+    Engine.MoveTo (107862, 217546, -3701);
+    Engine.MoveTo (107123, 218150, -3701);
+    Engine.MoveTo (107122, 217833, -3600);
+    Engine.MoveTo (107110, 217123, -3592);
+  end;
+  if  User.InRange (107110, 217123, -3592, 200, 200)  then
+  begin
+    Engine.SetTarget (Kantabilon);
+    Engine.DlgOpen;
+    Delay (500);
+    Engine.DlgSel ('Quest');
+    Delay (500);
+    Engine.DlgSel ('Possesssor Of A Precious Soul - 1');
+    Delay (500);
+    Engine.BypassToServer ('241_PossessorOfAPreciousSoul_1 31042-2.htm');
+    Delay (500);
+  end;
 
 {
-  Teleport to Giran. Teleport to Dragon Valley. Run west. Kill Malruk Succubus and Malruk Succubus Tauren until you get 10 talons. You have to kill a lot to get the 10 talons, the quest item drop rate for this quest is very low. It is not a last hit required quest, the drop rate just sucks. Return to Heine and speak with that dwarf again.
+  Teleport to Giran. Teleport to Dragon Valley. Run west. Kill Malruk Succubus and Malruk Succubus Tauren until you get 10 talons.
+  You have to kill a lot to get the 10 talons.
+  It is not a last hit required quest, the drop rate just sucks. Return to Heine and speak with that dwarf again.
+}
+  //TeleportTo ('dragon valley');
+  if  User.InRange (20510, 189036, -3339, 500, 200)  or
+      User.InRange (131442, 114472, -3716, 500, 200)  then
+  begin
+    Engine.MoveTo (125690, 112173, -3240);
+    Engine.MoveTo (123837, 108585, -3104);
+    Engine.MoveTo (121049, 108660, -2988);
+    Engine.MoveTo (118201, 109847, -2944);
+    Engine.MoveTo (112585, 110363, -2976);
+    Engine.LoadZone (exepath + 'Zmaps\noblesse1');
+	Engine.FaceControl (0, true);
+	while  (User.Target = nil)  do
+	  Delay (3333);
+	Delay (20 * 1000);
+	if  (User.Target = nil)  then
+	  GoHome;
+  end;
+
+{
+  Teleport back up to Aden. Talk to Talien.
 }
 
 {
-  Teleport back up to Aden. Talk to Talien. (I forget if he send you to HV here or not). Teleport to Rune. Teleport to the Rune Castle Town Temple. Run through the temple to find Virgil, one of the three NPCs on a balcony. Get to know them well because they're all about these Noblesse Quests. Talk to him, he'll have you talk to the other two NPCs, one of which is his GrandDaughter.
+   Go to Hunters Village and talk to Stedmiel in the Warrior Guild.
 }
 
 {
-  Teleport to Rune Castle Town Guild. Run in and talk to the NPC there (I forget his name). Teleport back to Rune Castle Town Store, which will put you next to the GK.
+  Teleport back up to Aden. Talk to Talien.
 }
 
 {
-  Teleport to the Western Entrance of the Swamp of Screams. Kill Splinter Stakato Drones, which are matk resist and archer resist. They bleed. You will not be able to do this part of the quest alone at level 50. Everything here is social and aggressive. It is not a last hit required quest, the drop rate just sucks. You will obtain crimson moss. When you have 5, return to the NPC in the Rune Guild, who makes the medecine.
+  Teleport to Rune. Teleport to the Rune Castle Town Temple. Run through the temple to find Virgil, one of the three NPCs on a balcony.
+  Get to know them well because they're all about these Noblesse Quests. Talk to him, he'll have you talk to Ogmar.
 }
+
+  if  User.InRange (33015, -48194, 1776, 500, 200)  then
+  begin
+    Engine.MoveTo (37995, -48210, 870);
+    Engine.MoveTo (36694, -48227, 896);
+    Engine.MoveTo (35923, -47736, 896);
+    Engine.MoveTo (35911, -47044, 1056);
+    Engine.MoveTo (35922, -46925, 1072);
+    Engine.MoveTo (35017, -46930, 1376);
+    Engine.MoveTo (34887, -46927, 1370);
+    Engine.MoveTo (34894, -48096, 1704);
+    Engine.MoveTo (34916, -48206, 1712);
+    Engine.MoveTo (34410, -48211, 1768);
+    Engine.MoveTo (34306, -48206, 1754);
+  end;
+
+{
+  Talk to Rahorakti in the Mystic Guild in the basement
+}
+
+  if  User.InRange (33015, -48194, 1776, 500, 200)  then
+  begin
+    Engine.MoveTo (34306, -48206, 1754);
+    Engine.MoveTo (34916, -48206, 1712);
+    Engine.MoveTo (34887, -46927, 1370);
+    Engine.MoveTo (35922, -46925, 1072);
+    Engine.MoveTo (35923, -47736, 896);
+    Engine.MoveTo (36694, -48227, 896);
+    Engine.MoveTo (37995, -48210, 870);
+  end;
+  if  User.InRange (33015, -48194, 1776, 500, 200)  then
+  begin
+    Engine.MoveTo (37359, -48605, -1128);
+    Engine.MoveTo (37350, -49377, -1155);
+    Engine.MoveTo (38347, -49267, -1155);
+	// Talk to Rahorakti
+  end;
+  if  User.InRange (38347, -49267, -1155, 500, 200)  then
+  begin
+    Engine.MoveTo (37350, -49377, -1155);
+    Engine.MoveTo (37359, -48605, -1128);
+    Engine.MoveTo (33015, -48194, 1776);
+	// Teleport to 'Rune Castle Temple'
+	// Teleport to 'Rune Castle Town Store'
+	// Teleport to swamp of screams
+  end;
+
+{
+  Teleport back to Rune Castle Town Store, which will put you next to the GK.
+  Teleport to the Western Entrance of the Swamp of Screams. Kill Splinter Stakato Drones, which resist magic attacks and archer attacks.
+  You will not be able to do this part of the quest alone at level 50. Everything here is social and aggressive.
+  It is not a last hit required quest. You will obtain crimson moss.
+  When you have 5, return to Rahorakti in the Rune Guild, who makes the medicine.
+}
+
+
+// To Rahorakti
+if  User.InRange (33015, -48194, 1776, 500, 200)  then
+  begin
+    Engine.MoveTo (34306, -48206, 1754);
+    Engine.MoveTo (34916, -48206, 1712);
+    Engine.MoveTo (34887, -46927, 1370);
+    Engine.MoveTo (35922, -46925, 1072);
+    Engine.MoveTo (35923, -47736, 896);
+    Engine.MoveTo (36694, -48227, 896);
+    Engine.MoveTo (37995, -48210, 870);
+  end;
+  if  User.InRange (33015, -48194, 1776, 500, 200)  then
+  begin
+    Engine.MoveTo (37359, -48605, -1128);
+    Engine.MoveTo (37350, -49377, -1155);
+    Engine.MoveTo (38347, -49267, -1155);
+	// Talk to Rahorakti
+  end;
+  if  User.InRange (38347, -49267, -1155, 500, 200)  then
+  begin
+    Engine.MoveTo (37350, -49377, -1155);
+    Engine.MoveTo (37359, -48605, -1128);
+    Engine.MoveTo (33015, -48194, 1776);
+	// Teleport to 'Rune Castle Temple'
+  end;
 
 {
   Teleport back to the Temple. Speak to the girl. She's happy and cured. Yay. Talk to Virgil again. He'll send you to Goddard to talk to Caradine. Teleport there. She's to the Northeast of the GK on the outer edge of town.
 }
+  if  User.InRange (38267, -48068, 901, 500, 200)  then
+  begin
+    Engine.MoveTo (37995, -48210, 870);
+    Engine.MoveTo (36694, -48227, 896);
+    Engine.MoveTo (35923, -47736, 896);
+    Engine.MoveTo (35911, -47044, 1056);
+    Engine.MoveTo (35922, -46925, 1072);
+    Engine.MoveTo (35017, -46930, 1376);
+    Engine.MoveTo (34887, -46927, 1370);
+    Engine.MoveTo (34894, -48096, 1704);
+    Engine.MoveTo (34916, -48206, 1712);
+    Engine.MoveTo (34410, -48211, 1768);
+    Engine.MoveTo (34306, -48206, 1754);
+    Engine.MoveTo (33032, -48255, 1754);
+  end;
 
 {
-  Speak to Caradine and she'll send you to the blacksmith two shops over. He'll tell he needs one hellfire oil and 5 lunaragents (Supplier of Reagents quest in IT). Get them, go back to the blacksmith then back to Caradine and finish the quest. You'll receive experience, and Virgil's Letter. Which tells you that Virgil needs your help RIGHT AWAY! OH NO!
+  Speak to Caradine and she'll send you to the blacksmith two shops over. He'll tell he needs one hellfire oil and 5 lunaragents (Supplier of Reagents quest in Ivory Tower).
+  In total: 100 Lava Stones, 50 Moon Dust, 500 Moonstone Shards, 60 Volcanic Ash, 1 Quicksilver, 2 Sulfur, 100 Demon's Blood, 10 Blood Roots
+  Get them.
+}
+  if  User.InRange (85538, 16191, -4300, 200, 200)  then
+  begin
+    Engine.SetTarget (31149);
+    Engine.DlgOpen;
+    Delay (500);
+    Engine.DlgSel (2);
+    Delay (500);
+
+    // Moondust = 10 Moonstone Shard + 1 Volcanic Ash
+	for  i := 1  to  50  do
+	begin
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents U_I_Insert');  // insert ingredient
+	Delay (500);
+	Engine.BypassToServer ('Quest 373_SupplierOfReagents x_2_I_6013');  // x10 moonstone shard
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents urn');  // back
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents U_C_Insert');  // insert catalyst
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents x_1_C_6018');  // x1 volcanic ash
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents urn');  // back
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents 31149-5.htm');  // select temperature
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents tmp_1');  // temperature 1 - salamander
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents urn');  // back
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents 31149-6.htm'); // mix ingredients
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents urn');  // back
+    Delay (500);
+	end;
+	
+	// Lunargent = 10 Moondust + 1 Quicksilver
+	for  i := 1  to  5	do
+	begin
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents U_I_Insert');  // insert ingredient
+	Delay (500);
+	Engine.BypassToServer ('Quest 373_SupplierOfReagents x_2_I_6023');  // x10 moondust
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents urn');  // back
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents U_C_Insert');  // insert catalyst
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents x_1_C_6019');  // x1 quicksilver
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents urn');  // back
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents 31149-5.htm');  // select temperature
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents tmp_1');  // temperature 1 - salamander
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents urn');  // back
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents 31149-6.htm'); // mix ingredients
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents urn');  // back
+    Delay (500);
+	end;
+	
+	// Magma Dust = 10 Lava Stone + 1 Volcanic Ash
+	for  i := 1  to  10  do
+	begin
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents U_I_Insert');  // insert ingredient
+	Delay (500);
+	Engine.BypassToServer ('Quest 373_SupplierOfReagents x_2_I_6012');  // x10 lava stone
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents urn');  // back
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents U_C_Insert');  // insert catalyst
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents x_1_C_6018');  // x1 volcanic ash
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents urn');  // back
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents 31149-5.htm');  // select temperature
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents tmp_1');  // temperature 1 - salamander
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents urn');  // back
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents 31149-6.htm'); // mix ingredients
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents urn');  // back
+    Delay (500);
+	end;
+	
+	// Fire Essence = 10 Magma Dust + 1 Sulfur
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents U_I_Insert');  // insert ingredient
+	Delay (500);
+	Engine.BypassToServer ('Quest 373_SupplierOfReagents x_2_I_6022');  // x10 magma dust
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents urn');  // back
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents U_C_Insert');  // insert catalyst
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents x_1_C_6020');  // x1 sulfur
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents urn');  // back
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents 31149-5.htm');  // select temperature
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents tmp_1');  // temperature 1 - salamander
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents urn');  // back
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents 31149-6.htm'); // mix ingredients
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents urn');  // back
+    Delay (500);
+	
+	// Demonplasm = 10 Demon Blood + 1 Blood Root
+	for  i := 1  to  10  do
+	begin
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents U_I_Insert');  // insert ingredient
+	Delay (500);
+	Engine.BypassToServer ('Quest 373_SupplierOfReagents x_2_I_6015');  // x10 demon blood
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents urn');  // back
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents U_C_Insert');  // insert catalyst
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents x_1_C_6017');  // x1 blood root
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents urn');  // back
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents 31149-5.htm');  // select temperature
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents tmp_1');  // temperature 1 - salamander
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents urn');  // back
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents 31149-6.htm'); // mix ingredients
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents urn');  // back
+    Delay (500);
+	end;
+	
+	// Demonic Essence = 10 Demonplasm + 1 Sulfur
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents U_I_Insert');  // insert ingredient
+	Delay (500);
+	Engine.BypassToServer ('Quest 373_SupplierOfReagents x_2_I_6025');  // x10 demonplasm
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents urn');  // back
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents U_C_Insert');  // insert catalyst
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents x_1_C_6020');  // x1 sulfur
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents urn');  // back
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents 31149-5.htm');  // select temperature
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents tmp_1');  // temperature 1 - salamander
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents urn');  // back
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents 31149-6.htm'); // mix ingredients
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents urn');  // back
+    Delay (500);
+
+	// Hellfire Oil = 1 Fire Essence + 1 Demonic Essence
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents U_I_Insert');  // insert ingredient
+	Delay (500);
+	Engine.BypassToServer ('Quest 373_SupplierOfReagents x_1_I_6028');  // x1 fire essence
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents urn');  // back
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents U_C_Insert');  // insert catalyst
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents x_1_C_6031');  // x1 demonic essence
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents urn');  // back
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents 31149-5.htm');  // select temperature
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents tmp_1');  // temperature 1 - salamander
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents urn');  // back
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents 31149-6.htm'); // mix ingredients
+    Delay (500);
+    Engine.BypassToServer ('Quest 373_SupplierOfReagents urn');  // back
+    Delay (500);
+  end;
+
+{
+  go back to the blacksmith then back to Caradine and finish the quest. You'll receive experience, and Virgil's Letter.
+  Which tells you that Virgil needs your help RIGHT AWAY! OH NO!
 }
 
 {
-  Congratulations, you've now completed Part 1. Only 3 Parts to go. Go see Virgil to start Part 2.
+  Congratulations, you've now completed Part 1. Only 3 Parts to go. Go see Cardine finish the quest.
 }
 end;
 
 BEGIN
-  Noble;
+  Noblesse1;
 END.

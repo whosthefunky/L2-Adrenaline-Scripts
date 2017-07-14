@@ -1,3 +1,6 @@
+const
+  chitin = 7248;
+
 procedure  GoToStackatoNest;
 begin
   Engine.MoveTo (89801, -44647, -2168);
@@ -11,6 +14,8 @@ begin
 end;
 
 procedure  TheZeroHour;
+var
+  item: TL2Item;
 begin
   // TeleportTo ('swamp of screams');
   if  User.InRange (70011, -49895, -3246, 500, 200)  then begin
@@ -27,9 +32,11 @@ begin
     Engine.LoadZone ('TheZeroHour');
     Engine.FaceControl (0, true);
   end;
-  while  Inventory.byId(7248).Count < 100  then begin
+
+  Inventory.User.byId(chitin, item);
+  while  item.Count < 100  do
     Delay (10 * 1000);
-  end;
+
   Engine.MoveTo (73602, -51840, -3166);
   Engine.MoveTo (73151, -51664, -3136);
   Engine.MoveTo (71770, -51673, -3136);

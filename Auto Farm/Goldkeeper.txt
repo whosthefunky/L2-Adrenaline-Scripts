@@ -1,0 +1,23 @@
+var
+  i: integer;
+  mobTitle: string;
+  p: integer;
+begin
+  while  true  do
+  begin
+    for  i := 0  to NpcList.Count-1  do
+    begin
+      mobTitle := NpcList.Items (i).Title;
+      p := pos ('GoldKeeper', mobTitle);
+      
+      if  ( User.DistTo(NpcList.Items(i)) < 500 )  and
+          NpcList.Items(i).Attackable  and
+          not NpcList.Items(i).Dead  and
+         ((NpcList.Items(i).MaxHP > 30000)  or  (p <> 0))  then
+      begin
+        PlaySound (exepath + '\sounds\beep.wav');
+      end;
+    end;
+    Delay (3333);
+  end;
+end.

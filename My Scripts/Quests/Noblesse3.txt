@@ -12,15 +12,57 @@
 }
 
 {
-  1. To start this part of the quest speak with Caradine in Goddard Castle Town.
-     He will tell you that the princess needs some items to unseal her magical powers.
+  To start this part of the quest speak with Caradine in Goddard Castle Town.
+  She will tell you that the princess needs some items to unseal her magical powers.
 }
 
 {
-  2. Speak with Ossian. He will ask you to hunt Pilgrim Of Splendor and Judge Of Splendor
-     in Valley of Saints. Hunt then until you get Ring Of Goddess: Waterbinder and
-     Necklace Of Goddess: EverGreen
+  Speak with Ossian. He will ask you to hunt Pilgrim Of Splendor and Judge Of Splendor
+  in Valley of Saints. Hunt them until you get Ring Of Goddess: Waterbinder and
+  Necklace Of Goddess: EverGreen
 }
+    // Pilgrim of Splendor
+    Engine.MoveTo (71678, -73500, -3792);
+    Engine.MoveTo (73932, -74437, -3496);
+    Engine.MoveTo (75075, -74457, -3280);
+    Engine.MoveTo (76593, -74298, -3112);
+    Engine.MoveTo (77497, -74159, -3056);
+    Engine.MoveTo (77783, -74141, -3064);
+    Engine.MoveTo (78760, -74719, -3392);
+    Engine.MoveTo (80366, -76594, -4016);
+	if  User.InRange (86860, -75506, -3496, 500, 200)  then  // fix this
+  begin
+    Engine.LoadZone (exepath + 'Zmaps\pilgrim');
+	Engine.FaceControl (0, true);
+	while  (User.Target = nil)  do
+	  Delay (3333);
+	Delay (20 * 1000);
+	if  (User.Target = nil)  then
+	  GoHome;
+  end;
+  
+  // Judge of Splendor
+    Engine.MoveTo (67008, -72367, -3802);
+    Engine.MoveTo (67406, -73294, -3696);
+    Engine.MoveTo (68484, -75831, -3720);
+	
+    Engine.MoveTo (69510, -78072, -3976);
+    Engine.MoveTo (68469, -80789, -3632);
+    Engine.MoveTo (68568, -81984, -3536);
+    Engine.MoveTo (70927, -84406, -3200);
+    Engine.MoveTo (70817, -88310, -2568);
+    Engine.MoveTo (74873, -92921, -1592);
+    Engine.MoveTo (70817, -88310, -2568);
+	if  User.InRange (86860, -75506, -3496, 500, 200)  then  // fix this
+  begin
+    Engine.LoadZone (exepath + 'Zmaps\pilgrim');
+	Engine.FaceControl (0, true);
+	while  (User.Target = nil)  do
+	  Delay (3333);
+	Delay (20 * 1000);
+	if  (User.Target = nil)  then
+	  GoHome;
+  end;
 
 {
   3. Go back to Ossian with the items. Now you need to kill raid boss - Flame Of Splendor Barakiel
@@ -29,11 +71,12 @@
 }
 
 {
-  4. Return to Ossian, he will give you one box. You must bring the box to Magister Ladd in Ivory Tower.
+  4. Return to Ossian, he will give you one box.
 }
 
 {
-  5. Magister Ladd is at 3th floor. He will give you Caradine's Letter where is written
-     that you must go back and speak with her when you reach 75 level of your subclass.
-     Congratulations! Now you need just few more levels and you can start the fourth and final Noblesse Quest!
+  You must bring the box to Magister Ladd in Ivory Tower.
+  Magister Ladd is at 4th floor. He will give you Caradine's Letter where is written
+  that you must go back and speak with her when you reach 75 level of your subclass.
+  Congratulations! Now you need just few more levels and you can start the fourth and final Noblesse Quest!
 }

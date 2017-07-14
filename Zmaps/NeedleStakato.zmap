@@ -47,5 +47,29 @@
 				<point x="86214" y="-53598"/>
 			</points>
 		</poly>
+		<poly>
+			<points>
+				<point x="83811" y="-53292"/>
+				<point x="84092" y="-53086"/>
+				<point x="84231" y="-53249"/>
+				<point x="84007" y="-53436"/>
+			</points>
+		</poly>
+		<poly>
+			<points>
+				<point x="83490" y="-54127"/>
+				<point x="83603" y="-53945"/>
+				<point x="83851" y="-53975"/>
+				<point x="83801" y="-54214"/>
+			</points>
+		</poly>
+		<poly>
+			<points>
+				<point x="84345" y="-54122"/>
+				<point x="84189" y="-54321"/>
+				<point x="84509" y="-54477"/>
+				<point x="84604" y="-54310"/>
+			</points>
+		</poly>
 	</internalPolies>
 </zone>

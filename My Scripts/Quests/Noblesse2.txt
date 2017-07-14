@@ -12,45 +12,126 @@
 }
 
 {
-  1. To start the quest speak with Virgil in Rune Castle Town (in Rune temple),
-     he will tell you to speak with Kassandra. She will send you to Ogmar.
+  To start the quest speak with Virgil in Rune Castle Town (in Rune temple),
+  he will tell you to speak with Kassandra. She will send you to Ogmar.
 }
 
 {
-  2. Ogmar will send you to Swamp of Screams to meet with Mysterious Dark Knight.
+  Ogmar will send you to Swamp of Screams to meet with Mysterious Dark Knight.
 }
 
 {
-  3. Speak with the Knight and ispect the dead angels to find a single blonde hair.
+  Speak with the Knight and ispect the dead angels to find a single blonde hair.
 }
 
 {
-  4. Speak again with him and he will send you to one witch who owes him a favour - Kalis.
+  Speak again with him and he will send you to one witch who owes him a favour - Kalis.
 }
 
 {
-  5. Talk to Kalis and she will ask you for some items in order her spell to work.
+  Talk to Kalis and she will ask you for some items in order her spell to work.
 }
+  if  User.InRange (33015, -48194, 1776, 500, 200)  then  // fix this
+  begin
+    Engine.MoveTo (85254, 16337, -3700);
+    Engine.MoveTo (85320, 17342, -3520);
+    Engine.MoveTo (85345, 22022, -3784);
+    Engine.MoveTo (85354, 23243, -3512);
+    Engine.MoveTo (85304, 27106, -3736);
+    Engine.MoveTo (89644, 26951, -3728);
+    Engine.MoveTo (92906, 24675, -3432);
+    Engine.MoveTo (85315, 15045, -3528);
+
+    Engine.MoveTo (91229, 26412, -3640);
+    Engine.MoveTo (94292, 23590, -3181);
+    Engine.MoveTo (95385, 22187, -2880);
+  end;
 
 {
-  6. Now you have to ask Alchemist Matild for the items. Once you have them return
-     to Kalis Kalis location on the map.
+  Now you have to ask Alchemist Matild for the items. Once you have them return
+  to Kalis on the map.
 }
+  if  User.InRange (33015, -48194, 1776, 500, 200)  then  // fix this
+  begin
+    Engine.MoveTo (95385, 22187, -2880);
+    Engine.MoveTo (94292, 23590, -3181);
+    Engine.MoveTo (91229, 26412, -3640);
+    Engine.MoveTo (85315, 15045, -3528);
+    Engine.MoveTo (92906, 24675, -3432);
+    Engine.MoveTo (89644, 26951, -3728);
+    Engine.MoveTo (85304, 27106, -3736);  // end of the bridge
+    Engine.MoveTo (81897, 27637, -3744);
+    Engine.MoveTo (75722, 29709, -3552);
+    Engine.MoveTo (74967, 30276, -3448);
+    Engine.MoveTo (73620, 28407, -3592);
+    Engine.MoveTo (72716, 25884, -3424);
+    Engine.MoveTo (72257, 24259, -3473);
+    Engine.MoveTo (71391, 19325, -3640);
+    Engine.MoveTo (70782, 18376, -3616);
+    Engine.MoveTo (69860, 18120, -3656);
+  end;
 
 {
-  7. Kalis will make the spell and found the princess but you must hurry,
-     cause the princess is in danger. Go to Valley of Saints
+  Kalis will make the spell and found the princess but you must hurry,
+  cause the princess is in danger. Go to Valley of Saints
 }
+  if  User.InRange (33015, -48194, 1776, 500, 200)  then  // fix this
+  begin
+    Engine.MoveTo (69860, 18120, -3656);
+    Engine.MoveTo (70782, 18376, -3616);
+    Engine.MoveTo (71391, 19325, -3640);
+    Engine.MoveTo (72257, 24259, -3473);
+    Engine.MoveTo (72716, 25884, -3424);
+    Engine.MoveTo (73620, 28407, -3592);
+    Engine.MoveTo (74967, 30276, -3448);
+    Engine.MoveTo (75722, 29709, -3552);
+    Engine.MoveTo (81897, 27637, -3744);
+    Engine.MoveTo (85304, 27106, -3736); // end of the bridge
+    Engine.MoveTo (89644, 26951, -3728);
+    Engine.MoveTo (91229, 26412, -3640);
+    Engine.MoveTo (94292, 23590, -3181);	
+    Engine.MoveTo (95385, 22187, -2880);
+  end;
 
 {
-  8. Chek where the yellow thumbtack is. Find the entrance of the cave.
-     Here kill the quest monsters in order to obtain Orb Of Binding.
-     Now you must speak to all the 4 seals and use the orbs to unseal the unicorn.
-     The 4th seal will take all of your orbs of binding. After talk to the unicorn,
-     who comes alive and it turned to be the princess! Now return to Kassandra.
+  Chek where the yellow thumbtack is. Find the entrance of the cave.
 }
+  if  User.InRange (33015, -48194, 1776, 500, 200)  then  // fix this
+  begin
+    Engine.MoveTo (73221, -74290, -3624);
+    Engine.MoveTo (74701, -74513, -3352);
+    Engine.MoveTo (76978, -74282, -3080);
+    Engine.MoveTo (77627, -74175, -3056);
+    Engine.MoveTo (78394, -74392, -3264);
+    Engine.MoveTo (80207, -75233, -3576);
+    Engine.MoveTo (81297, -73912, -3560);
+    Engine.MoveTo (81389, -72253, -3632);
+    Engine.MoveTo (82376, -72008, -3504);
+    Engine.MoveTo (83743, -72468, -3496);
+    Engine.MoveTo (85317, -73779, -3608);
+    Engine.MoveTo (87642, -74220, -3528);
+    Engine.MoveTo (87857, -74393, -3504);	
+    Engine.MoveTo (86860, -75506, -3496);
+  end;
 
 {
-  9. Speak with Virgil and you will recieve Caradine's Letter, which you need to
-     start the next Noblesse Quest. (to start the quest you need level 65 on the sub).
+  Kill the quest monsters in order to obtain Orb Of Binding.
+  Now you must speak to all the 4 seals and use the orbs to unseal the unicorn.
+  The 4th seal will take all of your orbs of binding. After talk to the unicorn,
+  who comes alive and it turned to be the princess! Now return to Kassandra.
+}
+  if  User.InRange (86860, -75506, -3496, 500, 200)  then  // fix this
+  begin
+    Engine.LoadZone (exepath + 'Zmaps\noblesse2');
+	Engine.FaceControl (0, true);
+	while  (User.Target = nil)  do
+	  Delay (3333);
+	Delay (20 * 1000);
+	if  (User.Target = nil)  then
+	  GoHome;
+  end;
+
+{
+  Speak with Virgil and you will recieve Caradine's Letter, which you need to
+  start the next Noblesse Quest. (to start the quest you need level 65 on the sub).
 }
