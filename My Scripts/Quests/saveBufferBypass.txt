@@ -1,0 +1,10 @@
+uses classes;
+begin
+with Tstringlist.create do
+try
+  Text := Engine.DlgText;
+  SaveToFile(exepath+'show dlg'+'.txt');
+finally
+  Free;
+ end;
+end.

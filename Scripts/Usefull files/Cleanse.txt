@@ -1,0 +1,40 @@
+Const
+     CLEANSE_ID = 1409;
+     ITERATION_DELAY = 100;
+    
+ Var
+     Skill: TL2Skill;
+     I: Integer;
+ 
+ Begin
+ 
+     While Engine.Status = lsOnline do
+     Begin
+ 
+         If (SkillList.ByID (CLEANSE_ID, skill)) then
+         Begin
+        
+             For i := 0 to Party.Chars.Count - 1 do
+             Begin
+            
+                 If (Party.Chars.Items (i) .AbnormalID> 0) then
+                 Begin
+                     Engine.SetTarget (Party.Chars.Items (i));
+                     Engine.UseSkill (CLEANSE_ID, true, true);
+                 End;
+                
+                 If User.AbnormalID> 0 then
+                 Begin
+                     Engine.SetTarget (User);
+                     Engine.UseSkill (CLEANSE_ID, true, true);
+                 End;
+                
+             End;
+            
+         End;
+ 
+         Delay (ITERATION_DELAY);
+ 
+     End;
+  
+ End.

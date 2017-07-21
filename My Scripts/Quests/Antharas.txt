@@ -1,0 +1,269 @@
+uses  TeleportModule;
+
+const
+  Gabrielle = 30753;
+  Chakiris = 30705;
+  Orven = 30857;
+  Kendra = 30851;
+  Verona = 30727;
+  Kaiena = 30720;
+  
+{
+  Audience with the Land Dragon
+
+  Description: make this quest in order to be able to fight with Antharas
+  Start lvl: 50
+  Location: Giran
+  NPC: Gabrielle
+  Type: Repeatable
+  Rewards: Portal Stone to enter Antharas Nest
+}
+
+procedure  AudienceWithTheLandDragon;
+begin
+  if  User.InRange (82937, 148620, -3495, 500, 200)  then
+  begin
+    Engine.MoveTo (82745, 149419, -3464);
+    Engine.MoveTo (81773, 149487, -3495);
+    Engine.MoveTo (81328, 149690, -3464);
+  end;
+
+{
+  The quest starts in Giran at Gabrielle. She is situated at the south-west of the center sqare. She will send you to 4 NPC. Every NPC will send you to kill a couple of mobs and bring them the quest items.
+}
+  if  User.InRange (81328, 149690, -3464, 200, 200)  then
+  begin
+    Engine.SetTarget (Gabrielle);
+    Engine.DlgOpen;
+    Delay (200);
+    Engine.DlgSel ('Quest');
+    Delay (200);
+    Engine.BypassToServer ('npc_268464828_Quest 337_AudienceWithTheLandDragon');
+    Delay (200);
+    Engine.BypassToServer ('Quest 337_AudienceWithTheLandDragon 30753-04.htm');
+    Delay (200);
+    Engine.BypassToServer ('Quest 337_AudienceWithTheLandDragon 30753-05.htm');
+    Delay (200);
+    Engine.BypassToServer ('Quest 337_AudienceWithTheLandDragon 30753-06.htm');
+	PlaySound (exepath + '\sounds\beep.wav');
+    Print ('Teleport to Giants Cave');
+    while  not User.InRange (174534, 52665, -4364, 200, 200)  do
+      Delay (1000);
+  end;
+
+{
+  Hunt 1 Kranrot and 1 Hamrut in the Giants Cave: 
+  After Killing the mobs you will earn the quest items: Hamrut Leg and Kranrot Skin
+}
+  if  User.InRange (174534, 52665, -4364, 200, 200)  then
+  begin
+    Print ('Moving to Giant''s Cave hunting ground.');
+    Engine.MoveTo (174287, 52883, -4360);
+    Engine.MoveTo (173370, 53467, -4360);
+    Engine.MoveTo (173794, 52994, -4360);
+    Engine.MoveTo (173365, 53507, -4360);
+    Engine.MoveTo (173331, 56041, -4344);
+    Engine.MoveTo (173278, 60132, -4368);
+    Engine.MoveTo (173381, 61256, -4368);
+    Engine.LoadZone (exepath + 'Zmaps\AntharasQuestGiantsCave.zmap');
+    Engine.FaceControl (0, true);
+	  Delay (60 * 1000);
+	  GoHome;
+  end;
+
+{
+  Kill Blood Queen in Seal of Silen until the quest mob appears
+  Kill the quest mob and you will earn the quest item: Remains Of Sacrified
+}
+  if  User.InRange (185358, 20380, -3264, 200, 200)  then
+  begin
+    Engine.MoveTo (185431, 19847, -3264);
+    Engine.LoadZone (exepath + 'Zmaps\AntharasQuestSealOfSilen.zmap');
+    Engine.FaceControl (0, true);
+	  Delay (60 * 1000);
+	  GoHome;
+    PlaySound (exepath + '\sounds\beep.wav');
+    Print ('Teleport to Forsaken Plains');
+    while  not User.InRange (167287, 37129, -4003, 500, 200)  do
+      Delay (1000);
+  end;
+
+{
+  Hunt 1 Marsh Stalker and 1 Marsh Drake in Forsaken Plains
+  The mobs are situated in the crater of Forsaken Plains.
+  After killing the mobs you will get the items: Marsh Drake Talons, Marsh Stalker Horn.
+}
+  if  User.InRange (167287, 37129, -4003, 500, 200)  then
+  begin
+    Engine.MoveTo (168949, 40426, -4052);
+    Engine.MoveTo (170342, 42527, -4835);
+    Engine.LoadZone (exepath + 'Zmaps\AntharasQuestForsakenPlains.zmap');
+    Engine.FaceControl (0, true);
+    Delay (60 * 1000);
+    GoHome;
+    PlaySound (exepath + '\sounds\beep.wav');
+    Print ('Teleport to Forest of Mirrors');
+    while  not User.InRange (150486, 85872, -2760, 500, 200)  do
+    Delay (1000);
+  end;
+
+{
+  Hunt: Harit Lizardman Matriarch, Harit Lizardman Shaman
+  Kill a couple of them and 3 quest mobs (Harit Lizardman Zealot) will appear,
+  kill the quest mobs an you will get the quest item: Totem Of Land Dragon
+}
+  if  User.InRange (150486, 85872, -2760, 500, 200)  then
+  begin
+    Engine.MoveTo (151660, 84248, -3376);
+    Engine.MoveTo (152971, 82975, -3224);
+    Engine.MoveTo (154282, 81451, -3192);
+    Engine.LoadZone (exepath + 'Zmaps\AntharasQuest.zmap');
+    Engine.FaceControl (0, true);
+    Delay (5 * 60 * 1000);
+    GoHome;
+    MoveInCity;
+    while  not User.InRange (118081, 76133, -2718, 500, 200)  do
+      Delay (1000);
+  end;
+  if  User.InRange (118081, 76133, -2718, 500, 200)  then
+  begin
+    Engine.MoveTo (119537, 76574, -2288);
+    Engine.MoveTo (119727, 76616, -2272);
+    Engine.MoveTo (119751, 75541, -2264);
+    Engine.MoveTo (119684, 75018, -2400);
+    Engine.MoveTo (120028, 74869, -2368);
+  end;
+	if  User.InRange (120028, 74869, -2368, 200, 200)  then
+  begin
+    Engine.SetTarget (Chakiris);
+    Engine.DlgOpen;
+    Engine.DlgSel ('Quest');
+    PlaySound (exepath + '\sounds\beep.wav');
+    Print ('Go to Aden''s Church entrance');
+    while  not User.InRange (147457, 25745, -2008, 500, 200)  do
+	    Delay (1000);
+  end;
+
+{
+  Go to High Priest Orven in Aden church
+}
+  if  User.InRange (147457, 25745, -2008, 500, 200)  then
+  begin
+    Engine.MoveTo (147455, 22628, -1984);
+  end;
+  if  User.InRange (147455, 22628, -1984, 200, 200)  then
+  begin
+    Engine.SetTarget (Orven);
+    Engine.DlgOpen;
+    Engine.DlgSel ('Quest');
+    Delay (200);
+    Engine.BypassToServer ('npc_268465204_Quest 337_AudienceWithTheLandDragon');
+    Engine.MoveTo (147455, 24991, -1984);
+    Engine.MoveTo (147457, 25745, -2008);
+    Engine.MoveTo (148472, 25684, -2039);
+    Engine.MoveTo (148710, 24352, -2008);
+    Engine.MoveTo (149866, 24513, -2136);
+    Engine.MoveTo (149733, 25237, -2167);
+    Engine.MoveTo (149337, 25334, -2120);
+    Engine.MoveTo (149224, 25617, -2148);
+    if  User.InRange (149337, 25334, -2120, 200, 200)  then
+    begin
+      Engine.SetTarget (Kendra);
+      Engine.DlgOpen;
+      Engine.DlgSel ('Quest');
+	end;
+    //TeleportTo ('ivory tower');
+    PlaySound (exepath + '\sounds\beep.wav');
+    Print ('Go to Ivory Tower');
+    while  not User.InRange (85350, 16144, -3689, 200, 200)  do
+      Delay (1000);
+  end;
+  
+{
+  Go to Ivory Tower
+}
+  if  User.InRange (85350, 16144, -3689, 200, 200)  then
+  begin
+    Engine.SetTarget (Verona);
+    Engine.DlgOpen;
+    Engine.DlgSel ('Go to another floor.');
+    Engine.DlgSel (4);
+    Engine.MoveTo (85335, 16565, -1776);
+	  if  User.InRange  (85335, 16565, -1776, 200, 200)  then
+	  begin
+	    Engine.SetTarget (Kaiena);
+      Engine.DlgOpen;
+      Engine.DlgSel ('Quest');
+	    GoHome;
+	  end;
+	  //TeleportTo ('giran');
+    PlaySound (exepath + '\sounds\beep.wav');
+    Print ('Go to Ivory Tower');
+    while  not User.InRange (82937, 148620, -3495, 500, 200)  do
+      Delay (1000);
+  end;
+  
+if  User.InRange (82937, 148620, -3495, 500, 200)  then
+  begin
+    Engine.MoveTo (82745, 149419, -3464);
+    Engine.MoveTo (81773, 149487, -3495);
+    Engine.MoveTo (81328, 149690, -3464);
+  end;
+
+  if  User.InRange (81328, 149690, -3464, 200, 200)  then
+  begin
+    Engine.SetTarget (Gabrielle);
+    Engine.DlgOpen;
+    Delay (200);
+    Engine.DlgSel ('Quest');
+    Delay (200);
+    Engine.BypassToServer ('npc_268464828_Quest 337_AudienceWithTheLandDragon');
+    Delay (200);
+    Engine.BypassToServer ('Quest 337_AudienceWithTheLandDragon 30753-04.htm');
+    Delay (200);
+  end.
+
+
+{10. Bring it back to Master Kendra and she will give you another Mark Of Watchman.
+
+11. Go with the 4 marks back in Giran to Gabrielle, give them to her and she will send you to 2 NPC.
+First NPC is Warehouse Chief Moke in Gludin Warehouse. Talk to him and he will send you to Wind Mill to get him some quest items.
+
+12. Here you will find a quest monster Abyssal Jewel 1 Abyssal Jewel 1 location on the map . If you are a big lvl like 72+ damage dealer or nuker you will be able to get the items if you have a support character or you are lower lvl you will have to find some friends to pass the tests that will follow.
+So hit the Abyssal Jewel 1 Abyssal Jewel 1 location on the map and lots of quest monsters will appear you will have to earn quest item from Abyssal Jewel 1 and from the many monsters that protects it.
+
+You have earned 1st Fragment Of Abyss Jewel 1st Fragment Of Abyss Jewel and Mara Fang Mara Fang
+
+13. After doing so go with the items back to Warehouse Chief Moke and he will give you a Mark Of Watchman Mark Of Watchman .
+
+14. The second NPC is situated in Oren his name is Blacksmith Helton, he will send you to Sea of Spores to get 2nd Fragment of Abyss Jewel and a Musfel Fang.
+
+Here the same thing will happen after hitting the Abyssal Jewel 2 Abyssal Jewel 2 location on the map many quest monsters will appear, again you will have to earn one quest item from the jewel and the other from protectors.
+
+You have earned 2nd Fragment Of Abyss Jewel 2nd Fragment Of Abyss Jewel and Musfel Fang Musfel Fang
+
+15. Take the items back to Blacksmith Helton and he will give you another Mark Of Watchman Mark Of Watchman .
+
+16. Take the 2 marks to Gabrielle in Giran. Now she will send you to the entrance of Dragon Valley to talk to Antharas Watchman Gilmore Gilmore location on the map
+
+17. He will send you to hunt some Cave Keeper Cave Keeper location on the map and Cave Maiden Cave Maiden location on the map . They are situated in front of Antharas Lair.
+
+18. After killing a couple of them the Abyssal Jewel 3 will appear, hit it and some quest monsters will appear kill them and you will get only fragments from the jewel the protectors will not give a quest item any more.
+
+Free Image Hosting at www.ImageShack.us Free Image Hosting at www.ImageShack.us
+
+You have earned 3rd Fragment Of Abyss Jewel 3rd Fragment Of Abyss Jewel
+
+19. Take the 3rd fragment to the NPC Antharas Watchman Theodric Theodric location on the map in front of the entrance of Antharas Lair, give it to him and you will earn the Portal Stone Portal Stone
+
+Theodric
+
+Congratulations you now are able to enter Antharas Nest good luck killing it.
+
+* Every time you go to Antharas you have to make the quest again. You can have multiple stones in your quest inventory.
+}
+end;
+
+BEGIN
+  AudienceWithTheLandDragon;
+END.

@@ -1,0 +1,39 @@
+procedure  EAD;
+begin
+  if  User.InRange (172052, -173417, 3445, 500, 200)  then
+  begin
+    Engine.MoveTo (173127, -174056, 3480);
+  end;
+  if  User.InRange (, 500, 200)  then
+  begin
+    Engine.MoveTo ();
+  end;
+  if  User.InRange (, 500, 200)  then
+  begin
+    Engine.MoveTo ();
+  end;
+  if  User.InRange (, 500, 200)  then
+  begin
+    Engine.MoveTo ();
+  end;
+  if  User.InRange (, 500, 200)  then
+  begin
+    Engine.MoveTo ();
+  end;
+  if  User.InRange (, 500, 200)  then
+  begin
+    Engine.MoveTo ();
+  end;
+  if  User.InRange (, 500, 200)  then
+  begin
+    Engine.MoveTo ();
+  end;
+  if  User.InRange (, 500, 200)  then
+  begin
+    Engine.MoveTo ();
+  end;
+  if  User.InRange (, 500, 200)  then
+  begin
+    Engine.MoveTo ();
+  end;  
+end;

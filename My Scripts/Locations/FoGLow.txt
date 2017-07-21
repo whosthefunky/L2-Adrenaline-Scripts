@@ -1,0 +1,172 @@
+procedure  FoGLow;
+begin
+  if  User.InRange (170209, -116238, -2079, 500, 200)  then begin
+    Engine.MoveTo (171469, -116228, -2144);
+  end;
+  if  User.InRange (171469, -116228, -2144, 500, 200)  then begin
+    Engine.MoveTo (171564, -116190, -2183);
+  end;
+  if  User.InRange (171564, -116190, -2183, 500, 200)  then begin
+    Engine.MoveTo (171795, -116124, -2816);
+  end;
+  if  User.InRange (171795, -116124, -2816, 500, 200)  then begin
+    Engine.MoveTo (172498, -116436, -3216);
+  end;
+  if  User.InRange (172498, -116436, -3216, 500, 200)  then begin
+    Engine.MoveTo (173368, -116102, -3592);
+  end;
+  if  User.InRange (173368, -116102, -3592, 500, 200)  then begin
+    Engine.MoveTo (173603, -115475, -3760);
+  end;
+  if  User.InRange (173603, -115475, -3760, 500, 200)  then begin
+    Engine.MoveTo (175187, -115767, -3784);
+  end;
+  if  User.InRange (175187, -115767, -3784, 500, 200)  then begin
+    Engine.MoveTo (175669, -116001, -3810);
+  end;
+  if  User.InRange (175669, -116001, -3810, 500, 200)  then begin
+    Engine.MoveTo (177391, -116482, -3688);
+  end;
+  if  User.InRange (177391, -116482, -3688, 500, 200)  then begin
+    Engine.MoveTo (178245, -116805, -3600);
+  end;
+  if  User.InRange (178245, -116805, -3600, 500, 200)  then begin
+    Engine.MoveTo (179030, -117037, -3633);
+  end;
+  if  User.InRange (179030, -117037, -3633, 500, 200)  then begin
+    Engine.MoveTo (179956, -117974, -3641);
+  end;
+  if  User.InRange (179956, -117974, -3641, 500, 200)  then begin
+    Engine.MoveTo (178864, -118398, -3824);
+  end;
+  if  User.InRange (178864, -118398, -3824, 500, 200)  then begin
+    Engine.MoveTo (177473, -118801, -4112);
+  end;
+  if  User.InRange (177473, -118801, -4112, 500, 200)  then begin
+    Engine.MoveTo (177011, -119858, -4112);
+  end;
+  if  User.InRange (177011, -119858, -4112, 500, 200)  then begin
+    Engine.MoveTo (177225, -120569, -4142);
+  end;
+  if  User.InRange (177225, -120569, -4142, 500, 200)  then begin
+    Engine.MoveTo (177787, -121050, -4056);
+  end;
+  if  User.InRange (177787, -121050, -4056, 500, 200)  then begin
+    Engine.MoveTo (179275, -120980, -3824);
+  end;
+  if  User.InRange (179275, -120980, -3824, 500, 200)  then begin
+    Engine.MoveTo (180162, -120630, -3680);
+  end;
+  if  User.InRange (180162, -120630, -3680, 500, 200)  then begin
+    Engine.MoveTo (180479, -120475, -3701);
+  end;
+  if  User.InRange (180479, -120475, -3701, 500, 200)  then begin
+    Engine.MoveTo (181461, -119376, -3608);
+  end;
+  if  User.InRange (181461, -119376, -3608, 500, 200)  then begin
+    Engine.MoveTo (181652, -118364, -3360);
+  end;
+  if  User.InRange (181652, -118364, -3360, 500, 200)  then begin
+    Engine.MoveTo (182228, -117269, -3336);
+  end;
+  if  User.InRange (182228, -117269, -3336, 500, 200)  then begin
+    Engine.MoveTo (181886, -116809, -3328);
+  end;
+  if  User.InRange (181886, -116809, -3328, 500, 200)  then begin
+    Engine.MoveTo (183474, -117430, -3336);
+  end;
+  if  User.InRange (183474, -117430, -3336, 500, 200)  then begin
+    Engine.MoveTo (185412, -117438, -3288);
+  end;
+  if  User.InRange (185412, -117438, -3288, 500, 200)  then begin
+    Engine.MoveTo (186016, -117585, -3314);
+  end;
+  if  User.InRange (186016, -117585, -3314, 500, 200)  then begin
+    Engine.MoveTo (186652, -118823, -3288);
+  end;
+  if  User.InRange (186652, -118823, -3288, 500, 200)  then begin
+    Engine.MoveTo (187520, -118879, -3280);
+  end;
+  if  User.InRange (187520, -118879, -3280, 500, 200)  then begin
+    Engine.MoveTo (189238, -118246, -3314);
+  end;
+  if  User.InRange (189238, -118246, -3314, 500, 200)  then begin
+    Engine.MoveTo (189254, -116299, -3288);
+  end;
+  if  User.InRange (189254, -116299, -3288, 500, 200)  then begin
+    Engine.MoveTo (186702, -115290, -3314);
+  end;
+  if  User.InRange (186702, -115290, -3314, 500, 200)  then begin
+    Engine.MoveTo (186597, -112211, -3288);
+  end;
+  if  User.InRange (186597, -112211, -3288, 500, 200)  then begin
+    Engine.MoveTo (186269, -111847, -3314);
+  end;
+  if  User.InRange (186269, -111847, -3314, 500, 200)  then begin
+    Engine.MoveTo (186552, -111195, -3288);
+  end;
+  if  User.InRange (186552, -111195, -3288, 500, 200)  then begin
+    Engine.MoveTo (184321, -109056, -3288);
+  end;
+  if  User.InRange (184321, -109056, -3288, 500, 200)  then begin
+    Engine.MoveTo (182556, -109070, -3697);
+  end;
+  if  User.InRange (182556, -109070, -3697, 500, 200)  then begin
+    Engine.MoveTo (181222, -110693, -3664);
+  end;
+  if  User.InRange (181222, -110693, -3664, 500, 200)  then begin
+    Engine.MoveTo (178744, -110936, -3697);
+  end;
+  if  User.InRange (178744, -110936, -3697, 500, 200)  then begin
+    Engine.MoveTo (177843, -111177, -3664);
+  end;
+  if  User.InRange (177843, -111177, -3664, 500, 200)  then begin
+    Engine.MoveTo (177742, -112501, -3496);
+  end;
+  if  User.InRange (177742, -112501, -3496, 500, 200)  then begin
+    Engine.MoveTo (177570, -113045, -3488);
+  end;
+  if  User.InRange (177570, -113045, -3488, 500, 200)  then begin
+    Engine.MoveTo (174861, -113097, -3517);
+  end;
+  if  User.InRange (174861, -113097, -3517, 500, 200)  then begin
+    Engine.MoveTo (173547, -112737, -3723);
+  end;
+  if  User.InRange (173547, -112737, -3723, 500, 200)  then begin
+    Engine.MoveTo (173357, -113123, -3640);
+  end;
+  if  User.InRange (173357, -113123, -3640, 500, 200)  then begin
+    Engine.MoveTo (173288, -113383, -4768);
+  end;
+  if  User.InRange (173288, -113383, -4768, 500, 200)  then begin
+    Engine.MoveTo (173653, -112853, -5040);
+  end;
+  if  User.InRange (173653, -112853, -5040, 500, 200)  then begin
+    Engine.MoveTo (173734, -112224, -5232);
+  end;
+  if  User.InRange (173734, -112224, -5232, 500, 200)  then begin
+    Engine.MoveTo (176415, -112261, -5520);
+  end;
+  if  User.InRange (176415, -112261, -5520, 500, 200)  then begin
+    Engine.MoveTo (178706, -112537, -5824);
+  end;
+  if  User.InRange (178706, -112537, -5824, 500, 200)  then begin
+    Engine.MoveTo (179868, -111829, -5832);
+  end;
+  if  User.InRange (179868, -111829, -5832, 500, 200)  then begin
+    Engine.MoveTo (180772, -110757, -5864);
+  end;
+  if  User.InRange (180772, -110757, -5864, 500, 200)  then begin
+    Engine.MoveTo (180504, -109345, -5832);
+  end;
+  if  User.InRange (180504, -109345, -5832, 500, 200)  then begin
+    Engine.MoveTo (179935, -108921, -5864);
+  end;
+  if  User.InRange (173288, -113383, -4768, 500, 200)  then begin
+    Engine.MoveTo (173653, -112853, -5040);
+  end;
+end;
+
+BEGIN
+  FoGLow;
+END.
