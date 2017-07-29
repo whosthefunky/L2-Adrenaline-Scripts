@@ -1,0 +1,44 @@
+unit  RuneToGoddard;
+
+interface
+
+procedure  RuneToGoddard;
+
+implementation
+
+procedure  RuneToGoddard;
+begin
+  // From the market
+  if  User.InRange (43775, -48257, -792, 500, 200)  then
+  begin
+    Engine.MoveTo (26400, 145925, -3328);
+    Engine.MoveTo (27394, 145649, -3051);
+    Engine.MoveTo (28823, 144619, -2976);
+    Engine.MoveTo (30576, 143939, -3150);
+    Engine.MoveTo (32161, 143996, -3280);
+	
+	// add here
+    Engine.MoveTo (41013, -54161, -1816);
+    Engine.MoveTo (42685, -54512, -2312);
+    Engine.MoveTo (42601, -56123, -2992);
+    Engine.MoveTo (44576, -56148, -3720);
+	
+	// exit execution grounds
+    Engine.MoveTo (55097, 152338, -2448);
+    Engine.MoveTo (57473, 154244, -2478);
+    Engine.MoveTo (59505, 154213, -2568);
+    Engine.MoveTo (61750, 154957, -2960);
+    Engine.MoveTo (64378, 155268, -3480);
+    Engine.MoveTo (68633, 155012, -3736);
+    Engine.MoveTo (69712, 155326, -3728);
+    Engine.MoveTo (70465, 154474, -3696);
+    Engine.MoveTo (72881, 154259, -3448);
+    Engine.MoveTo (73594, 153501, -3456);
+    Engine.MoveTo (74706, 150830, -3440);
+    Engine.MoveTo (75119, 149643, -3472);
+    Engine.MoveTo (76461, 148721, -3608); // Giran
+  end;
+end;
+
+begin
+end.

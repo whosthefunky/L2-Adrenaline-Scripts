@@ -111,7 +111,7 @@ begin
     y2 := Party.Chars.Items(i).Y;
     z2 := Party.Chars.Items(i).Z;
 
-    if  (distanceBetween (x1, y1, z1, x2, y2, z2) < 1000)  then
+    if  (distanceBetween (x1, y1, z1, x2, y2, z2) < 2000)  then
     begin
       while  not (distanceBetween (x1, y1, z1, x2, y2, z2) < 150)  do
       begin

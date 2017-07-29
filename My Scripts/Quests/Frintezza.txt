@@ -13,29 +13,35 @@ Reward: Frintezza's Magic Force Field Removal Scroll
 const
   Tatiana = 31275;
   Nameless_Spirit = 31453;
-  Scroll_of_Escape = 736;
 
 // You have to be noblesse
 procedure  TeleportToFourSepulchers;
 begin
-  if  User.InRange (147960, -55272, -2728)  then
+  if  User.InRange (147960, -55272, -2728, 300, 200)  then
   begin
     Engine.SetTarget (Tatiana);
     Engine.DlgOpen;
-    Delay (500);
-    Engine.DlgSel ('[Noblesse Exclusive] Teleport');
-    Delay (500);
-    Engine.DlgSel (2);
-    Delay (500);
-    Engine.DlgSel ('Four Sepulchers - 1000 &#57');
-    Delay (500);
-    Engine.CancelTarget;
+    Engine.DlgSel ('Noblesse Only');
+    Delay (200);
+    Engine.BypassToServer ('npc_268465506_Chat 2');
+    Delay (200);
+    Engine.BypassToServer ('npc_268465506_goto 9067');
+  end;
+  if  User.InRange (178135, -84446, -7211, 500, 200)  then
+  begin
+    Engine.MoveTo (178286, -85547, -7243);
+    Engine.SetTarget (Nameless_Spirit);
+    Engine.DlgOpen;
+    Engine.DlgSel ('Quest');
+    Engine.DlgSel ('Journey To A Settlement');
+    Delay (200);
+    Engine.BypassToServer ('npc_268465579_Quest 654_JourneyToASettlement');
   end;
 end;
 
 procedure  TeleportToWallOfArgos;
 begin
-  if  User.InRange (147960, -55272, -2728)  then
+  if  User.InRange (147960, -55272, -2728, 300, 200)  then
   begin
     Engine.SetTarget (Tatiana);
     Engine.DlgOpen;
@@ -44,7 +50,6 @@ begin
     Delay (500);
     Engine.DlgSel ('Wall of Argos - 2200 &#57');
     Delay (500);
-    Engine.CancelTarget;
   end;
 end;
 
@@ -60,7 +65,7 @@ begin
 }
   TeleportToFourSepulchers;
   Engine.MoveTo (178296, -85560, -7216);
-  if  User.InRange (178296, -85560, -7216)  then
+  if  User.InRange (178296, -85560, -7216, 300, 200)  then
   begin
     Engine.SetTarget (Nameless_Spirit);
     Engine.DlgOpen;
@@ -76,7 +81,7 @@ begin
 
   // Recall
   if  not (Inventory.User.ByID(8073, Item) = true)  and  (Item.Count < 5)  then begin
-    Engine.UseItem (Scroll_of_Escape);
+    //Engine.UseItem (Scroll_of_Escape);
     Delay (10 * 1000);
 
 {
@@ -122,4 +127,8 @@ begin
     Delay (500);
     Engine.CancelTarget;
   end;
+end;
+
+begin
+  Frintezza;
 end.

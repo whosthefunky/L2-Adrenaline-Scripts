@@ -1,0 +1,44 @@
+procedure  ShoutObstacles;
+var
+  i: integer;
+begin
+  while  Engine.Status = lsOnline  do
+  begin
+    for  i := 0  to  NpcList.Count-1  do
+    begin
+      if  User.DistTo(NpcList.Items(i)) < 40  then
+      begin
+        Engine.EnterText ('MOVE ASIDE');
+        Engine.EnterText ('I''m in a hurry!');
+      end; 
+    end;
+    Delay (1000);
+  end;
+end;
+
+procedure  Shout;
+begin
+  while  Engine.Status = lsOnline  do
+  begin
+    Delay (60 * 1000);
+    Engine.EnterText ('Move move!');
+    Delay (60 * 1000);
+    Engine.EnterText ('Move aside! I''m in a hurry');
+  end;
+end;
+
+procedure  Move;
+begin
+  while  Engine.Status = lsOnline  do
+  begin
+    Engine.MoveTo (82794, 147782, -3464);
+    Engine.MoveTo (81056, 147817, -3495);
+    Engine.MoveTo (81058, 149411, -3495);
+    Engine.MoveTo (82837, 149412, -3464);
+  end;
+end;
+
+begin
+  Script.NewThread (@Move);
+  Script.NewThread (@Shout);
+end.

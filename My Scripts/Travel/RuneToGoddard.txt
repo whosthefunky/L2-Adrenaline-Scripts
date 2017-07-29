@@ -1,0 +1,91 @@
+unit  RuneToGoddard;
+
+interface
+
+procedure  RuneToGoddard;
+
+implementation
+
+procedure  RuneToGoddard;
+begin
+  // From the market
+  if  User.InRange (43775, -48257, -792, 500, 200)  then
+  begin
+    Engine.MoveTo (43523, -50500, -823);
+    Engine.MoveTo (41983, -51958, -792);
+    Engine.MoveTo (40724, -52839, -936);
+    Engine.MoveTo (38870, -53552, -1328);
+    Engine.MoveTo (39647, -54176, -1496);
+    Engine.MoveTo (41013, -54161, -1816);
+    Engine.MoveTo (42685, -54512, -2312);
+    Engine.MoveTo (42601, -56123, -2992);
+    Engine.MoveTo (44576, -56148, -3720);
+	
+	// Run through the forest
+    Engine.MoveTo (45378, -56104, -3688);
+    Engine.MoveTo (47174, -55428, -3232);
+    Engine.MoveTo (47884, -54828, -3024);
+    Engine.MoveTo (48707, -54201, -3008);
+    Engine.MoveTo (50394, -54211, -3088);
+    Engine.MoveTo (51315, -54487, -3136);
+    Engine.MoveTo (52061, -54093, -3152);
+    Engine.MoveTo (52733, -53281, -3168);
+    Engine.MoveTo (53907, -52849, -3272);
+    Engine.MoveTo (55273, -51902, -3520);
+    Engine.MoveTo (55721, -50939, -3624);
+    Engine.MoveTo (57123, -50305, -3440);
+    Engine.MoveTo (59140, -50110, -3208);
+    Engine.MoveTo (60110, -49491, -3048);
+    Engine.MoveTo (61219, -48933, -3056);
+
+	// From Forest to Swamp
+	Engine.MoveTo (64222, -48849, -2984);
+    Engine.MoveTo (65072, -48626, -2816);
+    Engine.MoveTo (66710, -48252, -2800);
+    Engine.MoveTo (67512, -47989, -2896);
+    Engine.MoveTo (68714, -48323, -3200);
+    Engine.MoveTo (70568, -49929, -3256);
+    Engine.MoveTo (72743, -49044, -3200);
+    Engine.MoveTo (75561, -48561, -3080);
+    Engine.MoveTo (77254, -47541, -3064);
+    Engine.MoveTo (80150, -47608, -3016);
+    Engine.MoveTo (81465, -48014, -3248);
+    Engine.MoveTo (84142, -47363, -3208);
+    Engine.MoveTo (84994, -48259, -3072);
+    Engine.MoveTo (85374, -50360, -2800);
+    Engine.MoveTo (87072, -52668, -2552);
+    Engine.MoveTo (87609, -54765, -2584);
+    Engine.MoveTo (90331, -56165, -2968);
+    Engine.MoveTo (92535, -58245, -2888);
+    Engine.MoveTo (94732, -59180, -2520);
+    Engine.MoveTo (95101, -60143, -2440);
+	
+	// Devil Pass
+    Engine.MoveTo (97638, -60977, -2648);
+    Engine.MoveTo (100495, -60101, -2752);
+    Engine.MoveTo (102383, -59958, -2440);
+    Engine.MoveTo (103246, -60109, -2384);
+    Engine.MoveTo (104314, -60789, -2464);
+    Engine.MoveTo (108049, -62556, -3040);
+    Engine.MoveTo (111823, -61786, -3336);
+    Engine.MoveTo (115058, -59105, -3432);
+	
+	// Varka
+    Engine.MoveTo (118486, -61182, -3560);
+    Engine.MoveTo (119552, -62216, -3544);
+    Engine.MoveTo (122828, -63498, -3520);
+    Engine.MoveTo (126516, -62266, -3496);
+    Engine.MoveTo (127948, -59910, -3696);
+    Engine.MoveTo (130956, -60626, -3280);
+    Engine.MoveTo (131381, -60525, -3456);
+    Engine.MoveTo (135093, -62735, -3288);
+    Engine.MoveTo (137671, -62254, -3128);
+    Engine.MoveTo (138493, -61740, -3048);
+    Engine.MoveTo (140430, -61548, -3072);
+    Engine.MoveTo (144858, -64522, -3416);
+    Engine.MoveTo (147486, -64693, -3462); // Goddard
+  end;
+end;
+
+begin
+end.

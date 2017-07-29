@@ -1,0 +1,37 @@
+unit  ToRuneMarket;
+
+interface
+
+procedure  ToRuneMarket;
+
+implementation
+
+procedure  ToRuneMarket;
+begin
+  if  User.InRange (39637, -48246, 901, 500, 200)  then
+  begin
+    Engine.MoveTo (39466, -48307, 896);
+	Engine.SetTarget (35566);
+	Engine.DlgOpen;
+	Engine.BypassToServer ('npc_268468807_door'); // Open doors
+	Delay (200);
+	Engine.BypassToServer ('npc_268468807_door open');
+    Engine.MoveTo (39469, -48239, 872);
+    Engine.MoveTo (39189, -48250, 896);
+    Engine.MoveTo (39267, -48320, 870);
+	Engine.SetTarget (35567);
+	Engine.DlgOpen;
+	Engine.BypassToServer ('npc_268468808_close_doors'); // Close doors
+    Engine.MoveTo (36665, -50548, 896);
+    Engine.MoveTo (36677, -51234, 691);
+    Engine.MoveTo (36830, -51233, 712);
+    Engine.MoveTo (38282, -51166, 184);
+    Engine.MoveTo (39970, -50237, -296);
+    Engine.MoveTo (40169, -49923, -332);
+    Engine.MoveTo (40481, -48258, -768);
+    Engine.MoveTo (43775, -48257, -792);
+  end;
+end;
+
+begin
+end.

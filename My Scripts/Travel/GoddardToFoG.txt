@@ -1,0 +1,98 @@
+unit  GoddardToFoG;
+
+interface
+
+procedure  GoddardToFoG;
+
+implementation
+
+procedure  GoddardToFoG;
+begin
+    Engine.MoveTo (146748, -67742, -3664);
+  if  User.InRange (146748, -67742, -3664, 500, 200)  then
+    Engine.MoveTo (146008, -68839, -3728);
+  if  User.InRange (146008, -68839, -3728, 500, 200)  then
+    Engine.MoveTo (144391, -68848, -3744);
+  if  User.InRange (144391, -68848, -3744, 500, 200)  then
+    Engine.MoveTo (142268, -69807, -3768);
+  if  User.InRange (142268, -69807, -3768, 500, 200)  then
+    Engine.MoveTo (137997, -70052, -3704);
+  if  User.InRange (137997, -70052, -3704, 500, 200)  then
+    Engine.MoveTo (136754, -71701, -3496);
+  if  User.InRange (136754, -71701, -3496, 500, 200)  then
+    Engine.MoveTo (135092, -72532, -3472);
+  if  User.InRange (135092, -72532, -3472, 500, 200)  then
+    Engine.MoveTo (134522, -72900, -3464);
+  if  User.InRange (134522, -72900, -3464, 500, 200)  then
+    Engine.MoveTo (146748, -67742, -3664);
+  if  User.InRange (146748, -67742, -3664, 500, 200)  then
+    Engine.MoveTo (133739, -76165, -3592);
+  if  User.InRange (133739, -76165, -3592, 500, 200)  then
+    Engine.MoveTo (134475, -78755, -3616);
+  if  User.InRange (134475, -78755, -3616, 500, 200)  then
+    Engine.MoveTo (134322, -80623, -3656);
+  if  User.InRange (134322, -80623, -3656, 500, 200)  then
+    Engine.MoveTo (133861, -83667, -3736);
+  if  User.InRange (133861, -83667, -3736, 500, 200)  then
+    Engine.MoveTo (134659, -86741, -3680);
+  if  User.InRange (134659, -86741, -3680, 500, 200)  then
+    Engine.MoveTo (134605, -90145, -3536);
+  if  User.InRange (134605, -90145, -3536, 500, 200)  then
+    Engine.MoveTo (134130, -91573, -3392);
+  if  User.InRange (134130, -91573, -3392, 500, 200)  then
+    Engine.MoveTo (135335, -94533, -3389);
+  if  User.InRange (135335, -94533, -3389, 500, 200)  then
+    Engine.MoveTo (135700, -96682, -3320);
+  if  User.InRange (135700, -96682, -3320, 500, 200)  then
+    Engine.MoveTo (135531, -99030, -3224); // HS
+
+  if  User.InRange (135531, -99030, -3224, 500, 200)  then
+    Engine.MoveTo (135957, -99963, -3152);
+  if  User.InRange (135957, -99963, -3152, 500, 200)  then
+    Engine.MoveTo (136928, -100316, -3072);
+  if  User.InRange (136928, -100316, -3072, 500, 200)  then
+    Engine.MoveTo (139287, -100442, -2944);
+  if  User.InRange (139287, -100442, -2944, 500, 200)  then
+    Engine.MoveTo (140436, -101393, -3024);
+  if  User.InRange (140436, -101393, -3024, 500, 200)  then
+    Engine.MoveTo (141424, -100497, -2952);
+  if  User.InRange (141424, -100497, -2952, 500, 200)  then
+    Engine.MoveTo (141861, -99534, -2936);
+  if  User.InRange (141861, -99534, -2936, 500, 200)  then
+    Engine.MoveTo (142992, -99591, -2992);
+  if  User.InRange (142992, -99591, -2992, 500, 200)  then
+    Engine.MoveTo (145666, -100897, -3240);
+  if  User.InRange (145666, -100897, -3240, 500, 200)  then
+    Engine.MoveTo (149420, -100880, -2912);
+  if  User.InRange (149420, -100880, -2912, 500, 200)  then
+    Engine.MoveTo (151490, -101447, -2924);
+  if  User.InRange (151490, -101447, -2924, 500, 200)  then
+    Engine.MoveTo (153914, -101018, -2928);
+  if  User.InRange (153914, -101018, -2928, 500, 200)  then
+    Engine.MoveTo (156808, -102811, -2640);
+  if  User.InRange (156808, -102811, -2640, 500, 200)  then
+    Engine.MoveTo (159531, -103842, -2464);
+  if  User.InRange (159531, -103842, -2464, 500, 200)  then
+    Engine.MoveTo (160568, -104849, -2368);
+  if  User.InRange (160568, -104849, -2368, 500, 200)  then
+    Engine.MoveTo (162286, -108253, -2248);
+  if  User.InRange (162286, -108253, -2248, 500, 200)  then
+    Engine.MoveTo (163503, -108894, -2472);
+  if  User.InRange (163503, -108894, -2472, 500, 200)  then
+    Engine.MoveTo (164924, -108795, -2672);
+  if  User.InRange (164924, -108795, -2672, 500, 200)  then
+    Engine.MoveTo (165718, -110202, -3024);
+  if  User.InRange (165718, -110202, -3024, 500, 200)  then
+    Engine.MoveTo (165426, -111755, -3040);
+  if  User.InRange (165426, -111755, -3040, 500, 200)  then
+    Engine.MoveTo (166068, -112352, -2872);
+  if  User.InRange (166068, -112352, -2872, 500, 200)  then
+    Engine.MoveTo (167276, -112903, -2816);
+  if  User.InRange (167276, -112903, -2816, 500, 200)  then
+    Engine.MoveTo (169039, -116177, -2448);
+  if  User.InRange (169039, -116177, -2448, 500, 200)  then
+    Engine.MoveTo (170209, -116238, -2079); // Fog Entrance
+end;
+
+begin
+end.

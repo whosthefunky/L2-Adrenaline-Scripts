@@ -1,0 +1,7 @@
+uses  ToRuneMarket, RuneToGoddard, GoddardToFoG;
+
+begin
+  //ToRuneMarket;
+  //RuneToGoddard;
+  GoddardToFoG;
+end.

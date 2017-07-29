@@ -1,0 +1,19 @@
+var
+  i: integer;
+begin
+  for  i := 0  to  20  do
+  begin
+    // Engine.BypassToServer ('Quest 640_TheZeroHour 1'); // 1 Enria (12 Stakato Fangs)
+    // Engine.BypassToServer ('Quest 640_TheZeroHour 2'); // 1 Asofe (6 Stakato Fangs)
+    // Engine.BypassToServer ('Quest 640_TheZeroHour 3'); // 1 Thons (6 Stakato Fangs)
+    // Engine.BypassToServer ('Quest 640_TheZeroHour 4'); // 10 Varnishes of Purity (81 Stakato Fangs)
+    // Engine.BypassToServer ('Quest 640_TheZeroHour 5'); // 5 Syntetic Cokes (33 Stakato Fangs)
+    // Engine.BypassToServer ('Quest 640_TheZeroHour 6'); // 10 Compoud Braids (30 Stakato Fangs)
+    // Engine.BypassToServer ('Quest 640_TheZeroHour 7'); // 10 Durable Metal Plates (150 Stakato Fangs)
+    Engine.BypassToServer ('Quest 640_TheZeroHour 8'); // 10 Mithril Alloy (131 Stakato Fangs)
+    // Engine.BypassToServer ('Quest 640_TheZeroHour 9'); // 5 Oriharukon (123 Stakato Fangs)
+    Delay (200);
+    Engine.BypassToServer ('Quest 640_TheZeroHour 31554-05.htm');
+    Delay (200);
+  end;
+end.

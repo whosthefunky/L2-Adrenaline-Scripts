@@ -1,0 +1,17 @@
+const
+  Rooney = 32049;
+
+procedure  TargetRooney;
+begin
+  while  true  do
+  begin
+    if  Engine.SetTarget (Rooney)  then
+      PlaySound (exepath + '\sounds\beep.wav');
+    Delay (1000);
+  end;
+end;
+
+procedure  MoveAround;
+begin
+  Engine.MoveTo (183424, -111534, -3616);
+end;

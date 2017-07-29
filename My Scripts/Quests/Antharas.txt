@@ -7,6 +7,10 @@ const
   Kendra = 30851;
   Verona = 30727;
   Kaiena = 30720;
+  Moke = 30498;
+  Helton = 30678;
+  Gilmore = 30754;
+  Theodric = 30755;
   
 {
   Audience with the Land Dragon
@@ -45,7 +49,7 @@ begin
     Engine.BypassToServer ('Quest 337_AudienceWithTheLandDragon 30753-05.htm');
     Delay (200);
     Engine.BypassToServer ('Quest 337_AudienceWithTheLandDragon 30753-06.htm');
-	PlaySound (exepath + '\sounds\beep.wav');
+	  PlaySound (exepath + '\sounds\beep.wav');
     Print ('Teleport to Giants Cave');
     while  not User.InRange (174534, 52665, -4364, 200, 200)  do
       Delay (1000);
@@ -67,21 +71,24 @@ begin
     Engine.MoveTo (173381, 61256, -4368);
     Engine.LoadZone (exepath + 'Zmaps\AntharasQuestGiantsCave.zmap');
     Engine.FaceControl (0, true);
-	  Delay (60 * 1000);
-	  GoHome;
+    Delay (60 * 1000);
+    Engine.EnterText ('/unstuck');
+    Print ('Teleport to Seal of Silen');
+    while  not User.InRange (185358, 20380, -3264, 500, 200)  do
+      Delay (1000);
   end;
 
 {
   Kill Blood Queen in Seal of Silen until the quest mob appears
   Kill the quest mob and you will earn the quest item: Remains Of Sacrified
 }
-  if  User.InRange (185358, 20380, -3264, 200, 200)  then
+  if  User.InRange (185358, 20380, -3264, 500, 200)  then
   begin
     Engine.MoveTo (185431, 19847, -3264);
     Engine.LoadZone (exepath + 'Zmaps\AntharasQuestSealOfSilen.zmap');
     Engine.FaceControl (0, true);
-	  Delay (60 * 1000);
-	  GoHome;
+    Delay (60 * 1000);
+    GoHome;
     PlaySound (exepath + '\sounds\beep.wav');
     Print ('Teleport to Forsaken Plains');
     while  not User.InRange (167287, 37129, -4003, 500, 200)  do
@@ -117,7 +124,7 @@ begin
     Engine.MoveTo (151660, 84248, -3376);
     Engine.MoveTo (152971, 82975, -3224);
     Engine.MoveTo (154282, 81451, -3192);
-    Engine.LoadZone (exepath + 'Zmaps\AntharasQuest.zmap');
+    Engine.LoadZone (exepath + 'Zmaps\AntharasQuestForestOfMirrors.zmap');
     Engine.FaceControl (0, true);
     Delay (5 * 60 * 1000);
     GoHome;
@@ -202,8 +209,11 @@ begin
     while  not User.InRange (82937, 148620, -3495, 500, 200)  do
       Delay (1000);
   end;
-  
-if  User.InRange (82937, 148620, -3495, 500, 200)  then
+
+{
+  Bring the items to Gabrielle
+}  
+  if  User.InRange (82937, 148620, -3495, 500, 200)  then
   begin
     Engine.MoveTo (82745, 149419, -3464);
     Engine.MoveTo (81773, 149487, -3495);
@@ -219,48 +229,176 @@ if  User.InRange (82937, 148620, -3495, 500, 200)  then
     Delay (200);
     Engine.BypassToServer ('npc_268464828_Quest 337_AudienceWithTheLandDragon');
     Delay (200);
-    Engine.BypassToServer ('Quest 337_AudienceWithTheLandDragon 30753-04.htm');
+    Engine.BypassToServer ('Quest 337_AudienceWithTheLandDragon 30753-10.htm');
     Delay (200);
-  end.
+	//TeleportTo ('gludin');
+    PlaySound (exepath + '\sounds\beep.wav');
+    Print ('Teleport to Windy Hill');
+    while  not User.InRange (-88522, 83383, -2859, 500, 200)  do
+      Delay (1000);
+  end;
 
+{
+  Destroy the 1st Jewel
+}
+  if  User.InRange (-88522, 83383, -2859, 500, 200)  then
+  begin
+    Engine.MoveTo (-87800, 82747, -2864);
+    Engine.MoveTo (-84478, 79837, -3160);
+    Engine.MoveTo (-81325, 75873, -3376);
+  end;
+  if  User.InRange (-81325, 75873, -3376, 500, 200)  then
+  begin
+    Engine.LoadZone (exepath + 'Zmaps\AntharasQuestWindyHill.zmap');
+    Engine.FaceControl (0, true);
+    Delay (2 * 60 * 1000);
+    GoHome;
+    //TeleportTo ('sea of spores');
+    PlaySound (exepath + '\sounds\beep.wav');
+	Print ('Teleport to Sea of Spores');
+    while  not User.InRange (64335, 26798, -3758, 500, 200)  do
+      Delay (1000);
+  end;
 
-{10. Bring it back to Master Kendra and she will give you another Mark Of Watchman.
+{
+  Destroy the 2nd Jewel
+}
+  if  User.InRange (64335, 26798, -3758, 500, 200)  then
+  begin
+    Engine.MoveTo (63525, 30327, -3752);
+    Engine.MoveTo (63571, 30951, -3772);
+  end;
+  if  User.InRange (63571, 30951, -3772, 500, 200)  then
+  begin
+    Engine.LoadZone (exepath + 'Zmaps\AntharasQuestSeaOfSpores.zmap');
+    Engine.FaceControl (0, true);
+    Delay (2 * 60 * 1000);
+    GoHome;
+	MoveInCity;
+	Print ('Move from the gatekeeper to the blacksmith');
+    while  not User.InRange (82761, 53602, -1517, 500, 200)  do
+      Delay (1000);
+  end;
 
-11. Go with the 4 marks back in Giran to Gabrielle, give them to her and she will send you to 2 NPC.
-First NPC is Warehouse Chief Moke in Gludin Warehouse. Talk to him and he will send you to Wind Mill to get him some quest items.
+{
+  Talk to Oren's Blacksmith
+}
+  if  User.InRange (82761, 53602, -1517, 500, 200)  then
+  begin
+    Engine.MoveTo (82489, 54245, -1488);
+    Engine.MoveTo (82514, 55580, -1520);
+    Engine.MoveTo (83611, 55595, -1512);
+  end;
+  if  User.InRange (83611, 55595, -1512, 200, 200)  then
+  begin
+    Engine.SetTarget (Helton);
+    Engine.DlgOpen;
+    Engine.DlgSel ('Quest');
+    //TeleportTo ('gludin');
+    PlaySound (exepath + '\sounds\beep.wav');
+	Print ('Teleport to Gludin');
+    while  not User.InRange (64335, 26798, -3758, 500, 200)  do
+      Delay (1000);
+  end;
+  
+{
+  Talk to Moke in Gludin Warehouse
+}
+  if  User.InRange (-80818, 149785, -3038, 500, 200)  then
+  begin
+    Engine.MoveTo (-81050, 150164, -3056);
+    Engine.MoveTo (-83025, 151906, -3120);
+    Engine.MoveTo (-83000, 153942, -3204);
+    Engine.MoveTo (-82272, 153864, -3204);
+    Engine.MoveTo (-82265, 153384, -3168);
+    Engine.MoveTo (-81974, 153391, -3200);
+    Engine.MoveTo (-81914, 153491, -3168);	
+  end;
+  if  User.InRange (-81914, 153491, -3168, 200, 200)  then
+  begin
+    Engine.SetTarget (Moke);
+    Engine.DlgOpen;
+    Engine.DlgSel ('Quest');
+    //TeleportTo ('giran');
+    PlaySound (exepath + '\sounds\beep.wav');
+	Print ('Teleport to Giran');
+    while  not User.InRange (82937, 148620, -3495, 500, 200)  do
+      Delay (1000);
+  end;
 
-12. Here you will find a quest monster Abyssal Jewel 1 Abyssal Jewel 1 location on the map . If you are a big lvl like 72+ damage dealer or nuker you will be able to get the items if you have a support character or you are lower lvl you will have to find some friends to pass the tests that will follow.
-So hit the Abyssal Jewel 1 Abyssal Jewel 1 location on the map and lots of quest monsters will appear you will have to earn quest item from Abyssal Jewel 1 and from the many monsters that protects it.
+{
+  Take the 2 marks to Gabrielle in Giran.
+}  
+  if  User.InRange (82937, 148620, -3495, 500, 200)  then
+  begin
+    Engine.MoveTo (82745, 149419, -3464);
+    Engine.MoveTo (81773, 149487, -3495);
+    Engine.MoveTo (81328, 149690, -3464);
+  end;
 
-You have earned 1st Fragment Of Abyss Jewel 1st Fragment Of Abyss Jewel and Mara Fang Mara Fang
+  if  User.InRange (81328, 149690, -3464, 200, 200)  then
+  begin
+    Engine.SetTarget (Gabrielle);
+    Engine.DlgOpen;
+    Delay (200);
+    Engine.DlgSel ('Quest');
+    Delay (200);
+    Engine.BypassToServer ('npc_268464828_Quest 337_AudienceWithTheLandDragon');
+    Delay (200);
+	//TeleportTo ('death pass');
+    PlaySound (exepath + '\sounds\beep.wav');
+    Print ('Teleport to Dragon Valley entrance');
+    while  not User.InRange (72305, 117730, -3693, 500, 200)  do
+      Delay (1000);
+  end;
+  
+  if  User.InRange (72305, 117730, -3693, 500, 200)  then
+  begin
+    Engine.MoveTo (73183, 118466, -3696);
+  end;
+  if  User.InRange (73183, 118466, -3696, 200, 200)  then
+  begin
+    Engine.SetTarget (Gilmore);
+    Engine.DlgOpen;
+    Engine.DlgSel ('Quest');
+    Delay (200);
+    Engine.BypassToServer ('npc_268464801_Quest 337_AudienceWithTheLandDragon');
+    Delay (200);
+    Engine.BypassToServer ('Quest 337_AudienceWithTheLandDragon 30754-03.htm');
+	GoHome;
+    //TeleportTo ('antharas lair');
+    PlaySound (exepath + '\sounds\beep.wav');
+	Print ('Teleport to Giran');
+    while  not User.InRange (131420, 114463, -3716, 500, 200)  do
+      Delay (1000);
+  end;
 
-13. After doing so go with the items back to Warehouse Chief Moke and he will give you a Mark Of Watchman Mark Of Watchman .
+{
+  Kill Cave Keepers and Cave Maiden until the 3rd Jewel appears and you destroy it
+}
+  if  User.InRange (131420, 114463, -3716, 500, 200)  then
+  begin
+    Engine.LoadZone (exepath + 'Zmaps\AntharasQuestAntharasLair.zmap');
+    Engine.FaceControl (0, true);
+    Delay (10 * 60 * 1000);
+    Engine.MoveTo (131128, 114683, -3720);
+  end;
 
-14. The second NPC is situated in Oren his name is Blacksmith Helton, he will send you to Sea of Spores to get 2nd Fragment of Abyss Jewel and a Musfel Fang.
+{
+  Take the 3rd fragment to Antharas Watchman Theodric in front of the entrance of Antharas Lair, give it to him and you will earn the Portal Stone Portal Stone
+}
+  if  User.InRange (131128, 114683, -3720, 200, 200)  then
+  begin
+    Engine.SetTarget (Theodric);
+    Engine.DlgOpen;
+    Engine.DlgSel ('Quest');
+    Delay (200);
+    Engine.BypassToServer ('Quest 337_AudienceWithTheLandDragon 30755-05.htm');
+  end;
 
-Here the same thing will happen after hitting the Abyssal Jewel 2 Abyssal Jewel 2 location on the map many quest monsters will appear, again you will have to earn one quest item from the jewel and the other from protectors.
-
-You have earned 2nd Fragment Of Abyss Jewel 2nd Fragment Of Abyss Jewel and Musfel Fang Musfel Fang
-
-15. Take the items back to Blacksmith Helton and he will give you another Mark Of Watchman Mark Of Watchman .
-
-16. Take the 2 marks to Gabrielle in Giran. Now she will send you to the entrance of Dragon Valley to talk to Antharas Watchman Gilmore Gilmore location on the map
-
-17. He will send you to hunt some Cave Keeper Cave Keeper location on the map and Cave Maiden Cave Maiden location on the map . They are situated in front of Antharas Lair.
-
-18. After killing a couple of them the Abyssal Jewel 3 will appear, hit it and some quest monsters will appear kill them and you will get only fragments from the jewel the protectors will not give a quest item any more.
-
-Free Image Hosting at www.ImageShack.us Free Image Hosting at www.ImageShack.us
-
-You have earned 3rd Fragment Of Abyss Jewel 3rd Fragment Of Abyss Jewel
-
-19. Take the 3rd fragment to the NPC Antharas Watchman Theodric Theodric location on the map in front of the entrance of Antharas Lair, give it to him and you will earn the Portal Stone Portal Stone
-
-Theodric
-
-Congratulations you now are able to enter Antharas Nest good luck killing it.
-
-* Every time you go to Antharas you have to make the quest again. You can have multiple stones in your quest inventory.
+{
+  Congratulations you now are able to enter Antharas Nest good luck killing it.
+  Every time you go to Antharas you have to make the quest again. You can have multiple stones in your quest inventory.
 }
 end;
 

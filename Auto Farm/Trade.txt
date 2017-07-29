@@ -1,7 +1,7 @@
 begin
   while  true  do
   begin
-    Engine.EnterText ('+WTB strider 400g');
-    Delay (10 * 1000);
+    Engine.EnterText ('+>>> WTS many EWS 200g in HS<<<');
+    Delay (30 * 1000);
   end;
 end.

@@ -1,0 +1,16 @@
+var
+  x: integer;
+  s: string;
+begin
+  while  true  do
+  begin
+    if  ChatMessage.Unread and (ChatMessage.Time < 3000)  then
+    begin
+      s := ChatMessage.text;
+      x := pos('seconds', s);
+      if  x > 0  then
+        Playsound (exepath + 'sounds/beep.wav');
+    end;
+    Delay(111);
+  end;
+end.
